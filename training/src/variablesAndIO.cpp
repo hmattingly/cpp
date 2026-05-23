@@ -142,7 +142,7 @@ void dataTypes()
     bool cc { true };
     bool dd {};                  // defaults to false
     bool ee { 1 };               // true when 1, false when 0  (direct-list-initialization)
-    bool ff { 4 };               // true when any value != 0, false when 0  (copy-initialization)
+    bool ff = 4;               // true when any value != 0, false when 0  (copy-initialization)
  
     std::cout << std::boolalpha; // prints booleans as true or false instead of 1 or 0
     std::cout << "True = " << ff << '\n';

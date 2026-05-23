@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "classes.h"    // best practice to include corresponding header (helps with catching errors)
+#include "Classes.h"    // best practice to include corresponding header (helps with catching errors)
 #include <iostream>     // because we need std::cout, must include iostream here
 #include <string_view>
 #include <cassert>      // for assert

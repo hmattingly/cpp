@@ -16,7 +16,7 @@
 // #define VARIO        // replaces VARIO with nothing
 // #define MATLOOP
 // #define FUNCSREFS
-//#define ENUMSTRUCTS
+// #define ENUMSTRUCTS
 #define CLASSES
  
 // ------- Namespace directives -------
