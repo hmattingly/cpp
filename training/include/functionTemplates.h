@@ -1,14 +1,10 @@
 // ------- Header Guard -------
-#ifndef FUNCSREFS_H  // variable typically matches header file name in all caps
-#define FUNCSREFS_H  // effectively creating a macro that replaces variable with nothing
+#ifndef FUNCTEMP_H  // variable typically matches header file name in all caps
+#define FUNCTEMP_H  // effectively creating a macro that replaces variable with nothing
  
 // ------- Forward Declarations -------
 namespace Fr  // forward declarations must be part of the same namespace in which they're defined
 {
- 
-    void referencePractice();
-    void pointerPractice();
- 
     // ------- Template Functions -------
     // in leiu of overloaded functions, we can use function templates
       // must be defined in the same file they get instantiated

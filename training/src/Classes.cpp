@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "Classes.h"    // best practice to include corresponding header (helps with catching errors)
+#include "classes.h"    // best practice to include corresponding header (helps with catching errors)
 #include <iostream>     // because we need std::cout, must include iostream here
 #include <string_view>
 #include <cassert>      // for assert
@@ -32,7 +32,7 @@ public:  // access specifier
         : m_name { name }, m_salary { salary }  // member initialization list (can also be on same line)
     {  // usually function body is left empty
         assert(salary >= 0);
-        std::cout << "Employee initialized with name " << name << " and salary $" << salary << '\n';
+        std::cout << "\nEmployee initialized with name " << name << " and salary $" << salary << '\n';
     }
  
     // access functions allow you to get or set private class members

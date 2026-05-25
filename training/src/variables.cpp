@@ -1,6 +1,6 @@
 // ------- Preprocessor directives -------
 #include <iostream>    // iostream is part of the standard C++ library that deals with basic input and output
-#include <cstdint>   // for fixed-width integers
+#include <cstdint>     // for fixed-width integers
 #include <string>      // for string
 #include <string_view> // for string_view
  
@@ -33,7 +33,7 @@ int variablePractice()
     int i { 2 }, j { 3 };
  
     // static local variables do not go out of scope after the function ends. They are initialized only once, the first time the function is called
-    static int m { 3 };  // if this function were called again, this line would be skipped since p is already initialized
+    static int m { 3 };  // if this function were called again, this line would be skipped since m is already initialized
     m++;
  
     [[maybe_unused]] int n { 3 };  // to prevent unused variable warning use [[maybe_unused]]
@@ -41,54 +41,7 @@ int variablePractice()
     return m;  // return integer
 }
  
-// functions with no return value have type void
-void outputPractice()
-{
-   
-    int m { variablePractice() };  // returns m = 4
- 
-    // common predefined variables in iostream
-      // cout = character output
-      // endl = end line, equivalent to \n but flushes the buffer (not preferred)
-      // cin  = character input
-      // cerr = character error, equivalent to cout but flushes the buffer, used for debugging
- 
-    std::cout << "\nHello world!\n";         // insertion operator << and extraction operator >> move data in direction pointed
-   
-    // Quoted text separated by nothing but whitespace (spaces, tabs, or newlines) will be concatenated
-    std::cout << "Hi "
-                 "World\n";
- 
-    // Statements can be split over multiple lines
-    std::cout
-      << "Hola World\n";
- 
-    std::cerr << "I'm helping to debug!\n";
- 
-    std::cout << "1st call: m = " << m << std::endl;
-    std::cout << "1st call: m = " << m << '\n';      // conventional to put \n in single quotes
-    std::cout << "2nd call: m = " << variablePractice() << '\n';  // returns m = 5
- 
-}
- 
-void inputPractice()
-{
-    // Notes on extraction opertor:
-      // removes all leading whitespace characters
-      // extracts as many characters as it can until it hits \n (Enter) or invalid entry per data type of variable extracted to (e.g. whitespace)
-      // returns 0 if invalid entry per data type of variable being extracted to and discontinues further extraction
-   
-  int x {}, y {};
-    std::cout << "\nEnter two integers separated by space or new line: ";
-    std::cin >> x >> y;                    // automatically adds new line
-    std::cout << "You entered: " << x << " and " << y << '\n';
-   
-    std::string s {};
-    std::cout << "Enter a word: ";
-    std::cin >> s;
-    std::cout << "Your word has " << s.length() << " characters.\n";
-}
- 
+// functions with no return value have type void 
 void dataTypes()  
 {  
  
@@ -145,7 +98,7 @@ void dataTypes()
     bool ff = 4;               // true when any value != 0, false when 0  (copy-initialization)
  
     std::cout << std::boolalpha; // prints booleans as true or false instead of 1 or 0
-    std::cout << "True = " << ff << '\n';
+    std::cout << "\nTrue = " << ff << '\n';
  
     // Characters and Strings
     char gg { '2' };             // characters use single quotes
@@ -192,7 +145,7 @@ void dataTypes()
       // int
  
    
-    std::cout << "\nA byte is    " << CHAR_BIT << " bits\n";
+    std::cout << "A byte is    " << CHAR_BIT << " bits\n";
     std::cout << "bool:        " << sizeof(bool) << " bytes\n";
     std::cout << "char:        " << sizeof(char) << " bytes\n";
     std::cout << "short:       " << sizeof(short) << " bytes\n";

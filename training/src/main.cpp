@@ -6,10 +6,12 @@
   // #include is literally replacing the directive with the contents of the file
   // it is best practice to always explicitly #include all header files needed for the source to compile
   // best practice sequence: paired header file, project header(s), 3rd party header(s), standard library header(s)
-#include "funcsAndRefs.h"
+#include "functionTemplates.h"
+#include "refsAndPointers.h"
 #include "mathAndLoops.h"
-#include "enumsAndStructs.h"
-#include "Classes.h"
+#include "enums.h"
+#include "structs.h"
+#include "classes.h"
 //#include <cstdlib>   // for exit and abort
  
   // #define is used to define macros.
@@ -61,9 +63,9 @@ int main()  // returns integer, typical for main to indicate successful executio
     #endif
  
     #ifdef VARIO  // preprocessor directive that compiles if VARIO is defined
-    inputPractice();
-    outputPractice();
     dataTypes();
+	inputPractice();
+    outputPractice();
     #endif
  
     #ifdef MATLOOP

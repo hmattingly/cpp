@@ -1,9 +1,8 @@
 // ------- Header Guard -------
-#ifndef ENUMSTRUCTS_H  
-#define ENUMSTRUCTS_H  
+#ifndef STRUCTS_H  
+#define STRUCTS_H  
  
 // ------- Forward Declarations -------
-void enumPractice();
 void structPractice();
  
 // ------- Template Classes -------
@@ -22,6 +21,18 @@ struct CylinCoords
     V theta {};
     V phi {};
 };
+
+// ------- Structure Definition -------
+struct Fraction {  // convention is to start with a capital letter
+    int numerator {};
+    int denominator { 1 };
+
+	double getPercent() const
+	{
+		return ((static_cast<double>(numerator) / static_cast<double>(denominator)) * 100.0);
+	}
+
+};  // user-defined types definitions must end in a semicolon
 
 
 #endif

@@ -10,97 +10,97 @@
  
  
 - Fundamental Data Types (built in):
-                DATA Type                         DESCRIPTION                                                                               MIN SIZE                                            TYPICAL SIZE                  EXAMPLE                                          NOTES
-                bool                                     integral/boolean                                          1 byte                                                  1 bytes                                                                true, false
+    DATA Type	DESCRIPTION					MIN SIZE			TYPICAL SIZE		EXAMPLE			NOTES
+    bool        integral/boolean            1 byte              1 bytes             true, false
  
-                int                                                          integral/signed integer                             2 bytes                                                                2/4 bytes                                           1, 2, 3...
-                short                                    integral/signed integer                             2 bytes                                                                2/4 bytes                                    1, 2, 3...                             Recommend using fixed width instead (below)
-                long                                      integral/signed integer                             4 bytes                                                                4/8 bytes                                    1, 2, 3...                             Recommend using fixed width instead (below)
-                long long                           integral/signed integer                             8 bytes                                                                8 bytes                                                    1, 2, 3...                             Recommend using fixed width instead (below)
+    int         integral/signed integer     2 bytes             2/4 bytes           1, 2, 3...
+    short       integral/signed integer     2 bytes             2/4 bytes           1, 2, 3...      Recommend using fixed width instead (below)
+    long        integral/signed integer     4 bytes             4/8 bytes           1, 2, 3...      Recommend using fixed width instead (below)
+    long long   integral/signed integer     8 bytes             8 bytes             1, 2, 3...      Recommend using fixed width instead (below)
  
-                float                                     decimal number                                                          4 bytes                                                                4 bytes                                                                3.141592...                     Holds 6-9 significant digits. https://www.h-schmidt.net/FloatConverter/IEEE754.html
-                double                                                decimal number                                          8 bytes                                                                8 bytes                                                                3.141592...                     Holds 15-18 significant digits.
-                long double                     decimal number                                                          8 bytes                                                                8/12/16 bytes                 3.141592...                     Holds 33-36 significant digits (if 16 bytes).
+    float       decimal number              4 bytes             4 bytes             3.141592...     Holds 6-9 significant digits. https://www.h-schmidt.net/FloatConverter/IEEE754.html
+    double      decimal number              8 bytes             8 bytes             3.141592...     Holds 15-18 significant digits.
+    long double decimal number              8 bytes             8/12/16 bytes       3.141592...     Holds 33-36 significant digits (if 16 bytes).
  
-                char                                      integral/character                                       1 byte (exactly)                                                                                              'c'                                                           ASCII characters
-                wchar_t                                              integral/character                                       1 byte                                                  2/4 bytes                                    'c'                                                           Avoid, only used for Windows API characters
-                char8_t                                               integral/character                                       1 byte                                                  1 byte                                                      'c'                                                           Avoid, only used for Unicode characters
-                char16_t                            integral/character                                       2 bytes                                                                2 bytes                                                    'c'                                                           Avoid, only used for Unicode characters
-                char32_t                            integral/character                                       4 bytes                                                                4 bytes                                                    'c'                                                           Avoid, only used for Unicode characters
+    char        integral/character          1 byte (exactly)                        'c'             ASCII characters
+    wchar_t     integral/character          1 byte              2/4 bytes           'c'             Avoid, only used for Windows API characters
+    char8_t     integral/character          1 byte              1 byte              'c'             Avoid, only used for Unicode characters
+    char16_t    integral/character          2 bytes             2 bytes             'c'             Avoid, only used for Unicode characters
+    char32_t    integral/character          4 bytes             4 bytes             'c'             Avoid, only used for Unicode characters
  
-                void                                      no type                                                                                               undefined
+    void        no type                     undefined
  
 - Compound Data Types
-                DATA Type                         DESCRIPTION                                                                                               NOTES
-                                                                                function
-                                                                                C-style array
-                                                                                pointer to object
-                                                                                pointer to function
-                                                                                pointer to data member
-                                                                                pointer to member function
-                                                                                reference/lvalue
-                                                                                reference/rvalue
-                                                                                enumeration/unscoped                                          Used to create user-defined types
-                                                                                enumeration/scoped                                                                Used to create user-defined types
-                                                                                class/structs                                                                  Used to create user-defined types
-                                                                                class/class                                                                                      Used to create user-defined types
-                                                                                class/unions                                                                  Used to create user-defined types
+    DATA Type						DESCRIPTION							NOTES
+    function
+    C-style array
+    pointer to object
+    pointer to function
+    pointer to data member
+    pointer to member function
+    reference/lvalue
+    reference/rvalue
+    enumeration/unscoped            Used to create user-defined types
+    enumeration/scoped              Used to create user-defined types
+    class/structs                   Used to create user-defined types
+    class/class                     Used to create user-defined types
+    class/unions                    Used to create user-defined types
  
  
                
  
 - Standard Library Data Types:
-                DATA Type                                                         DESCRIPTION                                                               MIN SIZE                                            TYPICAL SIZE                  EXAMPLE                                          NOTES
-                std::int<x>_t                                   integral/signed int                       x/8 bytes (exactly)                                                                                       'c'/1, 2, 3...      Assigns whatever signed integral type corresponds to exactly x bits. Avoid int8_t, typically behaves like char
-                std::uint<x>_t                                integral/unsigned int x/8 bytes (exactly)                                                                                       'c'/1, 2, 3...      Assigns whatever unsigned integral type corresponds to exactly x bits. Avoid uint8_t, typically behaves like unsigned char
-                std::int_fast<x>_t                        integral/signed int                       x/8 bytes                                                                                                                            'c'/1, 2, 3...      Assigns fastest signed integral type that's at least x bits. Fastest = processed most quickly. Not recommended
-                std::uint_fast<x>_t                     integral/unsigned int x/8 bytes                                                                                                                            'c'/1, 2, 3...      Assigns fastest unsigned integral type that's at least x bits. Fastest = processed most quickly. Not recommended
-                std::int_least<x>_t                     integral/signed int                       x/8 bytes                                                                                                                            'c'/1, 2, 3...      Assigns smallest signed integral type with a width of at least x bits. Not recommended
-                std::uint_least<x>_t  integral/signed int                       x/8 bytes                                                                                                                            'c'/1, 2, 3...      Assigns smallest unsigned integral type with a width of at least x bits. Not recommended
-                std::nulptr_t                                    null pointer                                      4 bytes                                                                4/8 bytes
-                std::string                                                        string                                                                   (dynamic)                                         (dynamic)                                         "Hello"                                                Found in string.h
-                std::string_view                            string                                                                   (dynamic)                                         (dynamic)                                         "Hello"                                                Found in string_view.h. Provides read only access to a C-style string, std::string, or another std:string_view                                                   
+    DATA Type                       DESCRIPTION									MIN SIZE			TYPICAL SIZE	EXAMPLE				NOTES
+    std::int<x>_t                   integral/signed int                       	x/8 bytes (exactly)                 'c'/1, 2, 3...      Assigns whatever signed integral type corresponds to exactly x bits. Avoid int8_t, typically behaves like char
+    std::uint<x>_t                  integral/unsigned int x/8 bytes (exactly)                                       'c'/1, 2, 3...      Assigns whatever unsigned integral type corresponds to exactly x bits. Avoid uint8_t, typically behaves like unsigned char
+    std::int_fast<x>_t              integral/signed int                       	x/8 bytes                           'c'/1, 2, 3...      Assigns fastest signed integral type that's at least x bits. Fastest = processed most quickly. Not recommended
+    std::uint_fast<x>_t             integral/unsigned int x/8 bytes                                                 'c'/1, 2, 3...      Assigns fastest unsigned integral type that's at least x bits. Fastest = processed most quickly. Not recommended
+    std::int_least<x>_t             integral/signed int                       	x/8 bytes                           'c'/1, 2, 3...      Assigns smallest signed integral type with a width of at least x bits. Not recommended
+    std::uint_least<x>_t  			integral/signed int                       	x/8 bytes                           'c'/1, 2, 3...      Assigns smallest unsigned integral type with a width of at least x bits. Not recommended
+    std::nulptr_t                   null pointer                                4 bytes             4/8 bytes
+    std::string                     string                                      (dynamic)          	(dynamic)    	"Hello"             Found in string.h
+    std::string_view                string                                      (dynamic)           (dynamic)       "Hello"             Found in string_view.h. Provides read only access to a C-style string, std::string, or another std:string_view                                                   
  
  
  
 - Literals: Hardcoded values
-                LITERAL                                             DEFAULT TYPE
-                1, 2, -3                int                                                         
-                true, false                         bool
-                1.2, 0.0                              double
-                'a', '\n'                  char
-                "Hello"                                                const char[6]  (5 characters + null terminator \0, C-style string)
+    LITERAL			DEFAULT TYPE
+    1, 2, -3        int                                                         
+    true, false     bool
+    1.2, 0.0        double
+    'a', '\n'       char
+    "Hello"         const char[6]  (5 characters + null terminator \0, C-style string)
  
 To explicitly set a literal's type, use one of the following suffixes:
-                SUFFIX                                TYPE
-                u/U                                        unsigned int
-                l/L                                          long
-                ul/UL                   unsigned long
-                ll/LL                      long long
-                ull/ULL                               unsigned long long
-                f/F                          float
-                l/L                          long double
-                s                                             std::string                                        (suffix lives in std::literals::string_literals)
-                sv                                           std::string_view            (suffix lives in std::literals::string_view_literals)
+    SUFFIX			TYPE
+    u/U             unsigned int
+    l/L             long
+    ul/UL           unsigned long
+    ll/LL           long long
+    ull/ULL         unsigned long long
+    f/F             float
+    l/L             long double
+    s               std::string (suffix lives in std::literals::string_literals)
+    sv              std::string_view (suffix lives in std::literals::string_view_literals)
  
  
  
 - Control flow statements:
-                CATEGORY                                                      IMPLEMENTATION
-                Conditional statements  if, else if, else, switch
-                Jumps                                                                 goto, break, continue
-                Function calls                                                <function calls>, return
-                Loops                                                                  while, do-while, for, ranged-for
-                Halts                                                                    std::exit(), std::abort()
-                Exceptions                                                       try, throw, catch
+    CATEGORY					IMPLEMENTATION
+    Conditional statements		if, else if, else, switch
+    Jumps                       goto, break, continue
+    Function calls              <function calls>, return
+    Loops                       while, do-while, for, ranged-for
+    Halts                       std::exit(), std::abort()
+    Exceptions                  try, throw, catch
  
  
  
 - Compiler: Translates high-level language to low-level language (e.g. C++ to machine code or assembly code)
-                - Compiled programs: High-level language source code -> Compiler -> Executable (full process referred to as building). Executable -> Hardware -> Results
-                - Specifically, the C++ compiler will generate machine language instructions in an intermediate file called an object file (e.g. name.o or name.obj). A linker will then combine all object files and libraries to generate the executable file
+	- Compiled programs: High-level language source code -> Compiler -> Executable (full process referred to as building). Executable -> Hardware -> Results
+	- Specifically, the C++ compiler will generate machine language instructions in an intermediate file called an object file (e.g. name.o or name.obj). A linker will then combine all object files and libraries to generate the executable file
 - Interpreter: Directly executes source code instructions without compiling them first
-                - Interpreted programs: High-level language source code -> Interpreter -> Hardware -> Results
+	- Interpreted programs: High-level language source code -> Interpreter -> Hardware -> Results
  
  
  
@@ -109,7 +109,7 @@ To explicitly set a literal's type, use one of the following suffixes:
 - Function: a collection of statements that get executed sequentially
 - Data: any information that can be moved, processed, or stored by a computer
 - Object: represents a region of storage (typically RAM or a CPU register) that can hold a value
-                - An object is used to store a value in memory. A variable is an object that has a name (identifier).
+	- An object is used to store a value in memory. A variable is an object that has a name (identifier).
 - Refactoring: Process of making structural changes to code without changing the function. E.g. breaking up a monolithic function into multiple smaller functions
 - Reference: an alias for an existing object. 2 types: lvalue reference and rvalue reference
 - Pointer: an object that holds the memory address of another object
@@ -122,10 +122,10 @@ To explicitly set a literal's type, use one of the following suffixes:
 - Initialization: process of assigning a value to a variable when defined (e.g. int x = 5; int x {5};)
 - Assignment: process of changing the value of a previously defined variable (e.g. x = 5;)
 - Instantiation: a fancy word that means a variable has been created (allocated) and initialized (this includes default initialization).
-                - An instantiated object is sometimes called an instance.
+	- An instantiated object is sometimes called an instance.
 - Internal linkage: allows use of the object only within the current source file.
-                - By default the following have internal linkage: static global variables, static functions, const global variables, unnamed namespaces and anything within them
+	- By default the following have internal linkage: static global variables, static functions, const global variables, unnamed namespaces and anything within them
 - External linkage: allows use of the object within the entire project.
-                - By default the following have external linkage: non-const global variables, functions, extern const global variables, inline const global variables, namespaces
+	- By default the following have external linkage: non-const global variables, functions, extern const global variables, inline const global variables, namespaces
 - lvalue: expressions that evaluate to functions or objects (such as variables) that persist beyond the expression
 - rvalue: expressions that evaluate to values that do not persist beyond the expression

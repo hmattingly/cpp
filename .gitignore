@@ -35,6 +35,7 @@
 *.lib
 
 # Executables
+/training/bin
 *.exe
 *.out
 *.app
