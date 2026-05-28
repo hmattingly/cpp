@@ -14,11 +14,17 @@
 // ------- Forward Declarations -------
 // another option is to define global constants in header files
   // cannot forward declare constant expressions
-const int CONSTANT1 { 200 };          // now each source file that includes this header gets a copy of CONSTANT1
-inline const int CONSTANT2 { 300 };   // inline keyword allows each source file that includes this header to share a single instance of CONSTANT2 (more efficient than above)
+  // const globals have internal linkage by default so they don't violate the "one definition rule" 
+    // each source file that includes this header gets a copy of CONSTANT1
+  // use keyword inline to prevent violation of the "one definition rule"
+    // each source file that includes this header shares a single instance of CONSTANT2
+const int CONSTANT1 { 200 };          
+inline const int CONSTANT2 { 300 };
+inline int CONSTANT3 { 400 }; 
  
 // forward declare a constant if it's defined in another source file by using extern
-extern const double g_gravity;        // allocates memory to gravity without defining it
+  // extern declares a variable or function without allocating memory for it
+extern const double g_gravity;
  
 void mathPractice(int x=2, int y=3);  // put default values in forward declarations
 bool conditionalPractice();

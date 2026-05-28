@@ -1,9 +1,13 @@
 // ------- Preprocessor directives -------
 #include "classes.h"    // best practice to include corresponding header (helps with catching errors)
 #include <iostream>     // because we need std::cout, must include iostream here
-#include <string_view>
+#include <string>
 #include <cassert>      // for assert
  
+// ------- Namespace directives -------
+using namespace std::literals::string_literals;
+
+
 // we can use the following compound data types to create user-defined types
   // Enumerations (scoped and unscoped)
   // Classes (structs, classes, and unions)
@@ -18,7 +22,7 @@ class Employee
   // this is literally the only difference between classes and structs
   // best practice is class members should only be private or protected data members but can and should have public member functions
   // private class member variables often prefixed with m_
-    std::string_view m_name { "Blank" };
+    std::string m_name { "Blank" };
     double m_salary { 0.0 };
  
 public:  // access specifier
@@ -27,18 +31,33 @@ public:  // access specifier
       // no return type and function name must match class name
       // member initialization list must be in the same order member variables are defined
       // constructors can be overloaded to accept different types of inputs
+	  // cannot call constructors from another member function
     Employee() = default;  // default constructor if no arguments are provided
-    Employee(std::string_view name, double salary)
+
+	// delegate constructors call other constructors to reduce duplicate code
+	  // often used to map constructors with less arguments to those with more arguments
+	  // could alternatively use a single constructor with default value of 0.0 for salary
+	Employee(std::string name) 
+		: Employee{ name, 0.0 }
+	{}
+    Employee(std::string name, double salary)
         : m_name { name }, m_salary { salary }  // member initialization list (can also be on same line)
-    {  // usually function body is left empty
+    {  
         assert(salary >= 0);
-        std::cout << "\nEmployee initialized with name " << name << " and salary $" << salary << '\n';
+        std::cout << "\nEmployee initialized with name " << name << " and salary $" << salary;
     }
- 
+
+	// copy constructors are used to initialize an object with an existing object of the same type
+	  // not necessarily needed, C++ will use implicit copy constructor if none explicitly defined
+	  // can use Employee(const Employee& e) = default to explicitly define the default copy constructor
+	Employee(const Employee& e)  // must be a reference
+		: m_name { e.m_name }, m_salary { e.m_salary }
+	{}
+
     // access functions allow you to get or set private class members
-    void setName(const std::string_view& name) { m_name = name; }
+    void setName(const std::string& name) { m_name = name; }
     void setSalary(const double& salary) { m_salary = salary; }
-    const auto& getName() { return m_name; }  // generally better to return member variables by const reference, avoid non-const reference returns
+    const auto& getName() const { return m_name; }  // generally better to return member variables by const reference, avoid non-const reference returns
     double getSalary() const { return m_salary; }  // const implies data members will not be altered
  
     void printEmployee() const
@@ -55,17 +74,104 @@ public:  // access specifier
     {
         std::cout << m_name << " fires " << e.m_name << '\n';
     }
- 
+	
 };
- 
+
+class Animal 
+{
+	std::string m_name { "Blank" };
+	bool m_pet { false };
+	int m_age { 0 };
+	int m_id { 0 };
+
+public:
+	// static member variables are the same across all instances of the class
+	  // only const integral and enum, and inline types can be defined within the class
+	  // useful for things like ID generation and lookup tables that are constant across classes
+	static bool mammal;
+	static const bool reptile { false };
+	static inline int idGen { 0 };  // this is the preferred use of static member variables
+
+	// default constructor
+	Animal() = default; 
+
+	// use explicit keyword to prevent implicit argument conversions
+	  // can no longer use copy or copy-list initialization 
+	  // constructors that take a single argument should typically be explicit
+	explicit Animal(const std::string name, bool pet, int age)
+		: m_name { name }, m_pet { pet }, m_age { age }, m_id { ++idGen }
+	{}
+
+	// "this" is a const pointer that holds the address of the current implicit object
+	void getAge() const { std::cout << '\n' << this->m_age << '\n'; }
+
+	void setPet(bool m_pet)
+	{
+		this->m_pet = m_pet; // this->m_pet represents the member function
+	}
+
+	// return "this" allows function chaining
+	Animal& birthday() { m_age += 1; return *this; }
+	Animal& born() { m_age = 0; return *this; }
+
+	// reset class back to default state
+	void reset() { *this = {}; }
+	
+};
+
+// static member variables must be defined outside the class in the global scope
+  // you can define static member variables even if they are private or protected
+  // if a class is defined in the header, the member variable is usually in the source file
+bool Animal::mammal = true;  // now any instantiation of Animal will have mammal = true
+
 // ------- User-Defined Functions -------
+void printSalary( const Employee& e ) 
+{
+	std::cout << "\nSalary " << e.getSalary() << '\n';
+}
+
+void Date::printDate() const
+{
+	std::cout << m_month << '/' << m_day << '/' << m_year << '\n';
+}
+
 void classPractice()
 {
-    Employee bob { "Bob",12000.0 };
-    bob.raise(1000.0);
-    bob.printEmployee();
-   
-    Employee newGuy {};
-    newGuy.setName("Sam");
-    bob.fires(newGuy);
+	// calls default constructor
+	Employee nobody1;		// default initialization
+	Employee nobody2 {};	// value initializaiton (preferred)
+
+	// calls normal constructor
+	Employee joe ( "Joe", 13000.0 );	// direct initialization
+	Employee sam { "Sam", 14000.0 };	// direct-list initialization (preferred)
+	Employee jim = { "Jim", 15000.0 };	// copy-list initialization (non-explicit only)
+
+	// calls delegate constructor
+	Employee bob = "Bob"s; 			// copy initialization (non-explicit only)
+	bob.setSalary( 12000.0 );
+	Employee pam { "Pam" };
+
+	// calls copy constructor 
+	Employee bobCopy = bob;			// copy initialization
+	Employee joeCopy ( joe );		// direct initialization
+	Employee samCopy { sam };		// direct-list initialization (preferred)
+	Employee jimCopy = { jim };		// copy-list initialization
+
+	// implicitly convert instantiation to temporary class
+	printSalary({"Doug", 1000.0});
+
+	// static member functions can be accessed before any instantiation of the class
+	std::cout << "Are all animals mammals? " << Animal::mammal;
+	Animal dog ( "Dog"s, true, 5 );		// direct initialization
+	Animal lion { "Lion"s, false, 0 };	// direct-list initialization
+	dog.born().birthday().birthday();	// dog is now 2
+	dog.getAge();  // C++ is really performing Animal::dog.getName(&dog), where &dog gets assigned to "this"
+	std::cout << "Is dog a mammal? " << dog.mammal << '\n';
+	std::cout << "Is lion a mammal? " << lion.mammal << '\n';
+
+	Date today {};
+	today.printDate();
+
+	Cards card { Cards::hearts, 11 };
+	std::cout << card.isHearts() << '\n';
 }
