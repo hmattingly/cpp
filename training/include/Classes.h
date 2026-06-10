@@ -10,9 +10,16 @@ void classPractice();
   // class definitions are most often put in a header file so they can be used by other files
   // class header and source files often match the name of the class
   // user-defined types are not subject to the "one definition rule"
-  // member functions are implicitly inline
+  // member functions defined inside the class are implicitly inline
 class Date
 {
+	// friend classes or functions have access to all private and protected members of another class
+	  // friendship is always granted by the object whose members will be accessed
+	  // good for separating responsiblity between two classes that are related
+	  // it does not matter where the friendship declaration exists (e.g. in private or public)
+	  // Animal has access to Date but Date does not have access to Animal
+	friend class Animal;
+
 	int m_year { 2026 };
 	int m_month { 5 };
 	int m_day { 25 };
@@ -37,6 +44,10 @@ public:
 	  // best practice to put default values in forward declarations
 	void printDate() const;
 	void addDay();
+
+	// non-member friend function declaration
+	  // could alternatively define the function here inside the class, though it is less common
+	friend void addMonth(Date& date);
 };
 
 // use inline keyword to prevent violation of one definition rule for member functions defined outside the class

@@ -83,6 +83,8 @@ class Animal
 	bool m_pet { false };
 	int m_age { 0 };
 	int m_id { 0 };
+	// static variables can be private as well but can't be accessed without instantiating
+	static inline int m_value { 0 }; 
 
 public:
 	// static member variables are the same across all instances of the class
@@ -102,12 +104,20 @@ public:
 		: m_name { name }, m_pet { pet }, m_age { age }, m_id { ++idGen }
 	{}
 
+	// static member functions can be called without instantiating an object
+	  // static member functions have no "this" pointer
+	  // static member functions can only access other static member variables or functions
+	static int getValue() { return m_value; }
+
+	// like static member variables, static member functions can be defined outside the class
+	static int getID();
+
 	// "this" is a const pointer that holds the address of the current implicit object
 	void getAge() const { std::cout << '\n' << this->m_age << '\n'; }
 
-	void setPet(bool m_pet)
+	void setPet(bool pet)
 	{
-		this->m_pet = m_pet; // this->m_pet represents the member function
+		this->m_pet = pet; // this->m_pet represents the member function
 	}
 
 	// return "this" allows function chaining
@@ -116,10 +126,16 @@ public:
 
 	// reset class back to default state
 	void reset() { *this = {}; }
+
+	// because Animal is a friend of Date, we can access / modify the private members
+	void addYear( Date& date )
+	{
+		date.m_year += 1;
+	}
 	
 };
 
-// static member variables must be defined outside the class in the global scope
+// static member variables must be defined outside the class in the global scope (unless using inline)
   // you can define static member variables even if they are private or protected
   // if a class is defined in the header, the member variable is usually in the source file
 bool Animal::mammal = true;  // now any instantiation of Animal will have mammal = true
@@ -134,6 +150,15 @@ void Date::printDate() const
 {
 	std::cout << m_month << '/' << m_day << '/' << m_year << '\n';
 }
+
+// this non-member friend function can access private and protected members of Date
+  // because this is a non-member function, we must explicitly pass the class in to work with
+void addMonth(Date& date)
+{
+	date.m_month += 1;
+}
+
+int Animal::getID() { return idGen; }
 
 void classPractice()
 {
@@ -160,8 +185,9 @@ void classPractice()
 	// implicitly convert instantiation to temporary class
 	printSalary({"Doug", 1000.0});
 
-	// static member functions can be accessed before any instantiation of the class
-	std::cout << "Are all animals mammals? " << Animal::mammal;
+	// static member variables and functions can be accessed before any instantiation of the class
+	std::cout << "Are all animals mammals? " << Animal::mammal << '\n';
+	std::cout << "Value = " << Animal::getValue();
 	Animal dog ( "Dog"s, true, 5 );		// direct initialization
 	Animal lion { "Lion"s, false, 0 };	// direct-list initialization
 	dog.born().birthday().birthday();	// dog is now 2
@@ -170,7 +196,11 @@ void classPractice()
 	std::cout << "Is lion a mammal? " << lion.mammal << '\n';
 
 	Date today {};
+	addMonth(today);
 	today.printDate();
+
+	Date dogBirthday { 6, 17, 2022 };
+	dog.addYear(dogBirthday); 
 
 	Cards card { Cards::hearts, 11 };
 	std::cout << card.isHearts() << '\n';

@@ -7,7 +7,40 @@
 - Data Range: All n-bit signed variables have a range of -2^(n-1) to 2^(n-1)-1. Unsigned variables have a range of 0 to 2^n-1
 - Memory Address: Allows finding and accessing contents of memory at a particlar location. Holds 1 byte of data. Address of a variable x is accessed by &x
 - Object: a piece of memory that is used to store values
+- Compiler: Translates high-level language to low-level language (e.g. C++ to machine code or assembly code)
+	- Compiled programs: High-level language source code -> Compiler -> Executable (full process referred to as building). Executable -> Hardware -> Results
+	- Specifically, the C++ compiler will generate machine language instructions in an intermediate file called an object file (e.g. name.o or name.obj). A linker will then combine all object files and libraries to generate the executable file
+- Interpreter: Directly executes source code instructions without compiling them first
+	- Interpreted programs: High-level language source code -> Interpreter -> Hardware -> Results
+- Library: collections of precompiled code that has been packaged up for reuse
+- Statement: instruction type that causes the program to perform some action. Ends with semicolon (mostly)
+- Function: a collection of statements that get executed sequentially
+- Data: any information that can be moved, processed, or stored by a computer
+- Object: represents a region of storage (typically RAM or a CPU register) that can hold a value
+	- An object is used to store a value in memory. A variable is an object that has a name (identifier).
+- Refactoring: Process of making structural changes to code without changing the function. E.g. breaking up a monolithic function into multiple smaller functions
+- Reference: an alias for an existing object. 2 types: lvalue reference and rvalue reference
+- Pointer: an object that holds the memory address of another object
+- Sequence Container: implement data structures which can be accessed sequentially
+- Associative Container: implement sorted data structures which can be quickly searched
+	- There are also unordered associative containers given by the "unordered_" prefix
+- Contiguous: each element is placed in an adjacent memory location, with no gaps
  
+- Allocation: the process of reserving memory in RAM for an object’s use (occurs at runtime when the program is loaded into memory and run)
+- Declaration: informs compiler of object name and type, but does not always allocate memory (e.g. void fcn();)
+- Definition: a declaration that allocates memory in RAM (e.g. int x; {...} after function declaration)
+- Initialization: process of assigning a value to a variable when defined (e.g. int x = 5; int x {5};)
+- Assignment: process of changing the value of a previously defined variable (e.g. x = 5;)
+- Instantiation: a fancy word that means a variable has been created (allocated) and initialized (this includes default initialization).
+	- An instantiated object is sometimes called an instance.
+- Internal linkage: allows use of the object only within the current source file.
+	- By default the following have internal linkage: static global variables, static functions, const global variables, unnamed namespaces and anything within them
+- External linkage: allows use of the object within the entire project.
+	- By default the following have external linkage: non-const global variables, functions, extern const global variables, inline const global variables, namespaces
+- lvalue: expressions that evaluate to functions or objects (such as variables) that persist beyond the expression
+- rvalue: expressions that evaluate to values that do not persist beyond the expression
+
+
  
 - Fundamental Data Types (built in):
     DATA Type	DESCRIPTION					MIN SIZE			TYPICAL SIZE		EXAMPLE			NOTES
@@ -33,7 +66,7 @@
 - Compound Data Types
     DATA Type						DESCRIPTION							NOTES
     function
-    C-style array
+    C-style array														aka "built-in arrays" or "fixed-size arrays"
     pointer to object
     pointer to function
     pointer to data member
@@ -46,9 +79,6 @@
     class/class                     Used to create user-defined types
     class/unions                    Used to create user-defined types
  
- 
-               
- 
 - Standard Library Data Types:
     DATA Type                       DESCRIPTION									MIN SIZE			TYPICAL SIZE	EXAMPLE				NOTES
     std::int<x>_t                   integral/signed int                       	x/8 bytes (exactly)                 'c'/1, 2, 3...      Assigns whatever signed integral type corresponds to exactly x bits. Avoid int8_t, typically behaves like char
@@ -60,7 +90,6 @@
     std::nulptr_t                   null pointer                                4 bytes             4/8 bytes
     std::string                     string                                      (dynamic)          	(dynamic)    	"Hello"             Found in string.h
     std::string_view                string                                      (dynamic)           (dynamic)       "Hello"             Found in string_view.h. Provides read only access to a C-style string, std::string, or another std:string_view                                                   
- 
  
  
 - Literals: Hardcoded values
@@ -84,7 +113,6 @@ To explicitly set a literal's type, use one of the following suffixes:
     sv              std::string_view (suffix lives in std::literals::string_view_literals)
  
  
- 
 - Control flow statements:
     CATEGORY					IMPLEMENTATION
     Conditional statements		if, else if, else, switch
@@ -95,37 +123,18 @@ To explicitly set a literal's type, use one of the following suffixes:
     Exceptions                  try, throw, catch
  
  
- 
-- Compiler: Translates high-level language to low-level language (e.g. C++ to machine code or assembly code)
-	- Compiled programs: High-level language source code -> Compiler -> Executable (full process referred to as building). Executable -> Hardware -> Results
-	- Specifically, the C++ compiler will generate machine language instructions in an intermediate file called an object file (e.g. name.o or name.obj). A linker will then combine all object files and libraries to generate the executable file
-- Interpreter: Directly executes source code instructions without compiling them first
-	- Interpreted programs: High-level language source code -> Interpreter -> Hardware -> Results
- 
- 
- 
-- Library: collections of precompiled code that has been packaged up for reuse
-- Statement: instruction type that causes the program to perform some action. Ends with semicolon (mostly)
-- Function: a collection of statements that get executed sequentially
-- Data: any information that can be moved, processed, or stored by a computer
-- Object: represents a region of storage (typically RAM or a CPU register) that can hold a value
-	- An object is used to store a value in memory. A variable is an object that has a name (identifier).
-- Refactoring: Process of making structural changes to code without changing the function. E.g. breaking up a monolithic function into multiple smaller functions
-- Reference: an alias for an existing object. 2 types: lvalue reference and rvalue reference
-- Pointer: an object that holds the memory address of another object
- 
- 
- 
-- Allocation: the process of reserving memory in RAM for an object’s use (occurs at runtime when the program is loaded into memory and run)
-- Declaration: informs compiler of object name and type, but does not always allocate memory (e.g. void fcn();)
-- Definition: a declaration that allocates memory in RAM (e.g. int x; {...} after function declaration)
-- Initialization: process of assigning a value to a variable when defined (e.g. int x = 5; int x {5};)
-- Assignment: process of changing the value of a previously defined variable (e.g. x = 5;)
-- Instantiation: a fancy word that means a variable has been created (allocated) and initialized (this includes default initialization).
-	- An instantiated object is sometimes called an instance.
-- Internal linkage: allows use of the object only within the current source file.
-	- By default the following have internal linkage: static global variables, static functions, const global variables, unnamed namespaces and anything within them
-- External linkage: allows use of the object within the entire project.
-	- By default the following have external linkage: non-const global variables, functions, extern const global variables, inline const global variables, namespaces
-- lvalue: expressions that evaluate to functions or objects (such as variables) that persist beyond the expression
-- rvalue: expressions that evaluate to values that do not persist beyond the expression
+Container Types:
+	TYPE				CLASS			DEFINITION
+	array				Sequence		fixed size inplace contiguous array
+	vector				Sequence		resizable contiguous array
+	inplace_vector		Sequence		resizable, fixed capacity, inplace contiguous array
+	hive				Sequence		collection that reuses erased elements' memory
+	deque				Sequence		doubled-ended queue
+	forward_list		Sequence		singly-linked list
+	list				Sequence		doubly-linked list
+
+	set					Associative		collection of unique, sorted keys
+	map					Associative		collection of key-value pairs, sorted by unique keys
+	multiset			Associative		collection of sorted keys
+	multimap			Associative		collection of key-value pairs, sorted by keys
+

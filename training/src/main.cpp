@@ -12,6 +12,7 @@
 #include "enums.h"
 #include "structs.h"
 #include "classes.h"
+#include "containers.h"
 //#include <cstdlib>   // for exit and abort
  
   // #define is used to define macros.
@@ -19,7 +20,8 @@
 // #define MATLOOP
 // #define FUNCSREFS
 // #define ENUMSTRUCTS
-#define CLASSES
+//#define CLASSES
+#define CONTAINERS
  
 // ------- Namespace directives -------
   // using creates an alias for an existing name or data type
@@ -91,6 +93,10 @@ int main()  // returns integer, typical for main to indicate successful executio
     #ifdef CLASSES
     classPractice();
     #endif
+
+	#ifdef CONTAINERS
+	containerPractice();
+	#endif
    
     return 0;
 }  // all local variables are destroyed at the end of their function
