@@ -13,6 +13,7 @@
 #include "structs.h"
 #include "classes.h"
 #include "containers.h"
+#include "memory.h"
 //#include <cstdlib>   // for exit and abort
  
   // #define is used to define macros.
@@ -22,6 +23,7 @@
 // #define ENUMSTRUCTS
 // #define CLASSES
 // #define CONTAINERS
+#define MEMORY
  
 // ------- Namespace directives -------
   // using creates an alias for an existing name or data type
@@ -98,6 +100,10 @@ int main()  // returns integer, typical for main to indicate successful executio
 	vectorPractice();
 	arrayPractice();
 	multiDimPractice();
+	#endif
+
+	#ifdef MEMORY
+	memoryPractice();
 	#endif
    
     return 0;
