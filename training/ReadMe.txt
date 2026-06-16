@@ -39,7 +39,19 @@
 	- By default the following have external linkage: non-const global variables, functions, extern const global variables, inline const global variables, namespaces
 - lvalue: expressions that evaluate to functions or objects (such as variables) that persist beyond the expression
 - rvalue: expressions that evaluate to values that do not persist beyond the expression
-
+- Static memory allocation: memory allocated once when the program is run and persists throughout the program
+	- Includes static and global variables
+	- Size of the variable / array is known at compile time
+	- Memory allocation and deallocation happens automatically
+- Automatic memory allocation: memory allocated when the relevant block is entered and freed after exiting the block
+	- Includes function parameters and local variables
+	- Size of the variable / array is known at compile time
+	- Memory allocation and deallocation happens automatically
+- Dynamic memory allocation
+	- Size of the variable / array is typically unknown at compile time or large
+	- Memory allocation and deallocation happens manually using new and delete operators
+- Stack: holds automatic memory allocated variables. Limited size (order of Mbs). Exceeding this limit causes stack overflow resulting in program crash
+- Heap: holds dynamic memory allocated variables. Larger size (order of Gbs).
 
  
 - Fundamental Data Types (built in):
@@ -64,7 +76,7 @@
     void        no type                     undefined
  
 - Compound Data Types
-    DATA Type						DESCRIPTION							NOTES
+    DATA TYPE						DESCRIPTION							NOTES
     function
     C-style array														aka "built-in arrays" or "fixed-size arrays"
     pointer to object
@@ -80,7 +92,7 @@
     class/unions                    Used to create user-defined types
  
 - Standard Library Data Types:
-    DATA Type                       DESCRIPTION									MIN SIZE			TYPICAL SIZE	EXAMPLE				NOTES
+    DATA TYPE                       DESCRIPTION									MIN SIZE			TYPICAL SIZE	EXAMPLE				NOTES
     std::int<x>_t                   integral/signed int                       	x/8 bytes (exactly)                 'c'/1, 2, 3...      Assigns whatever signed integral type corresponds to exactly x bits. Avoid int8_t, typically behaves like char
     std::uint<x>_t                  integral/unsigned int x/8 bytes (exactly)                                       'c'/1, 2, 3...      Assigns whatever unsigned integral type corresponds to exactly x bits. Avoid uint8_t, typically behaves like unsigned char
     std::int_fast<x>_t              integral/signed int                       	x/8 bytes                           'c'/1, 2, 3...      Assigns fastest signed integral type that's at least x bits. Fastest = processed most quickly. Not recommended
@@ -123,7 +135,7 @@ To explicitly set a literal's type, use one of the following suffixes:
     Exceptions                  try, throw, catch
  
  
-Container Types:
+- Container Types:
 	TYPE				CLASS			DEFINITION
 	array				Sequence		fixed size inplace contiguous array
 	vector				Sequence		resizable contiguous array
