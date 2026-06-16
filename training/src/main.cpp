@@ -20,8 +20,8 @@
 // #define MATLOOP
 // #define FUNCSREFS
 // #define ENUMSTRUCTS
-//#define CLASSES
-#define CONTAINERS
+// #define CLASSES
+// #define CONTAINERS
  
 // ------- Namespace directives -------
   // using creates an alias for an existing name or data type
@@ -95,7 +95,9 @@ int main()  // returns integer, typical for main to indicate successful executio
     #endif
 
 	#ifdef CONTAINERS
-	containerPractice();
+	vectorPractice();
+	arrayPractice();
+	multiDimPractice();
 	#endif
    
     return 0;

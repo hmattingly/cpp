@@ -3,6 +3,8 @@
 #define CONTAINERS_H
  
 // ------- Forward Declarations -------
-void containerPractice();
+void vectorPractice();
+void arrayPractice();
+void multiDimPractice();
 
 #endif
