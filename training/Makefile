@@ -79,8 +79,9 @@
 # use .PHONY to indicate this target is always a command, never a file
 .PHONY: clean run build
 
-# macros
-#MACROS = VARIO MATLOOP FUNCSREFS ENUMSTRUCTS CLASSES
+# macros, edit these to adjust what functions in main.cpp get compiled
+# MACROS = VARIO MATLOOP FUNCSREFS ENUMSTRUCTS CLASSES CONTAINERS MEMORY
+MACROS = FUNCSREFS
 
 # compiler
 CXX = clang++
