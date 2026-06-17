@@ -36,12 +36,10 @@
 	- By default the following have external linkage: non-const global variables, functions, extern const global variables, inline const global variables, namespaces
 - lvalue: expressions that evaluate to functions or objects (such as variables) that persist beyond the expression
 - rvalue: expressions that evaluate to values that do not persist beyond the expression
-- Static memory: allocated once when the program is run and persists throughout the program. Includes static and global variables. Size known at compile time. Memory allocation and deallocation happens automatically
-- Automatic memory: allocated when the relevant block is entered and freed after exiting the block. Includes function parameters and local variables. Size known at compile time. Memory allocation and deallocation happens automatically
-- Dynamic memory: Size typically unknown at compile time or large. Memory allocation and deallocation happens manually using new and delete operators
 
-- Stack: holds automatic memory allocated variables. Limited size (order of Mbs). Exceeding this limit causes stack overflow resulting in program crash
-- Heap: holds dynamic memory allocated variables. Larger size (order of Gbs).
+- Static memory: allocated once when the program is run and persists throughout the program. Includes static and global variables. Size known at compile time. Memory allocation and deallocation happens automatically
+- Automatic memory: allocated when the relevant block is entered and freed after exiting the block. Includes function parameters, function information, and local variables. Size known at compile time. Memory allocation and deallocation happens automatically
+- Dynamic memory: Size typically unknown at compile time or large. Memory allocation and deallocation happens manually using new and delete operators
 
 - Sequence Container: implement data structures which can be accessed sequentially
 - Associative Container: implement sorted data structures which can be quickly searched
@@ -134,7 +132,7 @@ To explicitly set a literal's type, use one of the following suffixes:
     Exceptions                  try, throw, catch
  
  
-Container Types:
+- Container Types:
 	TYPE				CLASS			DEFINITION
 	array				Sequence		fixed size inplace contiguous array
 	vector				Sequence		resizable contiguous array
@@ -148,4 +146,14 @@ Container Types:
 	map					Associative		collection of key-value pairs, sorted by unique keys
 	multiset			Associative		collection of sorted keys
 	multimap			Associative		collection of key-value pairs, sorted by keys
+
+
+- Memory Segments:
+	TYPE			STORES											NOTES
+	Code Segment	the program itself								Read-only
+	BSS Segment		zero-initialized global and static variables
+	Data Segment	initialized global and static variables
+	Heap			dynamically allocated variables					Larger size (order of Gbs).
+	Stack			automatic allocated variables					Limited size (order of Mbs). Exceeding this limit causes stack overflow resulting in program crash
+
 

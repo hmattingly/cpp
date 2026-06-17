@@ -16,6 +16,7 @@ void memoryPractice()
 	// use the new operator to dynamically allocate memory for a data type on the heap
 	  // the new operator returns a pointer containing the address of the memory that has been allocated
 	  // accessing heap-allocated objects is generally slower than accessing stack-allocated objects
+	    // i.e. dereferencing a pointer is slower than accessing a variable directly
 	int* ptr1 { new int };
 	*ptr1 = 7;	// dereference the pointer to assign a value to it
 	int* ptr2 { new int (5) };
