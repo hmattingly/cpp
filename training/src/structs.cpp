@@ -50,6 +50,8 @@ void printEmployee(const Employee& e)  // structures are typically passed by ref
  
 void structPractice()
 {
+    std::cout << "\nstructPractice(): \n";
+
     Employee bob {};
     bob.name = "Bob";
     bob.id = 5;

@@ -7,6 +7,8 @@ int variablePractice();
 
 void outputPractice()
 {
+
+    std::cout << "\noutputPractice(): \n";
    
     int m { variablePractice() };  // returns m = 4
  
@@ -16,7 +18,7 @@ void outputPractice()
       // cin  = character input
       // cerr = character error, equivalent to cout but flushes the buffer, used for debugging
  
-    std::cout << "\nHello world!\n";         // insertion operator << and extraction operator >> move data in direction pointed
+    std::cout << "Hello world!\n";         // insertion operator << and extraction operator >> move data in direction pointed
    
     // Quoted text separated by nothing but whitespace (spaces, tabs, or newlines) will be concatenated
     std::cout << "Hi "
@@ -36,13 +38,15 @@ void outputPractice()
  
 void inputPractice()
 {
+    std::cout << "\ninputPractice(): \n";
+
     // Notes on extraction opertor:
       // removes all leading whitespace characters
       // extracts as many characters as it can until it hits \n (Enter) or invalid entry per data type of variable extracted to (e.g. whitespace)
       // returns 0 if invalid entry per data type of variable being extracted to and discontinues further extraction
    
-  int x {}, y {};
-    std::cout << "\nEnter two integers separated by space or new line: ";
+    int x {}, y {};
+    std::cout << "Enter two integers separated by space or new line: ";
     std::cin >> x >> y;                    // automatically adds new line
     std::cout << "You entered: " << x << " and " << y << '\n';
    

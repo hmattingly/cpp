@@ -49,6 +49,7 @@ void mathPractice(int x, int y)
  
 bool conditionalPractice()
 {
+    std::cout << "\nconditionalPractice(): \n";
    
     int x {};
     int y { 4 };
@@ -61,10 +62,10 @@ bool conditionalPractice()
    
     case 0:                 // case labels must be constant expressions
         x = 1;              // you can define variables anywhere
-        std::cout << "\nz is 0\n";
+        std::cout << "z is 0\n";
         break;              // without break, the subsequent statements will also be executed after the first matching case
     case 4:
-        std::cout << "\nz is 4\n";
+        std::cout << "z is 4\n";
         [[fallthrough]];    // optional but tells the compiler that fallthrough is intentional
     default:                // default works like an else statement and is optional
         double a { g_gravity*2.0 };  // you can only initialize variables in the last case

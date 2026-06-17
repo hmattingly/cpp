@@ -7,6 +7,7 @@
   // it is best practice to always explicitly #include all header files needed for the source to compile
   // best practice sequence: paired header file, project header(s), 3rd party header(s), standard library header(s)
 #include "functionTemplates.h"
+#include "functionPointers.h"
 #include "refsAndPointers.h"
 #include "mathAndLoops.h"
 #include "enums.h"
@@ -14,16 +15,11 @@
 #include "classes.h"
 #include "containers.h"
 #include "memory.h"
-//#include <cstdlib>   // for exit and abort
- 
-  // #define is used to define macros.
-// #define VARIO        // replaces VARIO with nothing
-// #define MATLOOP
-// #define FUNCSREFS
-// #define ENUMSTRUCTS
-// #define CLASSES
-// #define CONTAINERS
-#define MEMORY
+#include <cstdlib>   // for exit and abort
+
+// use #define to define macros which are used for text replacement and preprocessor logic statements (e.g. #ifdef, #ifndef)
+  // macros can be defined in the compiler command, see the Makefile variable "MACROS"
+
  
 // ------- Namespace directives -------
   // using creates an alias for an existing name or data type
@@ -56,9 +52,9 @@ int main()  // returns integer, typical for main to indicate successful executio
  
     // Quickly comment out lines with Ctrl + /
    
-    // can use std::atexit(cleanup) where cleanup is some function pointer that will run when you execute std::exit(). The function cannot take parameters
-    // can use std::exit(0) to exit the program cleanly, where 0 is the exit code. Functionally the same as ending main()
-    // can use std::abort() or std::terminate() to immediately exit the program. By default, std::terminate() calls std::abort()
+    // use std::atexit(cleanup) where cleanup is some function pointer that will run when you execute std::exit(). The function cannot take parameters
+    // use std::exit(0) to exit the program cleanly, where 0 is the exit code. Functionally the same as ending main()
+    // use std::abort() or std::terminate() to immediately exit the program. By default, std::terminate() calls std::abort()
  
     // nested functions are not supported in C++
  
@@ -68,7 +64,7 @@ int main()  // returns integer, typical for main to indicate successful executio
  
     #ifdef VARIO  // preprocessor directive that compiles if VARIO is defined
     dataTypes();
-	inputPractice();
+    inputPractice();
     outputPractice();
     #endif
  
@@ -81,6 +77,7 @@ int main()  // returns integer, typical for main to indicate successful executio
     #ifdef FUNCSREFS
     referencePractice();
     pointerPractice();
+    functionPractice();
     // instantiate template functions (implicitly inline)
     int a { Fr::max<int>(2,3) };  // populates template parameter with int
     auto b { Fr::max(2,3) };      // alternatively let the compiler deduce the template parameter from the input arguments
@@ -96,15 +93,15 @@ int main()  // returns integer, typical for main to indicate successful executio
     classPractice();
     #endif
 
-	#ifdef CONTAINERS
-	vectorPractice();
-	arrayPractice();
-	multiDimPractice();
-	#endif
+    #ifdef CONTAINERS
+    vectorPractice();
+    arrayPractice();
+    multiDimPractice();
+    #endif
 
-	#ifdef MEMORY
-	memoryPractice();
-	#endif
+    #ifdef MEMORY
+    memoryPractice();
+    #endif
    
     return 0;
 }  // all local variables are destroyed at the end of their function

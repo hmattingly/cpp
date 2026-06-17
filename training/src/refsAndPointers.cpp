@@ -45,6 +45,9 @@ void passByAddressAndReference(int*& x) {  // pass in a pointer by reference if 
 // favor references over pointers
 	// only advantage of pointers is they can be reassigned to a different memory location
 void referencePractice() {
+
+	std::cout << "\nreferencePractice(): \n";
+
 	// lvalue references are used to link an identifier to the same memory location as an object st changing the reference also changes the object (and vice versa)
 		// the type of a reference determines what type of object it can refer to
 		// lvalue references use since &. e.g. int&, double&.
@@ -60,7 +63,7 @@ void referencePractice() {
 
 	// you do not need to forward declare child functions in header files
 	addOneReference(b);  // now a = b = c = 7
-	printReference("\nReference Test");
+	printReference("Reference Test");
 
 	std::cout << "Value of a: " << a << '\n';
 
@@ -79,6 +82,9 @@ void referencePractice() {
 }
 
 void pointerPractice() {
+
+	std::cout << "\npointerPractice(): \n";
+
 	// pointers are an object that holds the memory address of another object
 		// pointers should always be intialized when declared (otherwise get a garbage address)
 		// pointers must always be initialized with a memory address (e.g. &x)
@@ -91,7 +97,7 @@ void pointerPractice() {
 	int* d { nullptr };  // same as above
 
 	// * also serves as the dereference operator used to access the value stored at a memory address. It is the opposite of &
-	std::cout << "\nAddress of a: " << b << '\n';
+	std::cout << "Address of a: " << b << '\n';
 	std::cout << "Value of a: " << *(b) << '\n';
 
 	// can alter the value stored at a memory address by derefercing the pointer

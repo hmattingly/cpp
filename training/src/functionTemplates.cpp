@@ -1,7 +1,6 @@
 // ------- Preprocessor directives -------
 #include "functionTemplates.h"    // best practice to include corresponding header (helps with catching errors)
 #include <iostream>          // because we need std::cout, must include iostream here
-#include <string>
  
 // ------- User-Defined Functions -------
   // namespaces must be defined at the global level

@@ -22,9 +22,9 @@ class Employee
   // this is literally the only difference between classes and structs
   // best practice is class members should only be private or protected data members but can and should have public member functions
   // private class member variables often prefixed with m_
-    std::string m_name { "Blank" };
+    std::string m_firstName { "Blank" };
     double m_salary { 0.0 };
- 
+	
 public:  // access specifier
    
     // constructors are special member functions that are automatically called when an object is instantiated
@@ -41,28 +41,29 @@ public:  // access specifier
 		: Employee{ name, 0.0 }
 	{}
     Employee(std::string name, double salary)
-        : m_name { name }, m_salary { salary }  // member initialization list (can also be on same line)
+        : m_firstName { name }, m_salary { salary }  // member initialization list (can also be on same line)
     {  
         assert(salary >= 0);
-        std::cout << "\nEmployee initialized with name " << name << " and salary $" << salary;
+        std::cout << "Employee initialized with name " << name << " and salary $" << salary << '\n';
     }
 
 	// copy constructors are used to initialize an object with an existing object of the same type
 	  // not necessarily needed, C++ will use implicit copy constructor if none explicitly defined
 	  // can use Employee(const Employee& e) = default to explicitly define the default copy constructor
 	Employee(const Employee& e)  // must be a reference
-		: m_name { e.m_name }, m_salary { e.m_salary }
+		: m_firstName { e.m_firstName }, m_salary { e.m_salary }
 	{}
 
     // access functions allow you to get or set private class members
-    void setName(const std::string& name) { m_name = name; }
+    void setName(const std::string& firstName) { m_firstName = firstName; }
     void setSalary(const double& salary) { m_salary = salary; }
-    const auto& getName() const { return m_name; }  // generally better to return member variables by const reference, avoid non-const reference returns
+
+    const auto& getName() const { return m_firstName; }  // generally better to return member variables by const reference, avoid non-const reference returns
     double getSalary() const { return m_salary; }  // const implies data members will not be altered
  
     void printEmployee() const
     {
-        std::cout << "Name: " << m_name << ", Salary: " << m_salary << '\n';
+        std::cout << "Name: " << m_firstName << ", Salary: " << m_salary << '\n';
     }
  
     void raise(const double& increase)
@@ -72,7 +73,7 @@ public:  // access specifier
  
     void fires(const Employee& e)
     {
-        std::cout << m_name << " fires " << e.m_name << '\n';
+        std::cout << m_firstName << " fires " << e.m_firstName << '\n';
     }
 	
 };
@@ -85,6 +86,7 @@ class Animal
 	int m_id { 0 };
 	// static variables can be private as well but can't be accessed without instantiating
 	static inline int m_value { 0 }; 
+	int* m_dummyArrPtr {};
 
 public:
 	// static member variables are the same across all instances of the class
@@ -112,6 +114,8 @@ public:
 	// like static member variables, static member functions can be defined outside the class
 	static int getID();
 
+	void setArrLength (std::size_t length) { m_dummyArrPtr = new int[length] {}; }
+
 	// "this" is a const pointer that holds the address of the current implicit object
 	void getAge() const { std::cout << '\n' << this->m_age << '\n'; }
 
@@ -132,6 +136,17 @@ public:
 	{
 		date.m_year += 1;
 	}
+
+	// a class destructor is automatically called when an object goes out of scope or it is explicitly deleted using the delete keyword
+	  // a class can only have a single destructor
+	  // The destructor must have the same name as the class, preceded by a tilde (~)
+	  // The destructor can not take arguments
+	  // The destructor has no return type.
+	~Animal()
+	{
+		delete[] m_dummyArrPtr;
+		std::cout << this->m_name << " says goodbye cruel world!\n";
+	}
 	
 };
 
@@ -143,7 +158,7 @@ bool Animal::mammal = true;  // now any instantiation of Animal will have mammal
 // ------- User-Defined Functions -------
 void printSalary( const Employee& e ) 
 {
-	std::cout << "\nSalary " << e.getSalary() << '\n';
+	std::cout << "Salary: " << e.getSalary() << '\n';
 }
 
 void Date::printDate() const
@@ -162,6 +177,8 @@ int Animal::getID() { return idGen; }
 
 void classPractice()
 {
+	std::cout << "\nclassPractice(): \n";
+
 	// calls default constructor
 	Employee nobody1;		// default initialization
 	Employee nobody2 {};	// value initializaiton (preferred)
@@ -185,6 +202,7 @@ void classPractice()
 	// implicitly convert instantiation to temporary class
 	printSalary({"Doug", 1000.0});
 
+
 	// static member variables and functions can be accessed before any instantiation of the class
 	std::cout << "Are all animals mammals? " << Animal::mammal << '\n';
 	std::cout << "Value = " << Animal::getValue();
@@ -194,6 +212,9 @@ void classPractice()
 	dog.getAge();  // C++ is really performing Animal::dog.getName(&dog), where &dog gets assigned to "this"
 	std::cout << "Is dog a mammal? " << dog.mammal << '\n';
 	std::cout << "Is lion a mammal? " << lion.mammal << '\n';
+	dog.setArrLength(10);
+	lion.setArrLength(20);
+
 
 	Date today {};
 	addMonth(today);
@@ -202,6 +223,7 @@ void classPractice()
 	Date dogBirthday { 6, 17, 2022 };
 	dog.addYear(dogBirthday); 
 
+
 	Cards card { Cards::hearts, 11 };
 	std::cout << card.isHearts() << '\n';
-}
+}  // class destructors are called here when the class instances go out of scope

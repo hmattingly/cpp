@@ -44,7 +44,8 @@ int variablePractice()
 // functions with no return value have type void 
 void dataTypes()  
 {  
- 
+    std::cout << "\ndataTypes(): \n";
+    
     // Integers (signed by default)
     short a { 1 };               // typically 2 bytes
     int b { 2 };                 // typically 4 bytes
@@ -98,7 +99,7 @@ void dataTypes()
     bool ff = 4;               // true when any value != 0, false when 0  (copy-initialization)
  
     std::cout << std::boolalpha; // prints booleans as true or false instead of 1 or 0
-    std::cout << "\nTrue = " << ff << '\n';
+    std::cout << "True = " << ff << '\n';
  
     // Characters and Strings
     char gg { '2' };             // characters use single quotes

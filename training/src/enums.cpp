@@ -57,6 +57,8 @@ enum class Color2
  
 void enumPractice()
 {
+    std::cout << "\nenumPractice(): \n";
+
     // unscoped enumerations
     Color apple { red };
     Color sky { blue };
@@ -70,7 +72,7 @@ void enumPractice()
     if (apple == red)
         ;  // do nothing
  
-    std::cout << "\nBody::hearts = " << me << '\n';  // compiler can implicitly convert enumerator to integral
+    std::cout << "Body::hearts = " << me << '\n';  // compiler can implicitly convert enumerator to integral
    
  
     // scoped enumerations
