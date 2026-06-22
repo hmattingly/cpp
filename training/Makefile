@@ -75,11 +75,19 @@
   # CPPFLAGS used to define preprocessor macros
   # LDFLAGS used to define linker arguments, defaults to empty
 
+# c++ supports macro definition as a compiler flag
+  # edit MACROS to adjust what functions in main.cpp get compiled
+
+# c++ supports command line arguments
+  # edit EXECFLAGS to pass in arguments to bin/program.exe
+  # arguments are always passed as strings and are separated by spaces
+  # the first argument passed in is always the program name (e.g. bin/program.exe)
+  # use quotes to define a single argument with spaces (e.g. "hello world" is one argument instead of two)
 
 # use .PHONY to indicate this target is always a command, never a file
 .PHONY: clean run build
 
-# macros, edit these to adjust what functions in main.cpp get compiled
+# macros
 # MACROS = VARIO MATLOOP FUNCSREFS ENUMSTRUCTS CLASSES CONTAINERS MEMORY
 MACROS = FUNCSREFS
 
@@ -94,6 +102,9 @@ CPPFLAGS = $(MACROS:%=-D%) -Iinclude
 
 # executable name
 TARGET = bin/program
+
+# executable flags
+EXECFLAGS = hello world
 
 # source files
 SRC = $(wildcard src/*.cpp)
@@ -114,7 +125,7 @@ build: $(TARGET)
 
 # execute program
 run:
-	@$(TARGET)
+	@$(TARGET) $(EXECFLAGS)
 
 # removes all object and executable files
 clean:
