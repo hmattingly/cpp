@@ -121,7 +121,18 @@ To explicitly set a literal's type, use one of the following suffixes:
     s               std::string (suffix lives in std::literals::string_literals)
     sv              std::string_view (suffix lives in std::literals::string_view_literals)
  
- 
+- Common Keywords
+    KEYWORD     PURPOSE                                                             USECASE
+    static      When used at the global (file) level, forces internal linkage.      Used in source files *definitions* to ensure global variables or functions are restricted to just that file or to preserve 
+                When used at the local (function) level, variables maintain their   local variables across multiple function calls. Generally not used in header file definitions since every source 
+                value even when they go out of scope (i.e. function ends).          file that includes the header gets its own copy of the static variable, which is inefficient and counter intuitive to inline.
+    inline      Ensures the function or variable can be included in multiple        Used in header file *definitions* with external linkage so the header can be included in multiple places w/out violating 
+                source files w/out violating the one definition rule                the one definition rule. inline global variables share only one copy of the variable across each file that includes the 
+                                                                                    header. Generally not used in source files. 
+    extern      Used to declare variables that are defined elsewhere.               Used in header file *variable declarations* when you want to use an variable that is defined elsewhere.
+                                           
+
+
 - Control flow statements:
     CATEGORY					IMPLEMENTATION
     Conditional statements		if, else if, else, switch
