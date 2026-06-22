@@ -1,16 +1,15 @@
 // ------- Preprocessor directives -------
+#include "variables.h"
 #include <iostream>    // iostream is part of the standard C++ library that deals with basic input and output
 #include <string>      // for string
  
 // ------- User-Defined Functions -------
-int variablePractice();
-
 void outputPractice()
 {
 
     std::cout << "\noutputPractice(): \n";
    
-    int m { variablePractice() };  // returns m = 4
+    int a { variablePractice() };  // returns a = 4
  
     // common predefined variables in iostream
       // cout = character output
@@ -30,9 +29,9 @@ void outputPractice()
  
     std::cerr << "I'm helping to debug!\n";
  
-    std::cout << "1st call: m = " << m << std::endl;
-    std::cout << "1st call: m = " << m << '\n';      // conventional to put \n in single quotes
-    std::cout << "2nd call: m = " << variablePractice() << '\n';  // returns m = 5
+    std::cout << "1st call: a = " << a << std::endl;
+    std::cout << "1st call: a = " << a << '\n';      // conventional to put \n in single quotes
+    std::cout << "2nd call: a = " << variablePractice() << '\n';  // returns a = 5
  
 }
  

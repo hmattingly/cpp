@@ -1,9 +1,14 @@
 // ------- Preprocessor directives -------
+#include "variables.h" // best practice to include corresponding header (helps with catching errors)
+#include "math.h"      // for g_mathConst1 and g_mathConst2
 #include <iostream>    // iostream is part of the standard C++ library that deals with basic input and output
 #include <cstdint>     // for fixed-width integers
 #include <string>      // for string
 #include <string_view> // for string_view
+
+#define PI 3.14159265358979323846  // object-like macros allow substitution of values, functionally equivalent to constants but prefer constants
  
+
 // ------- Namespace directives -------
 // using creates an alias for an existing name or data type
 using std::string;        // brings std::string into global scope. Now can use string without std:: prefix
@@ -12,13 +17,47 @@ using namespace std::literals::string_literals;
 using namespace std::literals::string_view_literals;
 // std is the standard namespace. Bringing in the entire std namespace is discouraged
   // :: is the scope resolution operator
- 
+
+
+// Internal Linkage
+  // The following have internal linkage by default (i.e. can only be accessed in this source file):
+    // unnamed namespaces and anything within them
+    // const global variables
+    // constexpr global variable
+    // static global variables
+    // static functions
+
+// External Linkage
+  // The following have external linkage by default (i.e. can be accessed in any source file):
+    // named namespaces and anything within them
+    // non-const global variables
+    // extern const global variables
+    // inline const global variables
+    // functions
+
+namespace // internal linkage
+{
+    int doo { 1 };
+}
+
+namespace External // external linkage
+{
+    int poo { 1 };
+}
+
+// ------------- Globals ---------------
+const double g_a { 9.1 };             // internal linkage. g_ prefix sometimes used for globals
+constexpr int expression { 3 + 5 };   // internal linkage
+static int s_b { 1 };                 // internal linkage. s_ prefix sometimes used for static
+
+double g_c { 9.2 };                   // external linkage
+
+
 // ------- User-Defined Functions -------
   // Function format:
   // [return data type] [function name]([input 1 type and name], ..., [input n type and name]) {[function definition]}
-int variablePractice()
+int variablePractice()  // internal linkage
 {
-   
     // 6 types of initialization
     int a;            // default initialization (no initializer), variable assigned garbage value.. typically avoid
     int b = 2;        // copy-initialization (traditional)
@@ -31,14 +70,39 @@ int variablePractice()
     // variables of different types must be on separate lines
     int g, h;
     int i { 2 }, j { 3 };
+
+    // constants
+      // const objects cannot be re-assigned
+      // must be initialized when defined
+    const double k { 9.81 };
+    constexpr int l { 3 + 5 };   // constant expressions must be known at compile time, allows the compiler to simplify code
+
+    // global variables
+      // we have access to the global variables defined in this source file
+    doo = d;                // can alter doo here because it's global non-const
+    External::poo = d;      // can alter poo here because it's global non-const
+    double m { PI };        // use PI macro here
+    double n { g_a };       // changing global constant to local non-const
+    s_b = c;                // can alter s_b here because it's global non-const
+    g_c = c;                // can alter g_c here because it's global non-const
+
+      // we also have access to the global variables defined in this header file
+    const int o { CONSTANT1 };
+    int p { CONSTANT2 };        
+    const int q { CONSTANT3 };  
+
+      // and global variables defined in other source files
+    int r { g_mathConst1 };
+    int s { g_mathConst2 };
  
+    
     // static local variables do not go out of scope after the function ends. They are initialized only once, the first time the function is called
-    static int m { 3 };  // if this function were called again, this line would be skipped since m is already initialized
-    m++;
+    static int t { 3 };  // if this function were called again, this line would be skipped since q is already initialized
+    ++t;
  
-    [[maybe_unused]] int n { 3 };  // to prevent unused variable warning use [[maybe_unused]]
+    [[maybe_unused]] int u { 3 };  // to prevent unused variable warning use [[maybe_unused]]
  
-    return m;  // return integer
+    return t;  // return integer
 }
  
 // functions with no return value have type void 
@@ -126,10 +190,6 @@ void dataTypes()
     auto qq { 123 };              // int
     auto rr { 1.2 };              // double
     auto ss { 1.2f };             // float
- 
-    // Constants
-    const double tt { 9.81 };     // const objects cannot be re-assigned. Must be initialized when defined
-    constexpr int uu { 3 + 5 };   // constant expressions must be known at compile time, allows the compiler to simplify code
  
     // the following operators require operands of the same type:
       // +, -, *, /, %
