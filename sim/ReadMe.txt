@@ -1,10 +1,6 @@
 ------- Framework --------
 MATH : file that contains various math constants, classes, and functions
 	Angle
-		deg2rad() : deg to radians
-		rad2deg()
-		deg2arc() : deg to deg + arcmin + arcsec
-		arc2deg()
 		e2ta() : eccentric anomaly to true anomaly
 		ta2e()
 		e2m() : eccentric anomaly to mean anomaly
