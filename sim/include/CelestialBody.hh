@@ -1,8 +1,8 @@
 // ------- Header Guard -------
-#ifndef CELESTIALBODY_H  
-#define CELESTIALBODY_H
+#ifndef CELESTIALBODY_HH  
+#define CELESTIALBODY_HH
  
-#include "Vector3.hh"		// for Vector3
+#include "Vector.hh"		// for Vector3
 #include <string_view>		// for std::string_view
 #include <optional>			// for std::optional<>
 
@@ -23,4 +23,4 @@ struct CelestialBody
 
 };
 
-#endif // CELESTIALBODY_H
+#endif // CELESTIALBODY_HH

@@ -1,8 +1,8 @@
 // ------- Header Guard -------
-#ifndef UTIL_H  
-#define UTIL_H
+#ifndef UTIL_HH  
+#define UTIL_HH
  
-#include "Vector3.hh"		// for Vector3
+#include "Vector.hh"		// for Vector3
 #include "CelestialBody.hh"	// for CelestialBody
 #include <iostream>
 #include <string_view>
@@ -72,4 +72,4 @@ namespace Util
 }
 
 
-#endif  // UTIL_H
+#endif  // UTIL_HH
