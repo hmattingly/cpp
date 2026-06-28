@@ -192,6 +192,19 @@ public:
 		return !(*this == m);
 	}
 
+	friend std::ostream& operator<<(std::ostream& os, const Matrix& m)
+	{
+		os << "[\n";
+		for (std::size_t i = 0; i < ROWS; ++i)
+		{
+			os << "  " << m[i];
+			if (i < ROWS - 1)
+				os << ",";
+			os << "\n";
+		}
+		os << "]";
+		return os;
+	}
 
 	// member functions
 	double trace() const

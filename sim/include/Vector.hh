@@ -156,6 +156,18 @@ public:
 		return !(*this == v);
 	}
 
+	friend std::ostream& operator<<(std::ostream& os, const Vector& v)
+	{
+		os << "[";
+		for (std::size_t i = 0; i < N; ++i)
+		{
+			os << v[i];
+			if (i < N - 1)
+				os << ", ";
+		}
+		os << "]";
+		return os;
+	}
 
 	// member functions
 	double mag2() const
