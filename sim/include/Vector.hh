@@ -8,6 +8,7 @@
 #include <cassert>
 #include <array>
 #include <cstddef>	// for std::size_t
+#include "util.hh"
 
 // ------- Forward Declarations -------
 template <std::size_t N>
@@ -76,6 +77,14 @@ public:
 		return result;
 	}
 
+	Vector operator-() const
+	{
+		Vector result;
+		for (std::size_t i = 0; i < N; ++i)
+			result[i] = -_vec[i];
+		return result;
+	}
+
 	Vector operator*(double scalar) const
 	{
 		Vector result;
@@ -134,11 +143,23 @@ public:
 		return *this;
 	}
 
+	bool operator==(const Vector& v) const
+	{
+		if ((*this - v).mag() < Util::FLOAT_TOL)
+			return true;
+		else
+			return false;
+	}
+
+	bool operator!=(const Vector& v) const
+	{
+		return !(*this == v);
+	}
+
 
 	// member functions
 	double mag2() const
 	{
-		assert(N <= 3);
 		double sum = 0;
 		for (std::size_t i = 0; i < N; ++i)
 		{
@@ -155,26 +176,44 @@ public:
 	Vector unit() const
 	{
 		double magnitude = this->mag();
-		assert(magnitude > 1e-12);	// cannot normalize a zero vector
+		assert(magnitude > Util::FLOAT_TOL);	// cannot normalize a zero vector
 
 		return *this / magnitude;
 	}
 
-	
-	// TODO: add outer product function once Matrix3 class is implemented
+	bool isZero() const
+	{
+		return this->mag() < Util::FLOAT_TOL;
+	}
+
+	bool isUnit() const
+	{
+		return std::abs(this->mag() - 1.0) < Util::FLOAT_TOL;
+	}
+
 
 	// access functions
-	const std::array<double, N>& vec() const
+	const std::array<double, N>& data() const
 	{
 		return _vec;
 	}
-
-	
 };
 
-inline double dot(const Vector3& a, const Vector3& b)
+template <std::size_t N>
+inline Vector<N> operator*(double scalar, const Vector<N>& v)
 {
-	return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    return v * scalar;
+}
+
+template <std::size_t N>
+inline double dot(const Vector<N>& a, const Vector<N>& b)
+{
+	double sum = 0;
+	for (std::size_t i = 0; i < N; ++i)
+	{
+		sum += a[i] * b[i];
+	}
+	return sum;
 }
 
 inline Vector3 cross(const Vector3& a, const Vector3& b) 
@@ -185,6 +224,15 @@ inline Vector3 cross(const Vector3& a, const Vector3& b)
 		a[2] * b[0] - a[0] * b[2],
 		a[0] * b[1] - a[1] * b[0]
 	};
+}
+
+template <std::size_t N>
+inline double angleBetween(const Vector<N>& a, const Vector<N>& b)
+{
+	double mags = a.mag() * b.mag();
+	assert(mags > Util::FLOAT_TOL);
+
+	return std::acos(dot(a, b) / mags);
 }
 
 
