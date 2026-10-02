@@ -3,6 +3,9 @@
 #define CLASSES_H
  
 // ------- Forward Declarations -------
+  // you can forward declare a class defined in another file if either of the following are true. Else, you must #include the class header
+    // if using a pointer or reference to a class
+	// if the class only appears in function declarations (e.g. function parameters, return type)
 void classPractice();
 
 
