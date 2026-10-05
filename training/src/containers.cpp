@@ -121,6 +121,8 @@ void vectorPractice()
 
 	// C++ indexing is 0 based
 	  // indexing is actually specifying an offset in memory from the first element of the array
+	  // indexing moves the memory address forward by the specified index, then dereferences
+	    // i.e. ptr[n] = *(ptr + n) = arr[n]
 	  // passing an invalid (out of bounds) index will return undefined behavior
 	    // the at() member function performs bounds checking on the index
 	  // arrays are contiguous, meaning their elements are adjacent in memory
@@ -192,7 +194,6 @@ void arrayPractice()
 	// std::array and c-style array indexing is the same as vectors
 
 
-	// typically avoid c-style arrays in favor of std::array and std::vector
 
 	// c-style arrays have one argument: the array length
 	int e[10] {};  				// creates a c-style array with length 10
@@ -201,6 +202,8 @@ void arrayPractice()
 
 	std::cout << "e has " << std::size(e) << " elements\n";
 
+	// once initialized, you cannot assign new values to a c-style array (e.g. int f[5]; f = { 1, 2, 3, 4, 5 }; is invalid)
+	  // however, you can assign values to individual elements of the array
 	// when a c-style array is used in an expression, it implicitly converts to a pointer to the first element address
 	  // this is called array decay (or just decay) because you lose the length information
 	  // you cannot pass a c-style array by reference, but you don't need to since it will always decay into a pointer

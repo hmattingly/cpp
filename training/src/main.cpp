@@ -14,7 +14,7 @@
 #include "refsAndPointers.h"
 #include "enums.h"
 #include "structs.h"
-#include "classes.h"
+#include "Classes.h"
 #include "containers.h"
 #include "memory.h"
 #include <cstdlib>   // for exit and abort
@@ -49,7 +49,7 @@ void outputPractice();
     // arguments are always passed in as strings. To convert from a string to another type use std::stringstream
     // argc is an integer parameter containing a cound of the number of arguments passed into the program. This first argument is always the name of the program itself
     // argv is a c-style array of character pointers where the actual arguments are stored. Length of the array is argc
-int main(int argc, char* argv[])
+int main(int argc, char* argv[])    // char* argv[] is equivalent to char** argv
 {
     /*
     This is how you add add a multi-line comment

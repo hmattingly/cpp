@@ -3,12 +3,13 @@
 #ifndef VECTOR_HH 
 #define VECTOR_HH
 
+// ------- Preprocessor directives -------
 #include <ostream>
 #include <cmath>
 #include <cassert>
 #include <array>
 #include <cstddef>	// for std::size_t
-#include "util.hh"
+#include "Constants.hh"
 
 // ------- Forward Declarations -------
 template <std::size_t N>
@@ -43,6 +44,9 @@ public:
 			_vec[i++] = x;
 		}
 	}
+	
+	// destructor
+	~Vector() = default;
 
 	// operator overloads
 	double& operator[](std::size_t i)
@@ -145,7 +149,7 @@ public:
 
 	bool operator==(const Vector& v) const
 	{
-		if ((*this - v).mag() < Util::FLOAT_TOL)
+		if ((*this - v).mag() < Constants::FLOAT_TOL)
 			return true;
 		else
 			return false;
@@ -188,19 +192,19 @@ public:
 	Vector unit() const
 	{
 		double magnitude = this->mag();
-		assert(magnitude > Util::FLOAT_TOL);	// cannot normalize a zero vector
+		assert(magnitude > Constants::FLOAT_TOL);	// cannot normalize a zero vector
 
 		return *this / magnitude;
 	}
 
 	bool isZero() const
 	{
-		return this->mag() < Util::FLOAT_TOL;
+		return this->mag() < Constants::FLOAT_TOL;
 	}
 
 	bool isUnit() const
 	{
-		return std::abs(this->mag() - 1.0) < Util::FLOAT_TOL;
+		return std::abs(this->mag() - 1.0) < Constants::FLOAT_TOL;
 	}
 
 
@@ -242,7 +246,7 @@ template <std::size_t N>
 inline double angleBetween(const Vector<N>& a, const Vector<N>& b)
 {
 	double mags = a.mag() * b.mag();
-	assert(mags > Util::FLOAT_TOL);
+	assert(mags > Constants::FLOAT_TOL);
 
 	return std::acos(dot(a, b) / mags);
 }

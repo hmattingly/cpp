@@ -3,13 +3,14 @@
 #ifndef MATRIX_HH 
 #define MATRIX_HH
 
+// ------- Preprocessor directives -------
 #include <ostream>
 #include <cmath>
 #include <cassert>
 #include <array>
 #include <cstddef>	// for std::size_t
 #include "Vector.hh"
-#include "util.hh"
+#include "Constants.hh"
 
 // ------- Forward Declarations -------
 template <std::size_t ROWS, std::size_t COLS>
@@ -44,6 +45,9 @@ public:
 			_mat[i++] = v;
 		}
 	}
+
+	// destructor
+	~Matrix() = default;
 
 	// operator overloads
 	Vector<COLS>& operator[](std::size_t i)
@@ -276,7 +280,7 @@ public:
 		{
 			for (std::size_t j = i + 1; j < COLS; ++j)
 			{
-				if (std::abs(_mat[i][j] - _mat[j][i]) > Util::FLOAT_TOL)
+				if (std::abs(_mat[i][j] - _mat[j][i]) > Constants::FLOAT_TOL)
 				{
 					return false;
 				}
@@ -294,7 +298,7 @@ public:
 			for (std::size_t j = 0; j < COLS; ++j)
 			{
 				double expected = (i == j) ? 1.0 : 0.0;
-				if (std::abs(_mat[i][j] - expected) > Util::FLOAT_TOL)
+				if (std::abs(_mat[i][j] - expected) > Constants::FLOAT_TOL)
 				{
 					return false;
 				}

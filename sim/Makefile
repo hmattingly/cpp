@@ -14,7 +14,7 @@ CXXFLAGS = -std=c++23 -c -pedantic-errors
 CPPFLAGS = $(MACROS:%=-D%) -Iinclude
 
 # executable name
-TARGET = bin/program
+TARGET = bin/sim
 
 # source files
 SRC = $(wildcard src/*.cpp)
