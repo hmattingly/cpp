@@ -84,3 +84,22 @@ SimManager : runs the simulation by repeatedly calling the integrator(s), handle
 	Scheduler : handles clock 
 	EventManager : handles scheduling and recording events throughout simulation
 	Logger() : logs info, events, warnings, and errors
+
+---- Integrator Set Up ----
+1. Instantiate Integrator -> constructor calls Scheduler::registerIntegrator() to add Integrator to array
+2. Instantiate Model -> constructor calls registerState() which adds reference to variables to an array. 
+	Think about how to keep track of array. Work uses IntegratorData class. 
+		IntegratorData has member variables: model pointer, integrator pointer, double State array (max 128), double dState array (max 128), num elements in State
+	registerState() should accept double state, double dstate or overload Vector3 state, Vector3 dstate. It should instantiate IntegratorData (if decide to use this)
+3. pIntegrator -> registerModel(pModel) for each model
+	registerModel() should...
+		a. check if the model has already been registered to an integrator:
+			If yes, error and exit
+			If no, update flag in model to indicate it is registered with integrator
+		b. add model.IntegratorData to IntegratorData array
+		c. if model is not initialized, run initModel()
+---- Integrator Update ----	
+Scheduler::update() loops through each integrator and calls Integrator -> calcModels() and Integrator -> advanceStates()
+	Integrator::calcModels() loops through IntegratorData array then performs IntegratorData->pModel->calcModel() which computes derivatives of States (consider instead looping through each registered Model)
+	Integrator::advanceStates() loops through IntegratorData array and performs RK2 or RK4 integration to update each element in IntegratorData then performs IntegratorData->pModel->updateStates() which just updates other variables in the model now that the state is up to the current time step
+	
