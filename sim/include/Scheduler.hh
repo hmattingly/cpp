@@ -3,7 +3,11 @@
 #define SCHEDULER_HH
 
 // ------- Preprocessor directives -------
+#include "Integrator.hh"
 #include <cassert>
+
+// ------ Constants -------
+inline const int MAX_INTEGRATORS = 10;
 
 // ------- Class Definition -------
 class Scheduler
@@ -15,6 +19,9 @@ class Scheduler
 	static inline double _time { 0.0 };
 	static inline double _startTime { 0.0 };
 	static inline double _endTime { 0.0 };
+
+	static inline Integrator* _pIntegratorList[MAX_INTEGRATORS] { nullptr };
+	static inline int _numIntegrators { 0 };
 
 public:
 
@@ -28,11 +35,13 @@ public:
 	void start();
 	void update();
 	void reset();
+	void registerIntegrator(Integrator* pIntegrator);
+	void updateIntegratorList();
 	
 	// access functions
-	const bool& isRunning() const { return _running; }
-	const double& getTimestep() const { return _timestep; }
-	const double& getCurrentTime() const { return _time; }
+	static const bool& isRunning() { return _running; }
+	static const double& getTimestep() { return _timestep; }
+	static const double& getCurrentTime() { return _time; }
 
 	// setter functions
 	void setStartEndTime(double startTime, double endTime)
