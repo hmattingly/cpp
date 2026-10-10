@@ -3,80 +3,62 @@
 #define SCHEDULER_HH
 
 // ------- Preprocessor directives -------
-#include "Integrator.hh"
-#include <cassert>
+#include <cassert>  // for assert()
 
 // ------ Constants -------
-inline const int MAX_INTEGRATORS = 10;
+inline constexpr int MAX_INTEGRATORS { 10 };
+
+// ------ Forward Declarations -------
+class Integrator;
+
+// ------- Enum Definition -------
+enum SchedulerStatus
+{
+	UNINITIALIZED,
+	RUNNING,
+	ENDTIME,
+	FORCEDEND,
+	ERROR
+};
 
 // ------- Class Definition -------
 class Scheduler
 {
 	// static member variables, shared across all instances of Scheduler
-	static inline bool _exists { false };
-	static inline bool _running { false };
-	static inline double _timestep { 0.0 };
+	static inline SchedulerStatus _status { UNINITIALIZED };
+
 	static inline double _time { 0.0 };
 	static inline double _startTime { 0.0 };
 	static inline double _endTime { 0.0 };
 
-	static inline Integrator* _pIntegratorList[MAX_INTEGRATORS] { nullptr };
-	static inline int _numIntegrators { 0 };
+	static inline Integrator* _pIntegratorArray[MAX_INTEGRATORS] { nullptr };
+	static inline std::size_t _numIntegrators { 0 };
+
+	void _checkExitConditions();
 
 public:
 
 	// default constructor
-	Scheduler();
+	Scheduler() = delete;
+
+	// parameterized constructor
+	Scheduler(const double startTime, const double endTime);
 
 	// destructor
 	~Scheduler() = default;
 
 	// forward declarations
-	void start();
-	void update();
-	void reset();
-	void registerIntegrator(Integrator* pIntegrator);
-	void updateIntegratorList();
+	void run();
+	static void registerIntegrator(Integrator* pIntegrator);
 	
 	// access functions
-	static const bool& isRunning() { return _running; }
-	static const double& getTimestep() { return _timestep; }
+	static const SchedulerStatus& getStatus() { return _status; }
 	static const double& getCurrentTime() { return _time; }
 
 	// setter functions
-	void setStartEndTime(double startTime, double endTime)
+	static void setCurrentTime(const double time)
 	{ 
-		_startTime = startTime; 
-		_endTime = endTime;
-	}
-	void setNumSamples(int samples)
-	{
-		assert(samples > 0);
-		_timestep = (_endTime - _startTime) / samples;
-
-	}
-	void setTimestep(double timestep)
-	{
-		if ( _startTime < _endTime )
-		{
-			assert(timestep > 0.0);
-		}
-		else if ( _startTime > _endTime )
-		{
-			assert(timestep < 0.0);
-		}
-		_timestep = timestep;
-	}
-	void setCurrentTime(double time)
-	{ 
-		if (_timestep > 0.0)
-		{
-			assert(time >= _startTime && time <= _endTime);
-		}
-		else if (_timestep < 0.0)
-		{
-			assert(time <= _startTime && time >= _endTime);
-		}
+		assert(time >= _startTime && time <= _endTime);
 		_time = time;
 	}
 

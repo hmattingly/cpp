@@ -4,6 +4,10 @@
 
 // ------- Preprocessor directives -------
 #include <numbers>			// for pi
+#include <limits>			// for max double and int
+
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
 
 // ------- Namespace directives -------
 namespace Constants
@@ -24,6 +28,8 @@ namespace Constants
 
 	// C++ constants
 	inline constexpr double FLOAT_TOL { 1e-12 };	// tolerance for floating point comparisons
+	inline constexpr double MAX_DOUBLE { std::numeric_limits<double>::max() };	// max double value (~1.798e308)
+	inline constexpr int MAX_INT { std::numeric_limits<int>::max() };
 
 }
 

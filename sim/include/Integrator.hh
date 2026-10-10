@@ -4,33 +4,119 @@
 
 // ------- Preprocessor directives -------
 #include "Scheduler.hh"
-#include "Model.hh"
+#include "Vector.hh"
+#include <cstddef>  // for std::size_t
+
+// ------ Constants -------
+inline constexpr int MAX_NX { 128 };		// max number of state variables for any model
+inline constexpr int MAX_MODELS { 10 };	// max number of models per integrator
+
+// ------ Forward Declarations -------
+class Model;
 
 // ------- Class Definition -------
-template <typename Model>
-class Integrator
+class IntegratorData
 {
-	using Vector = typename Model::Vector;
+	double* pState[MAX_NX] { nullptr };
+	double* pDState[MAX_NX] { nullptr };
+	std::size_t nX { 0 };
+	Model* pModel { nullptr };
 
-	Vector _X;
-	Vector _k1;
-	Vector _k2;
-	Vector _k3;
-	Vector _k4;
-
-	double _h { Scheduler::getTimestep() };
-	double _hd2 { _h / 2.0 };
-	Model* _pObject { nullptr };
-	
+	friend class ForwardEuler;
+	friend class RK4;
 
 public:
-	// default constructor
-	Integrator();
+	// default constructor (disabled)
+	IntegratorData() = delete;
 
 	// parameterized constructor
-	Integrator(Model* pObject);
+	IntegratorData(Model* pModel);
 
-	void update(double time);
+	// destructor
+	~IntegratorData() = default;
+
+	// forward declarations
+	void addStates(double& x, double& dx);
+	void addStates(Vector3& x, Vector3& dx);
+
+	// access functions
+	
+};
+
+// ------- Class Definition -------
+class Integrator
+{
+protected:
+	double _dt { 0.0 };
+	Model* _pModelArray[MAX_MODELS] { nullptr };
+	std::size_t _numModels { 0 };
+	double _nextUpdateTime { 0.0 };
+
+public:
+	// default constructor (disabled)
+	Integrator() = delete;
+
+	// parameterized constructor
+	Integrator(const double dt);
+
+	// destructor
+	virtual ~Integrator() = default;
+
+	// forward declarations
+	void updateDerivs();
+	virtual void updateStates() = 0;
+	void updateStateDependents();
+	void registerModel(Model* pModel);
+
+	// access functions
+	double getNextUpdateTime() const { return _nextUpdateTime; }
+};
+
+// ------- Class Definition -------
+class ForwardEuler : public Integrator
+{
+
+public:
+	// default constructor (disabled)
+	ForwardEuler() = delete;
+
+	// parameterized constructor
+	ForwardEuler(const double dt);
+
+	// destructor
+	~ForwardEuler() = default;
+
+	// forward declarations
+	void updateStates() override;
+
+};
+
+// ------- Class Definition -------
+class RK4 : public Integrator
+{
+	double _dt2 { 0.0 };
+	double _dt3 { 0.0 };
+	double _dt6 { 0.0 };
+	int _step { 0 };
+	double _state0[MAX_MODELS][MAX_NX] { NULL };
+	double _k1[MAX_MODELS][MAX_NX] { NULL };
+	double _k2[MAX_MODELS][MAX_NX] { NULL };
+	double _k3[MAX_MODELS][MAX_NX] { NULL };
+	double _k4[MAX_MODELS][MAX_NX] { NULL };
+
+public:
+	// default constructor (disabled)
+	RK4() = delete;
+
+	// parameterized constructor
+	RK4(const double dt);
+
+	// destructor
+	~RK4() = default;
+
+	// forward declarations
+	void updateStates() override;
+
 };
 
 #endif  // INTEGRATOR_HH
