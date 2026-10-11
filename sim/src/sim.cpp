@@ -1,5 +1,7 @@
 // ------- Preprocessor directives -------
 #include "Scheduler.hh"
+#include "Integrator.hh"
+#include "DummyModel.hh"
 #include <cstdio>
 
 // ------- Namespace directives -------
@@ -28,26 +30,26 @@ int main(int argc, char* argv[])
 	printf("--------------------------------\n");
 
 	// set sim run time parameters
-	int samples { 10 };
 	double startTime { 0.0 };
 	double endTime { 1.0 };
+	double dt { 0.1 };
 
 	// instantiate Scheduler object and set parameters
-	Scheduler* scheduler = new Scheduler();
-	scheduler->setStartEndTime(startTime, endTime);
+	Scheduler* pScheduler = new Scheduler(startTime, endTime);
 
 	// build integrators
-	Integrator* pIntegrator = new Integrator();
+	ForwardEuler* pIntegrator = new ForwardEuler(dt);
+
+	// build models
+	DummyModel* pDummyModel = new DummyModel("Dumb Dumb");
+	pIntegrator->registerModel(pDummyModel);	
 	
 	// run sim
-	scheduler->start();
-	printf("Current time: %f\n", scheduler->getCurrentTime());
-	while (true == scheduler->isRunning())
+	while (RUNNING != pScheduler->getStatus())
 	{
-		scheduler->update();
-		printf("Current time: %f\n", scheduler->getCurrentTime());
+		pScheduler->run();
 	}
 
 	// clean up
-	delete scheduler;
+	delete pScheduler;
 }

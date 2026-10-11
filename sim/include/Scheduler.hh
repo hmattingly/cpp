@@ -4,9 +4,14 @@
 
 // ------- Preprocessor directives -------
 #include <cassert>  // for assert()
+#include <cstdint>  // for std::int64_t
+#include <cstddef>  // for std::size_t
 
 // ------ Constants -------
 inline constexpr int MAX_INTEGRATORS { 10 };
+
+// ------- Namespace directives -------
+using ITIME = std::int64_t;
 
 // ------ Forward Declarations -------
 class Integrator;
@@ -31,6 +36,10 @@ class Scheduler
 	static inline double _startTime { 0.0 };
 	static inline double _endTime { 0.0 };
 
+	ITIME _iTime { 0 };
+	ITIME _iStartTime { 0 };
+	ITIME _iEndTime { 0 };
+
 	static inline Integrator* _pIntegratorArray[MAX_INTEGRATORS] { nullptr };
 	static inline std::size_t _numIntegrators { 0 };
 
@@ -50,18 +59,12 @@ public:
 	// forward declarations
 	void run();
 	static void registerIntegrator(Integrator* pIntegrator);
+	ITIME double2iTime(const double time);
+	double iTime2double(const ITIME time);
 	
 	// access functions
 	static const SchedulerStatus& getStatus() { return _status; }
 	static const double& getCurrentTime() { return _time; }
-
-	// setter functions
-	static void setCurrentTime(const double time)
-	{ 
-		assert(time >= _startTime && time <= _endTime);
-		_time = time;
-	}
-
 };
 
 #endif // SCHEDULER_HH

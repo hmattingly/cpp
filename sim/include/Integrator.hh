@@ -48,9 +48,11 @@ class Integrator
 {
 protected:
 	double _dt { 0.0 };
+	double _time { 0.0 };
 	Model* _pModelArray[MAX_MODELS] { nullptr };
 	std::size_t _numModels { 0 };
 	double _nextUpdateTime { 0.0 };
+	bool _atSolutionPoint { true };
 
 public:
 	// default constructor (disabled)
@@ -63,13 +65,20 @@ public:
 	virtual ~Integrator() = default;
 
 	// forward declarations
-	void updateDerivs();
 	virtual void updateStates() = 0;
 	void updateStateDependents();
+	void updateDerivs();
 	void registerModel(Model* pModel);
 
 	// access functions
-	double getNextUpdateTime() const { return _nextUpdateTime; }
+	const double& getTime() const { return _time; }
+	const double& getTimestep() const { return _dt; }
+	const double& getNextUpdateTime() const { return _nextUpdateTime; }
+	const bool& atSolutionPoint() const { return _atSolutionPoint; }
+
+	// setter functions
+	virtual void setNextUpdateTime() = 0;
+	virtual void setTimestep(const double dt) = 0;
 };
 
 // ------- Class Definition -------
@@ -89,6 +98,9 @@ public:
 	// forward declarations
 	void updateStates() override;
 
+	// setter functions
+	void setNextUpdateTime() override { _nextUpdateTime = _time + _dt; }
+	void setTimestep(const double dt) override;
 };
 
 // ------- Class Definition -------
@@ -116,6 +128,11 @@ public:
 
 	// forward declarations
 	void updateStates() override;
+
+	// setter functions
+	void setNextUpdateTime() override { _nextUpdateTime = _time + _dt2; }
+	void setTimestep(const double dt) override;
+	
 
 };
 

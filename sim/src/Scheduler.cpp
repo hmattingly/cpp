@@ -19,10 +19,18 @@ Scheduler::Scheduler(const double startTime, const double endTime)
 	// check if the Scheduler already exists, 
 	if ( UNINITIALIZED == _status )
 	{
+		// start Scheduler
 		_status = RUNNING;
+
+		// set double time
 		_startTime = startTime;
 		_endTime = endTime;
 		_time = _startTime;
+
+		// set integer time
+		_iStartTime = double2iTime(_startTime);
+		_iEndTime = double2iTime(_endTime);
+		_iTime = double2iTime(_time);
 	}
 	else
 	{
@@ -30,6 +38,23 @@ Scheduler::Scheduler(const double startTime, const double endTime)
 		std::exit(EXIT_FAILURE);
 	}
 	
+}
+
+// convert to integer time (quantization)
+ITIME Scheduler::double2iTime(const double time)
+{
+	if ( time > 0.0 )
+	{
+		return (static_cast<ITIME>( time / FLOAT_TOL + 0.5 ));
+	}
+	else if ( time < 0.0 )
+	{
+		return (static_cast<ITIME>( time / FLOAT_TOL - 0.5 ));
+	}
+	else
+	{
+		return static_cast<ITIME>(time);
+	}
 }
 
 // update the scheduler time by one timestep
@@ -40,25 +65,29 @@ void Scheduler::run()
 	if ( RUNNING == _status )
 	{
 		// from each integrator get min nextUpdateTime
+		// ensure integrators evaluate at last time step
 		double minUpdateTime { MAX_DOUBLE };
 		for ( std::size_t i { 0 }; i < _numIntegrators; ++i )
 		{
-			if ( _pIntegratorArray[i] != nullptr )
+			// only adjust integrator timestep while at a solution point
+			if ( true == _pIntegratorArray[i]->atSolutionPoint() )
 			{
-				minUpdateTime = MIN(minUpdateTime, _pIntegratorArray[i]->getNextUpdateTime());
-				
+				if ( double2iTime(_pIntegratorArray[i]->getTime() + _pIntegratorArray[i]->getTimestep()) > _iEndTime )
+				{
+					_pIntegratorArray[i]->setTimestep( _endTime - _pIntegratorArray[i]->getTime() );
+				}
 			}
+			minUpdateTime = MIN(minUpdateTime, _pIntegratorArray[i]->getNextUpdateTime());
 		}
-
-		// TODO consider better stopping condition at endTime
 
 		// set time to next update time
 		_time = minUpdateTime;
+		_iTime = double2iTime(_time);
 
 		// perform integration to update states of integrators that are ready
 		for ( std::size_t i { 0 }; i < _numIntegrators; ++i )
 		{
-			if ( _pIntegratorArray[i] != nullptr && _time == _pIntegratorArray[i]->getNextUpdateTime() )
+			if ( _iTime == double2iTime(_pIntegratorArray[i]->getNextUpdateTime()) )
 			{
 				_pIntegratorArray[i]->updateStates();
 				_pIntegratorArray[i]->updateStateDependents();
@@ -90,10 +119,20 @@ void Scheduler::registerIntegrator(Integrator* pIntegrator)
 // check exit conditions
 void Scheduler::_checkExitConditions()
 {
-	// check if we've reached the end of the sim
-	if ( _time >= _endTime )
+	// check if we've reached the end of the sim with all integrators at solution point
+	if ( _iTime == _iEndTime )
 	{
+		for ( std::size_t i { 0 }; i < _numIntegrators; ++i )
+		{
+			if ( false == _pIntegratorArray[i]->atSolutionPoint() )
+			{
+				return;
+			}
+		}
 		_status = ENDTIME;
 	}
-
+	else if ( _iTime > _iEndTime )
+	{
+		_status = ERROR;
+	}
 }

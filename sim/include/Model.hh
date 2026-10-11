@@ -3,6 +3,7 @@
 #define MODEL_HH
 
 // ------- Preprocessor directives -------
+#include "Vector.hh"
 
 // ------ Forward Declarations -------
 class IntegratorData;
@@ -11,6 +12,7 @@ class IntegratorData;
 // ------- Class Definition -------
 class Model
 {
+protected:
 	const char* _pName { nullptr };
 	IntegratorData* _pIntegratorData { nullptr };
 	bool _isRegWithIntegrator { false };
@@ -32,6 +34,7 @@ public:
 
 	// forward declarations
 	void registerStates(double& x, double& dx);
+	void registerStates(Vector3& x, Vector3& dx);
 
 	// access functions
 	const char* getName() const { return _pName; }

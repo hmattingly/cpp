@@ -49,7 +49,6 @@ void IntegratorData::addStates(double& state, double& dstate)
 	pState[nX] = &state;
 	pDState[nX] = &dstate;
 	++nX;
-
 }
 
 // set the state variables to be integrated (overload for Vector3)
@@ -137,8 +136,14 @@ void Integrator::updateStateDependents()
 ForwardEuler::ForwardEuler(const double dt) :
 	Integrator(dt)
 {
-	// set nextUpdateTime
-	_nextUpdateTime = Scheduler::getCurrentTime();
+	_time = Scheduler::getCurrentTime();
+	setNextUpdateTime();
+}
+
+void ForwardEuler::setTimestep(const double dt)
+{
+	_dt = dt;
+	setNextUpdateTime();
 }
 
 void ForwardEuler::updateStates()
@@ -161,7 +166,8 @@ void ForwardEuler::updateStates()
 	}
 
 	// set nextUpdateTime
-	_nextUpdateTime = Scheduler::getCurrentTime() + _dt;
+	_time = Scheduler::getCurrentTime();
+	setNextUpdateTime();
 }
 
 // ------- Class Definition -------
@@ -172,8 +178,17 @@ RK4::RK4(const double dt) :
 	_dt3 { dt / 3.0 },
 	_dt6 { dt / 6.0 }
 {
-	// set nextUpdateTime
-	_nextUpdateTime = Scheduler::getCurrentTime();
+	_time = Scheduler::getCurrentTime();
+	_nextUpdateTime = _time;
+}
+
+void RK4::setTimestep(const double dt)
+{
+	_dt = dt;
+	_dt2 = dt / 2.0;
+	_dt3 = dt / 3.0;
+	_dt6 = dt / 6.0;
+	setNextUpdateTime();
 }
 
 void RK4::updateStates()
@@ -193,6 +208,7 @@ void RK4::updateStates()
 		for ( std::size_t i { 0 }; i < _numModels; ++i )
 		{
 			// set solution to invalid
+			_atSolutionPoint = false;
 			_pModelArray[i]->setSolutionPoint( false );
 
 			pIntegratorData = _pModelArray[i]->getIntegratorData();
@@ -206,8 +222,9 @@ void RK4::updateStates()
 				}
 			}
 		}
-		// set nextUpdateTime now at t + dt
-		_nextUpdateTime = Scheduler::getCurrentTime() + _dt2;
+		// set nextUpdateTime now at t + dt/2
+		_time = Scheduler::getCurrentTime();
+		setNextUpdateTime();
 
 		break;
 
@@ -243,7 +260,9 @@ void RK4::updateStates()
 			}
 		}
 		// set nextUpdateTime now at t + dt
-		_nextUpdateTime = Scheduler::getCurrentTime() + _dt2;
+		_time = Scheduler::getCurrentTime();
+		setNextUpdateTime();
+
 		break;
 
 	case 3:
@@ -264,11 +283,11 @@ void RK4::updateStates()
 				}
 			}
 			// set solution to valid
+			_atSolutionPoint = true;
 			_pModelArray[i]->setSolutionPoint( true );
 		}
 		// do not update step time
 		break;
-		
 	}
 
 	// increment to next step of RK4
