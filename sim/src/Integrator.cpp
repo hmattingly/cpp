@@ -1,4 +1,5 @@
 // ------- Preprocessor directives -------
+#include "Scheduler.hh"
 #include "Integrator.hh"
 #include "Model.hh"
 #include <cstdio>   // for printf()

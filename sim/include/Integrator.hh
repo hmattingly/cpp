@@ -3,7 +3,6 @@
 #define INTEGRATOR_HH
 
 // ------- Preprocessor directives -------
-#include "Scheduler.hh"
 #include "Vector.hh"
 #include <cstddef>  // for std::size_t
 
@@ -132,8 +131,6 @@ public:
 	// setter functions
 	void setNextUpdateTime() override { _nextUpdateTime = _time + _dt2; }
 	void setTimestep(const double dt) override;
-	
-
 };
 
 #endif  // INTEGRATOR_HH

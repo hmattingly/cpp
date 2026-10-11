@@ -4,10 +4,10 @@
 #define VECTOR_HH
 
 // ------- Preprocessor directives -------
-#include <ostream>
-#include <cmath>
-#include <cassert>
-#include <array>
+#include <ostream>	// for std::ostream
+#include <cmath>	// for std::sqrt(), std::acos(), etc.
+#include <cassert>	// for assert()
+#include <array>    // for std::array
 #include <cstddef>	// for std::size_t
 #include "Constants.hh"
 
