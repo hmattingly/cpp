@@ -1,6 +1,6 @@
 // ------- Header Guard -------
-#ifndef FUNCS_H  // variable typically matches header file name in all caps
-#define FUNCS_H  // effectively creating a macro that replaces variable with nothing
+#ifndef FUNCS_HH  // variable typically matches header file name in all caps
+#define FUNCS_HH  // effectively creating a macro that replaces variable with nothing
  
 // ------- Forward Declarations -------
 namespace Fr  // forward declarations must be part of the same namespace in which they're defined
@@ -24,4 +24,4 @@ namespace Fr  // forward declarations must be part of the same namespace in whic
 
 void functionPractice();
 
-#endif
+#endif  // FUNCTIONS_HH

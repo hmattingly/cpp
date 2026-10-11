@@ -92,6 +92,12 @@ void Scheduler::run()
 				_pIntegratorArray[i]->updateStates();
 				_pIntegratorArray[i]->updateStateDependents();
 				_pIntegratorArray[i]->updateDerivs();
+				
+				// output registered variables as necessary
+				if ( true == _pIntegratorArray[i]->atSolutionPoint() )
+				{
+					_pIntegratorArray[i]->output();
+				}
 			}
 		}
 	}

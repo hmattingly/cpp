@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "containers.h"	// best practice to include corresponding header (helps with catching errors)
+#include "containers.hh"	// best practice to include corresponding header (helps with catching errors)
 #include <iostream>     // because we need std::cout, must include iostream here
 #include <string>
 #include <vector>

@@ -8,8 +8,8 @@
   // more than one declaration of the same object is perfectly fine
  
 // ------- Header Guard -------
-#ifndef VARIABLES_H  
-#define VARIABLES_H  
+#ifndef VARIABLES_HH
+#define VARIABLES_HH
  
 // ------- Forward Declarations -------
 // another option is to define global constants in header files (this is typically preferred)
@@ -22,4 +22,4 @@ inline const int CONSTANT3 { 400 };		// each source file that includes this head
 int variablePractice();
 void dataTypes();
 
-#endif
+#endif  // VARIABLES_HH

@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "functions.h" // best practice to include corresponding header (helps with catching errors)
+#include "functions.hh" // best practice to include corresponding header (helps with catching errors)
 #include <iostream>     // because we need std::cout, must include iostream here
  
 // ------- Namespace directives -------

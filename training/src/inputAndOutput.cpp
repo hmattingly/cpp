@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "variables.h"
+#include "variables.hh"
 #include <iostream>    // iostream is part of the standard C++ library that deals with basic input and output
 #include <string>      // for string
  

@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "loops.h"  	// best practice to include corresponding header (helps with catching errors)
+#include "loops.hh"  	// best practice to include corresponding header (helps with catching errors)
 #include <iostream>     // iostream is part of the standard C++ library that deals with basic input and output
  
 // ------- User-Defined Functions -------

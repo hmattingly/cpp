@@ -1,6 +1,6 @@
 // ------- Header Guard -------
-#ifndef STRUCTS_H  
-#define STRUCTS_H  
+#ifndef STRUCTS_HH
+#define STRUCTS_HH
  
 // ------- Forward Declarations -------
 void structPractice();
@@ -35,4 +35,4 @@ struct Fraction {  // convention is to start with a capital letter
 };  // user-defined types definitions must end in a semicolon
 
 
-#endif
+#endif  // STRUCTS_HH

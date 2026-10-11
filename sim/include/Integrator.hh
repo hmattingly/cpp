@@ -7,8 +7,8 @@
 #include <cstddef>  // for std::size_t
 
 // ------ Constants -------
-inline constexpr int MAX_NX { 128 };		// max number of state variables for any model
-inline constexpr int MAX_MODELS { 10 };	// max number of models per integrator
+inline constexpr int MAX_NX { 128 };	// max number of state variables for any model
+inline constexpr int MAX_MODELS { 16 };	// max number of models per integrator
 
 // ------ Forward Declarations -------
 class Model;
@@ -68,6 +68,7 @@ public:
 	void updateStateDependents();
 	void updateDerivs();
 	void registerModel(Model* pModel);
+	void output();
 
 	// access functions
 	const double& getTime() const { return _time; }

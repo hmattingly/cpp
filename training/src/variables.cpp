@@ -1,6 +1,6 @@
 // ------- Preprocessor directives -------
-#include "variables.h" // best practice to include corresponding header (helps with catching errors)
-#include "math.h"      // for g_mathConst1 and g_mathConst2
+#include "variables.hh" // best practice to include corresponding header (helps with catching errors)
+#include "math.hh"      // for g_mathConst1 and g_mathConst2
 #include <iostream>    // iostream is part of the standard C++ library that deals with basic input and output
 #include <cstdint>     // for fixed-width integers
 #include <string>      // for string

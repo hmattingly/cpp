@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "logic.h"  // best practice to include corresponding header (helps with catching errors)
+#include "logic.hh"  // best practice to include corresponding header (helps with catching errors)
 #include <iostream>        // iostream is part of the standard C++ library that deals with basic input and output
 
  

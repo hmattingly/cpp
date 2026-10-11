@@ -3,6 +3,8 @@
 #include "Integrator.hh"
 #include "DummyModel.hh"
 #include <cstdio>
+#include <filesystem>  // for std::filesystem
+
 
 // ------- Namespace directives -------
  
@@ -27,12 +29,15 @@ int main(int argc, char* argv[])
 		}
 		printf("\n");
 	}
+	printf("Writing outputs to working directory: %s\n", std::filesystem::current_path().c_str());
 	printf("--------------------------------\n");
 
+	// ------- User Inputs -------
 	// set sim run time parameters
 	double startTime { 0.0 };
 	double endTime { 1.0 };
 	double dt { 0.1 };
+	// ---------------------------
 
 	// instantiate Scheduler object and set parameters
 	Scheduler* pScheduler = new Scheduler(startTime, endTime);
@@ -41,7 +46,7 @@ int main(int argc, char* argv[])
 	ForwardEuler* pIntegrator = new ForwardEuler(dt);
 
 	// build models
-	DummyModel* pDummyModel = new DummyModel("Dumb Dumb");
+	DummyModel* pDummyModel = new DummyModel("Dummmy");
 	pIntegrator->registerModel(pDummyModel);	
 	
 	// run sim

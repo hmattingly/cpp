@@ -1,8 +1,8 @@
 // ------- Header Guard -------
-#ifndef ENUMS_H  
-#define ENUMS_H  
+#ifndef ENUMS_HH
+#define ENUMS_HH
  
 // ------- Forward Declarations -------
 void enumPractice();
 
-#endif
+#endif  // ENUMS_HH

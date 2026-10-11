@@ -1,6 +1,6 @@
 // ------- Header Guard -------
-#ifndef CLASSES_H  
-#define CLASSES_H
+#ifndef CLASSES_HH  
+#define CLASSES_HH
  
 // ------- Forward Declarations -------
   // you can forward declare a class defined in another file if either of the following are true. Else, you must #include the class header
@@ -95,4 +95,4 @@ class Dummy
 
 };
  
-#endif
+#endif  // CLASSES_HH

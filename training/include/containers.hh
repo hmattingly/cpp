@@ -1,10 +1,10 @@
 // ------- Header Guard -------
-#ifndef CONTAINERS_H
-#define CONTAINERS_H
+#ifndef CONTAINERS_HH
+#define CONTAINERS_HH
  
 // ------- Forward Declarations -------
 void vectorPractice();
 void arrayPractice();
 void multiDimPractice();
 
-#endif
+#endif  // CONTAINERS_HH

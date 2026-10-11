@@ -1,6 +1,6 @@
 // ------- Preprocessor directives -------
 #define NDEBUG             // disables assert() functions (must be placed before #includes)
-#include "math.h"          // best practice to include corresponding header (helps with catching errors)
+#include "math.hh"          // best practice to include corresponding header (helps with catching errors)
 #include <iostream>        // iostream is part of the standard C++ library that deals with basic input and output
 #include <cmath>           // for math functions
 #include <cassert>         // for assert

@@ -1,13 +1,16 @@
 // ------- Preprocessor directives -------
 #include "Model.hh"
 #include "Integrator.hh"
+#include "OutputProducer.hh"
 #include "Vector.hh"
 
 // ------- Namespace directives -------
  
 // ------- Class Definition -------
 // Constructor
-Model::Model(const char* pName) : _pName { pName }
+Model::Model(const std::string& pName) : 
+	OutputProducer(pName + ".csv"),
+	_pName { pName }
 {
 
 }

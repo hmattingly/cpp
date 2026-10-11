@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "structs.h"
+#include "structs.hh"
 #include <iostream>
 #include <string_view>
  

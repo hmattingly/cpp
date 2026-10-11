@@ -3,32 +3,36 @@
 #define MODEL_HH
 
 // ------- Preprocessor directives -------
+#include "OutputProducer.hh"
 #include "Vector.hh"
+#include <string>   // for string
 
 // ------ Forward Declarations -------
+class Integrator;
 class IntegratorData;
 
-
 // ------- Class Definition -------
-class Model
+class Model : public OutputProducer
 {
 protected:
-	const char* _pName { nullptr };
+	const std::string _pName { "no_name" };
 	IntegratorData* _pIntegratorData { nullptr };
-	bool _isRegWithIntegrator { false };
+	const Integrator* _pIntegrator { nullptr };
 	bool _atSolutionPoint { true };
+	bool _initialized { false };
 
 public:
 	// default constructor
 	Model() = delete;
 
 	// parameterized constructor
-	Model(const char* name);
+	Model(const std::string& name);
 
 	// destructor
 	~Model();
 
 	// virtual functions
+	virtual void initModel() = 0;
 	virtual void updateDerivs() = 0;
 	virtual void updateStateDependents() = 0;
 
@@ -37,13 +41,14 @@ public:
 	void registerStates(Vector3& x, Vector3& dx);
 
 	// access functions
-	const char* getName() const { return _pName; }
+	const std::string& getName() const { return _pName; }
 	IntegratorData* getIntegratorData() const { return _pIntegratorData; }
-	const bool& isRegisteredWithIntegrator() const { return _isRegWithIntegrator; }
+	const Integrator* getIntegrator() const { return _pIntegrator; }
 	const bool& atSolutionPoint() const { return _atSolutionPoint; }
+	const bool& isInitialized() const { return _initialized; }
 
 	// setter functions
-	void setRegisteredWithIntegrator( const bool flag ) { _isRegWithIntegrator = flag; }
+	void setIntegrator( const Integrator* pIntegrator ) { _pIntegrator = pIntegrator; }
 	void setSolutionPoint( const bool flag ) { _atSolutionPoint = flag; }
 
 };

@@ -29,9 +29,10 @@ public:
 	~DummyModel() = default;
 
 	// forward declarations
+	virtual void initModel() override;
 	virtual void updateDerivs() override;
 	virtual void updateStateDependents() override;
 };
 
 
-#endif
+#endif  // DUMMYMODEL_HH

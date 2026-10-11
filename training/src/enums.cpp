@@ -1,5 +1,5 @@
 // ------- Preprocessor directives -------
-#include "enums.h"
+#include "enums.hh"
 #include <iostream>
  
 // we can use the following compound data types to create user-defined types

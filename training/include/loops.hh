@@ -1,8 +1,8 @@
 // ------- Header Guard -------
-#ifndef LOOP_H  
-#define LOOP_H  
+#ifndef LOOP_HH
+#define LOOP_HH
  
 // ------- Forward Declarations -------
 void loopPractice();
 
-#endif
+#endif  // LOOP_HH

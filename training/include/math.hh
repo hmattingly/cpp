@@ -1,6 +1,6 @@
 // ------- Header Guard -------
-#ifndef MATH_H  
-#define MATH_H  
+#ifndef MATH_HH
+#define MATH_HH 
 
 // ------- Forward Declarations -------
 
@@ -10,4 +10,4 @@ extern int g_mathConst2;        // extern keyword still required even though g_m
 
 void mathPractice(int x=2, int y=3);  // put default values in forward declarations
 
-#endif
+#endif  // MATH_HH

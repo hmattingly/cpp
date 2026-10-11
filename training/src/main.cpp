@@ -6,16 +6,16 @@
   // #include is literally replacing the directive with the contents of the file
   // it is best practice to always explicitly #include all header files needed for the source to compile
   // best practice sequence: paired header file, project header(s), 3rd party header(s), standard library header(s)
-#include "variables.h"
-#include "math.h"
-#include "logic.h"
-#include "loops.h"
-#include "functions.h"
-#include "refsAndPointers.h"
-#include "enums.h"
-#include "structs.h"
-#include "Classes.h"
-#include "containers.h"
+#include "variables.hh"
+#include "math.hh"
+#include "logic.hh"
+#include "loops.hh"
+#include "functions.hh"
+#include "refsAndPointers.hh"
+#include "enums.hh"
+#include "structs.hh"
+#include "Classes.hh"
+#include "containers.hh"
 #include "memory.h"
 #include <cstdlib>   // for exit and abort
 #include <iostream>  // for cin and cout
