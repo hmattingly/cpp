@@ -41,7 +41,7 @@ struct OutputVariable
 class OutputProducer
 {
 protected:
-	std::ofstream _outputFile { NULL };
+	std::ofstream _outputFile;
 	std::string _outputFileName;
 
 	OutputVariable _outputVars[MAX_OUTVARS] {};

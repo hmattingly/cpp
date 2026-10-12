@@ -70,7 +70,7 @@ void OutputProducer::output(const double& integratorTime)
 	// open the file if not already open and write headers
     if ( false == _outputFile.is_open() )
     {
-        _outputFile.open(_outputFileName);
+        _outputFile.open("outputs/" + _outputFileName);
 
 		// check if file opened successfully
 		if ( false == _outputFile.is_open() )

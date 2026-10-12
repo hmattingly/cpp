@@ -1,9 +1,9 @@
 // ------- Preprocessor directives -------
 #include "Scheduler.hh"
 #include "Integrator.hh"
-#include "DummyModel.hh"
-#include <cstdio>
-#include <filesystem>  // for std::filesystem
+#include "Spacecraft.hh"
+#include <cstdio>		// for printf
+#include <filesystem>  	// for std::filesystem
 
 
 // ------- Namespace directives -------
@@ -29,28 +29,29 @@ int main(int argc, char* argv[])
 		}
 		printf("\n");
 	}
-	printf("Writing outputs to working directory: %s\n", std::filesystem::current_path().c_str());
+	printf("Writing outputs to %s%s\n", std::filesystem::current_path().c_str(), "/outputs");
 	printf("--------------------------------\n");
 
 	// ------- User Inputs -------
 	// set sim run time parameters
 	double startTime { 0.0 };
-	double endTime { 1.0 };
-	double dt { 0.1 };
+	double endTime { 1.3 };
+	double dt { 0.5 };
 	// ---------------------------
 
 	// instantiate Scheduler object and set parameters
 	Scheduler* pScheduler = new Scheduler(startTime, endTime);
 
 	// build integrators
-	ForwardEuler* pIntegrator = new ForwardEuler(dt);
+	RK4* pIntegrator = new RK4(dt);
 
 	// build models
-	DummyModel* pDummyModel = new DummyModel("Dummmy");
-	pIntegrator->registerModel(pDummyModel);	
+	Spacecraft* pSpacecraft = new Spacecraft("Spacecraft");
+	pIntegrator->registerModel(pSpacecraft);
 	
 	// run sim
-	while (RUNNING != pScheduler->getStatus())
+	pScheduler->start();
+	while (RUNNING == pScheduler->getStatus())
 	{
 		pScheduler->run();
 	}

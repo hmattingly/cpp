@@ -199,11 +199,17 @@ RK4::RK4(const double dt) :
 
 void RK4::setTimestep(const double dt)
 {
-	_dt = dt;
-	_dt2 = dt / 2.0;
-	_dt3 = dt / 3.0;
-	_dt6 = dt / 6.0;
-	setNextUpdateTime();
+	// do not allow setting timestep unless at a solution point
+	if ( true == _atSolutionPoint )
+	{
+		_dt = dt;
+		_dt2 = dt / 2.0;
+		_dt3 = dt / 3.0;
+		_dt6 = dt / 6.0;
+
+		// reset nextUpdateTime
+		_nextUpdateTime = _time;
+	}
 }
 
 void RK4::updateStates()
@@ -223,7 +229,6 @@ void RK4::updateStates()
 		for ( std::size_t i { 0 }; i < _numModels; ++i )
 		{
 			// set solution to invalid
-			_atSolutionPoint = false;
 			_pModelArray[i]->setSolutionPoint( false );
 
 			pIntegratorData = _pModelArray[i]->getIntegratorData();
@@ -237,8 +242,13 @@ void RK4::updateStates()
 				}
 			}
 		}
-		// set nextUpdateTime now at t + dt/2
+		// invalid solution until all 4 steps are finished
+		_atSolutionPoint = false;
+
+		// set time now equal to t
 		_time = Scheduler::getCurrentTime();
+
+		// set nextUpdateTime now at t + dt/2
 		setNextUpdateTime();
 
 		break;
@@ -257,6 +267,9 @@ void RK4::updateStates()
 				}
 			}
 		}
+		// set time now equal to t + dt/2
+		_time = Scheduler::getCurrentTime();
+
 		// do not update step time
 		break;
 
@@ -274,8 +287,10 @@ void RK4::updateStates()
 				}
 			}
 		}
-		// set nextUpdateTime now at t + dt
+		// set time now equal to t + dt/2
 		_time = Scheduler::getCurrentTime();
+
+		// set nextUpdateTime now at t + dt
 		setNextUpdateTime();
 
 		break;
@@ -298,9 +313,14 @@ void RK4::updateStates()
 				}
 			}
 			// set solution to valid
-			_atSolutionPoint = true;
 			_pModelArray[i]->setSolutionPoint( true );
 		}
+		// RK4 finished so set valid solution
+		_atSolutionPoint = true;
+
+		// set time now equal to t + dt
+		_time = Scheduler::getCurrentTime();
+
 		// do not update step time
 		break;
 	}

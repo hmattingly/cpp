@@ -20,7 +20,7 @@ Scheduler::Scheduler(const double startTime, const double endTime)
 	if ( UNINITIALIZED == _status )
 	{
 		// start Scheduler
-		_status = RUNNING;
+		_status = INITIALIZED;
 
 		// set double time
 		_startTime = startTime;
@@ -55,6 +55,24 @@ ITIME Scheduler::double2iTime(const double time)
 	{
 		return static_cast<ITIME>(time);
 	}
+}
+
+// start scheduler
+void Scheduler::start()
+{
+	// loop through all integrators and ensure state dependents and variables are up to date
+	for ( std::size_t i { 0 }; i < _numIntegrators; ++i )
+	{
+		_pIntegratorArray[i]->updateStateDependents();
+		_pIntegratorArray[i]->updateDerivs();
+
+		// output initial values
+		if ( true == _pIntegratorArray[i]->atSolutionPoint() )
+		{
+			_pIntegratorArray[i]->output();
+		}
+	}
+	_status = RUNNING;
 }
 
 // update the scheduler time by one timestep

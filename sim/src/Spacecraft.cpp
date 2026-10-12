@@ -1,16 +1,16 @@
 // ------- Preprocessor directives -------
-#include "DummyModel.hh"
+#include "Spacecraft.hh"
 
 // ------- Namespace directives -------
  
 // ------- Class Definition -------
-DummyModel::DummyModel(const char* pName) :
+Spacecraft::Spacecraft(const char* pName) :
 	Model(pName)
 {
 	
 }
 
-void DummyModel::initModel()
+void Spacecraft::initModel()
 {
 	// register states to be integrated
 	registerStates(_r, _v);
@@ -20,11 +20,11 @@ void DummyModel::initModel()
 	registerOutput("velocity", _v);
 }
 
-void DummyModel::updateDerivs()
+void Spacecraft::updateDerivs()
 {
 
 }
-void DummyModel::updateStateDependents()
+void Spacecraft::updateStateDependents()
 {
 	
 }

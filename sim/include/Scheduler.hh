@@ -20,6 +20,7 @@ class Integrator;
 enum SchedulerStatus
 {
 	UNINITIALIZED,
+	INITIALIZED,
 	RUNNING,
 	ENDTIME,
 	FORCEDEND,
@@ -57,6 +58,7 @@ public:
 	~Scheduler() = default;
 
 	// forward declarations
+	void start();
 	void run();
 	static void registerIntegrator(Integrator* pIntegrator);
 	ITIME double2iTime(const double time);

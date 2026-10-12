@@ -1,6 +1,6 @@
 // ------- Header Guard -------
-#ifndef DUMMYMODEL_HH  
-#define DUMMYMODEL_HH
+#ifndef SPACECRAFT_HH  
+#define SPACECRAFT_HH
 
 // ------- Preprocessor directives -------
 #include "Model.hh"
@@ -13,20 +13,20 @@
 
 
 // ------- Class Definition -------
-class DummyModel : public Model
+class Spacecraft : public Model
 {
-	Vector3 _r {0.0, 1.0, 2.0};
-	Vector3 _v {2.0, 4.0, 6.0};
+	Vector3 _RofBwrtOexpECI {0.0, 1.0, 2.0};
+	Vector3 _VofBwrtOexpECI {2.0, 4.0, 6.0};
 
 public:
 	// default constructor (disabled)
-	DummyModel() = delete;
+	Spacecraft() = delete;
 
 	// parameterized constructor
-	DummyModel(const char* pName);
+	Spacecraft(const char* pName);
 
 	// destructor
-	~DummyModel() = default;
+	~Spacecraft() = default;
 
 	// forward declarations
 	virtual void initModel() override;
@@ -35,4 +35,4 @@ public:
 };
 
 
-#endif  // DUMMYMODEL_HH
+#endif  // SPACECRAFT_HH
