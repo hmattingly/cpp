@@ -1,9 +1,11 @@
 // ------- Preprocessor directives -------
+#include "InputParser.hh"
 #include "Scheduler.hh"
 #include "Integrator.hh"
 #include "Spacecraft.hh"
 #include <cstdio>		// for printf
 #include <filesystem>  	// for std::filesystem
+#include <string>		// for string
 
 
 // ------- Namespace directives -------
@@ -11,7 +13,6 @@
 // ------- User-Defined Functions -------
  
 // ------- MAIN -------
-
 int main(int argc, char* argv[])
 {
 	// display the program name and arguments passed to the program
@@ -32,7 +33,10 @@ int main(int argc, char* argv[])
 	printf("Writing outputs to %s%s\n", std::filesystem::current_path().c_str(), "/outputs");
 	printf("--------------------------------\n");
 
-	// ------- User Inputs -------
+	// ------- Inputs -------
+	std::string pInputFileName { "sim.json" };
+	InputParser* pInputFile = new InputParser(pInputFileName);
+
 	// set sim run time parameters
 	double startTime { 0.0 };
 	double endTime { 1.3 };
@@ -57,5 +61,8 @@ int main(int argc, char* argv[])
 	}
 
 	// clean up
+	delete pInputFile;
 	delete pScheduler;
+	delete pIntegrator;
+	delete pSpacecraft;
 }

@@ -13,11 +13,11 @@ Spacecraft::Spacecraft(const char* pName) :
 void Spacecraft::initModel()
 {
 	// register states to be integrated
-	registerStates(_r, _v);
+	registerStates(_RofBwrtOexpECI, _VofBwrtOexpECI);
 
 	// register outputs with integrator
-	registerOutput("position", _r);
-	registerOutput("velocity", _v);
+	registerOutput("position", _RofBwrtOexpECI);
+	registerOutput("velocity", _VofBwrtOexpECI);
 }
 
 void Spacecraft::updateDerivs()
