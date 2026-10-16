@@ -1,0 +1,20 @@
+{
+	"initialState": 
+	{
+		"RwrtOexpN": [1718.18, -31888.14, 27208.05],
+		"VwrtOexpN": [2.1338, 1.5161, 1.6421]
+	},
+	"areaToMassRatio": 5.0,
+	"diffuseReflectivity": 0.25,
+	"dragCoefficient": 2.1,
+
+	"dynamics":
+	{
+		"TwoBody": true,
+		"J2": true,
+		"J3": true,
+		"J4": true,
+		"SRP": true,
+		"Drag": true
+	}
+}

@@ -5,7 +5,7 @@
 // ------- Preprocessor directives -------
 #include "OutputProducer.hh"
 #include "Vector.hh"
-#include <string>   // for string
+#include <string>			// for std::string
 
 // ------ Forward Declarations -------
 class Integrator;
@@ -15,7 +15,7 @@ class IntegratorData;
 class Model : public OutputProducer
 {
 protected:
-	const std::string _pName { "no_name" };
+	const std::string _name { "no_name" };
 	IntegratorData* _pIntegratorData { nullptr };
 	const Integrator* _pIntegrator { nullptr };
 	bool _atSolutionPoint { true };
@@ -41,7 +41,7 @@ public:
 	void registerStates(Vector3& x, Vector3& dx);
 
 	// access functions
-	const std::string& getName() const { return _pName; }
+	const std::string& getName() const { return _name; }
 	IntegratorData* getIntegratorData() const { return _pIntegratorData; }
 	const Integrator* getIntegrator() const { return _pIntegrator; }
 	const bool& atSolutionPoint() const { return _atSolutionPoint; }

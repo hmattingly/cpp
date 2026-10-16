@@ -2,6 +2,7 @@
 ** ------- Preprocessor directives -------
 */ 
 #include "OutputProducer.hh"
+#include <cstdlib>  // for std::exit()
 #include <string>   // for string
 
 /*
@@ -20,8 +21,8 @@
 ** ----------- Class Definition ------------
 */ 
 // constructor
-OutputProducer::OutputProducer(const std::string& pFileName) :
-	_outputFileName { pFileName }
+OutputProducer::OutputProducer(const std::string& fileName) :
+	_outputFileName { fileName + ".csv" }
 {
 
 }
@@ -35,7 +36,6 @@ void OutputProducer::registerOutput(const std::string& variableName, const doubl
 		printf("Error: Maximum number of output variables exceeded!\n");
 		std::exit(EXIT_FAILURE);
 	}
-
 	// check if the output variable has already been set
 	for (std::size_t i { 0 }; i < _numOutVars; ++i)
 	{
@@ -58,10 +58,9 @@ void OutputProducer::registerOutput(const std::string& variableName, const doubl
 void OutputProducer::registerOutput(const std::string& variableName, const Vector3& variable)
 {
 	// add vectors to output, rename with _1, _2, and _3
-	for ( int i { 0 }; i < 3; ++i )
+	for ( std::size_t i { 0 }; i < 3; ++i )
 	{
-		std::string newVariableName = variableName + "_" + std::to_string(i + 1);
-        registerOutput(newVariableName, variable[i]);
+        registerOutput(variableName + "_" + std::to_string(i + 1), variable[i]);
 	}
 }
 

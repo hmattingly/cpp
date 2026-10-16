@@ -8,9 +8,9 @@
 ** ------- Preprocessor directives -------
 */ 
 #include "Vector.hh"
-#include <string>   // for string
 #include <cstddef>  // for std::size_t
 #include <fstream>  // for std::ofstream
+#include <string>	// for std::string
 
 /*
 ** -------------- Constants ---------------
@@ -42,7 +42,7 @@ class OutputProducer
 {
 protected:
 	std::ofstream _outputFile;
-	std::string _outputFileName;
+	const std::string _outputFileName;
 
 	OutputVariable _outputVars[MAX_OUTVARS] {};
 	std::size_t _numOutVars { 0 };
@@ -63,7 +63,7 @@ public:
 	void output(const double& integratorTime);
 
 	// setter functions
-	void setOutputFileName(const std::string& pFileName) { _outputFileName = pFileName; }
+
 
 };
 

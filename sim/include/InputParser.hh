@@ -7,8 +7,8 @@
 /*
 ** ------- Preprocessor directives -------
 */ 
-#include "Vector.hh"
-#include <string>	// for string
+#include <json.hpp>		// for json
+#include <string>		// for std::string
 
 /*
 ** -------------- Constants ---------------
@@ -21,19 +21,7 @@
 /*
 ** --------- Namespace directives ---------
 */ 
-
-
-/*
-** ----------- Struct Definition -----------
-*/ 
-struct InputData
-{
-	double simStartTime { 0.0 };
-	double simEndTime { 0.0 };
-	double timeStep { 0.0 };
-	Vector3 RofBwrtOexpECI { 0.0, 0.0, 0.0 };
-	Vector3 VofBwrtOexpECI { 0.0, 0.0, 0.0 };
-};
+using json = nlohmann::json;
 
 /*
 ** ----------- Class Definition ------------
@@ -41,10 +29,12 @@ struct InputData
 class InputParser
 {
 private:
-	std::string _inputFileName;
-	InputData _inputFileData;
+	const std::string _inputFileName;
 
 public:
+
+	json inputFileData;
+
 	// default constructor (disabled)
 	InputParser() = delete;
 

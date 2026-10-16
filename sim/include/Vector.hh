@@ -4,12 +4,12 @@
 #define VECTOR_HH
 
 // ------- Preprocessor directives -------
+#include "Constants.hh"
 #include <ostream>	// for std::ostream
 #include <cmath>	// for std::sqrt(), std::acos(), etc.
 #include <cassert>	// for assert()
 #include <array>    // for std::array
 #include <cstddef>	// for std::size_t
-#include "Constants.hh"
 
 // ------- Forward Declarations -------
 template <std::size_t N>
@@ -19,6 +19,10 @@ class Vector;
 using Vector3 = Vector<3>;
 using Vector2 = Vector<2>;
 using Vector6 = Vector<6>;
+
+/*
+** -------------- Constants ---------------
+*/ 
 
 // ------- Class Definition -------
 template <std::size_t N>

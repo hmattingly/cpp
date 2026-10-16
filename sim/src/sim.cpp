@@ -5,7 +5,7 @@
 #include "Spacecraft.hh"
 #include <cstdio>		// for printf
 #include <filesystem>  	// for std::filesystem
-#include <string>		// for string
+#include <string>		// for std::string
 
 
 // ------- Namespace directives -------
@@ -33,25 +33,23 @@ int main(int argc, char* argv[])
 	printf("Writing outputs to %s%s\n", std::filesystem::current_path().c_str(), "/outputs");
 	printf("--------------------------------\n");
 
-	// ------- Inputs -------
-	std::string pInputFileName { "sim.json" };
-	InputParser* pInputFile = new InputParser(pInputFileName);
-
-	// set sim run time parameters
-	double startTime { 0.0 };
-	double endTime { 1.3 };
-	double dt { 0.5 };
+	// ------- Sim Inputs -------
+	const std::string inputFileName { "sim.json" };
+	InputParser* pInputFile = new InputParser(inputFileName);
+	double simStartTime { pInputFile->inputFileData["simStartTime"].get<double>() };
+	double simEndTime { pInputFile->inputFileData["simEndTime"].get<double>() };
 	// ---------------------------
 
 	// instantiate Scheduler object and set parameters
-	Scheduler* pScheduler = new Scheduler(startTime, endTime);
+	Scheduler* pScheduler = new Scheduler(simStartTime, simEndTime);
 
 	// build integrators
-	RK4* pIntegrator = new RK4(dt);
+	double timeStepRK4 { pInputFile->inputFileData["timeStepRK4"].get<double>() };
+	RK4* pIntegratorRK4 = new RK4(timeStepRK4);
 
 	// build models
 	Spacecraft* pSpacecraft = new Spacecraft("Spacecraft");
-	pIntegrator->registerModel(pSpacecraft);
+	pIntegratorRK4->registerModel(pSpacecraft);
 	
 	// run sim
 	pScheduler->start();
@@ -63,6 +61,6 @@ int main(int argc, char* argv[])
 	// clean up
 	delete pInputFile;
 	delete pScheduler;
-	delete pIntegrator;
+	delete pIntegratorRK4;
 	delete pSpacecraft;
 }

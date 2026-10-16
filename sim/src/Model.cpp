@@ -3,14 +3,15 @@
 #include "Integrator.hh"
 #include "OutputProducer.hh"
 #include "Vector.hh"
+#include <string>	// for std::string
 
 // ------- Namespace directives -------
  
 // ------- Class Definition -------
 // Constructor
-Model::Model(const std::string& pName) : 
-	OutputProducer(pName + ".csv"),
-	_pName { pName }
+Model::Model(const std::string& name) : 
+	OutputProducer(name),
+	_name { name }
 {
 
 }

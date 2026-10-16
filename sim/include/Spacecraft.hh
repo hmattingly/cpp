@@ -5,6 +5,10 @@
 // ------- Preprocessor directives -------
 #include "Model.hh"
 #include "Vector.hh"
+#include "Dynamics.hh"
+#include "SpacecraftBody.hh"
+#include <cstddef>  // for std::size_t
+#include <string>	// for std::string
 
 // ------ Constants -------
 
@@ -15,15 +19,17 @@
 // ------- Class Definition -------
 class Spacecraft : public Model
 {
-	Vector3 _RofBwrtOexpECI {0.0, 1.0, 2.0};
-	Vector3 _VofBwrtOexpECI {2.0, 4.0, 6.0};
+	SpacecraftBody _body;
+	DynamicsOptions _dynamicsOptions;
+	Dynamics* _pDynamics[MAX_DYNAMIC] { nullptr };
+	std::size_t _numDynamics { 0 };
 
 public:
 	// default constructor (disabled)
 	Spacecraft() = delete;
 
 	// parameterized constructor
-	Spacecraft(const char* pName);
+	Spacecraft(const std::string& pName);
 
 	// destructor
 	~Spacecraft() = default;
@@ -32,6 +38,11 @@ public:
 	virtual void initModel() override;
 	virtual void updateDerivs() override;
 	virtual void updateStateDependents() override;
+
+	// setter functions
+
+	// access functions
+	const SpacecraftBody& getSpacecraftBody() const { return _body; }
 };
 
 
