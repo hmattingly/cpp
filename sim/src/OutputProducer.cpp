@@ -4,11 +4,13 @@
 #include "OutputProducer.hh"
 #include <cstdlib>  // for std::exit()
 #include <string>   // for string
+#include <iomanip>	// for std::setprecision
+
 
 /*
 ** -------------- Constants ---------------
 */ 
-
+int constexpr PRECISION { 14 };  // number of decimal points in output
 /*
 ** -------- Forward Declarations ----------
 */ 
@@ -77,6 +79,9 @@ void OutputProducer::output(const double& integratorTime)
 			printf("Error: Failed to open %s", _outputFileName.c_str());
 			std::exit(EXIT_FAILURE);
 		}
+
+		// set precision
+		_outputFile << std::setprecision(PRECISION);
 
 		// write header row
 		_outputFile << "Time";

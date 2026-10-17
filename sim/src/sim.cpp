@@ -45,11 +45,11 @@ int main(int argc, char* argv[])
 
 	// build integrators
 	double timeStepRK4 { pInputFile->inputFileData["timeStepRK4"].get<double>() };
-	RK4* pIntegratorRK4 = new RK4(timeStepRK4);
+	RK4* pIntegrator = new RK4(timeStepRK4);
 
 	// build models
 	Spacecraft* pSpacecraft = new Spacecraft("Spacecraft");
-	pIntegratorRK4->registerModel(pSpacecraft);
+	pIntegrator->registerModel(pSpacecraft);
 	
 	// run sim
 	pScheduler->start();
@@ -61,6 +61,6 @@ int main(int argc, char* argv[])
 	// clean up
 	delete pInputFile;
 	delete pScheduler;
-	delete pIntegratorRK4;
+	delete pIntegrator;
 	delete pSpacecraft;
 }

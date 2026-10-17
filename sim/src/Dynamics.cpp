@@ -4,6 +4,7 @@
 #include "Dynamics.hh"
 #include "Vector.hh"
 #include "CelestialBody.hh"
+#include <cassert>	// for assert()
 
 /*
 ** -------------- Constants ---------------
@@ -37,5 +38,6 @@ TwoBodyDynamics::TwoBodyDynamics(SpacecraftBody& body) :
 void TwoBodyDynamics::calcAwrtOexpN()
 {
 	double rmag { _body.RwrtOexpN.mag() };
+	assert(rmag > 0.0);
 	_body.AwrtOexpN += -1.0 * EARTH.mu / (rmag * rmag * rmag) * _body.RwrtOexpN;
 }

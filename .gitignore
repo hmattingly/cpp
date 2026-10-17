@@ -70,3 +70,6 @@ Testing/
 
 # mac files
 .DS_Store
+
+# matlab files
+*.asv

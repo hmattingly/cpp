@@ -32,7 +32,7 @@ public:
 	Spacecraft(const std::string& pName);
 
 	// destructor
-	~Spacecraft() = default;
+	~Spacecraft();
 
 	// forward declarations
 	virtual void initModel() override;

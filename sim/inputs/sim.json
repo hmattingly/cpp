@@ -1,6 +1,6 @@
 {
 	"simStartTime": 0.0,
-	"simEndTime": 10.0,
-	"timeStepRK4": 0.1,
-	"timeStepFE": 0.1
+	"simEndTime": 86400.0,
+	"timeStepRK4": 1,
+	"timeStepFE": 1
 }

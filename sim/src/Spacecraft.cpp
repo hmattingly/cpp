@@ -1,7 +1,7 @@
 // ------- Preprocessor directives -------
-#include "Dynamics.hh"
 #include "Spacecraft.hh"
 #include "InputParser.hh"
+#include "Dynamics.hh"
 #include <cstddef>  // for std::size_t
 #include <string>	// for std::string
 
@@ -79,10 +79,16 @@ void Spacecraft::initModel()
 		//
 	}
 
+	// set initialized flag
+	_initialized = true;
+
 }
 
 void Spacecraft::updateDerivs()
 {
+	// reset acceleration
+	_body.AwrtOexpN = { 0.0, 0.0, 0.0 };
+
 	// loop through each dynamics model and update acceleration term
 	for ( std::size_t i { 0 }; i < _numDynamics; ++i )
 	{
@@ -94,3 +100,11 @@ void Spacecraft::updateStateDependents()
 	
 }
 
+// destructor
+Spacecraft::~Spacecraft()
+{
+	for ( std::size_t i { 0 }; i < _numDynamics; ++i )
+	{
+		delete _pDynamics[i];
+	}
+}

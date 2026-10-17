@@ -29,7 +29,7 @@ public:
 	Model(const std::string& name);
 
 	// destructor
-	~Model();
+	virtual ~Model();
 
 	// virtual functions
 	virtual void initModel() = 0;

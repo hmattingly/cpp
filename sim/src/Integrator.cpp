@@ -27,7 +27,7 @@ void IntegratorData::addStates(double& state, double& dstate)
 	// check if the max number of state variables has been reached
 	if ( nX >= MAX_NX )
 	{
-		printf("Error: Maximum number of state variables exceeded in %s!\n", pModel->getName());
+		printf("Error: Maximum number of state variables exceeded in %s!\n", (pModel->getName()).c_str());
 		std::exit(EXIT_FAILURE);
 	}
 
@@ -36,12 +36,12 @@ void IntegratorData::addStates(double& state, double& dstate)
 	{
 		if ( &state == pState[i] )
 		{
-			printf("Error: %s state variable already set!\n", pModel->getName());
+			printf("Error: %s state variable already set!\n", (pModel->getName()).c_str());
 			std::exit(EXIT_FAILURE);
 		}
 		else if ( &dstate == pDState[i] )
 		{
-			printf("Error: %s derivative variable already set!\n", pModel->getName());
+			printf("Error: %s derivative variable already set!\n", (pModel->getName()).c_str());
 			std::exit(EXIT_FAILURE);
 		}
 	}
@@ -86,7 +86,7 @@ void Integrator::registerModel(Model* pModel)
 	// check if model has already been registered
 	if ( nullptr != pModel->getIntegrator() )
 	{
-		printf("Error: Model %s already registered with Integrator!\n", pModel->getName());
+		printf("Error: Model %s already registered with Integrator!\n", (pModel->getName()).c_str());
 		std::exit(EXIT_FAILURE);
 	}
 
@@ -113,7 +113,7 @@ void Integrator::registerModel(Model* pModel)
 	// check if model has Integrator Data
 	if ( nullptr == pModel->getIntegratorData() )
 	{
-		printf("Warning: Model %s registered with no IntegratorData!\n", pModel->getName());
+		printf("Warning: Model %s registered with no IntegratorData!\n", (pModel->getName()).c_str());
 	}
 }
 

@@ -42,7 +42,7 @@ struct DynamicsOptions {
 class Dynamics
 {
 protected:
-	SpacecraftBody _body;
+	SpacecraftBody& _body;
 
 public:
 	// default constructor
@@ -52,7 +52,7 @@ public:
 	Dynamics(SpacecraftBody& body);
 
 	// destructor
-	~Dynamics() = default;
+	virtual ~Dynamics() = default;
 
 	// forward declarations
 	virtual void calcAwrtOexpN() = 0;
