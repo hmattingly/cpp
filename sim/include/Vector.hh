@@ -16,13 +16,16 @@ template <std::size_t N>
 class Vector;
 
 // ------- Type Aliases -------
-using Vector3 = Vector<3>;
 using Vector2 = Vector<2>;
+using Vector3 = Vector<3>;
 using Vector6 = Vector<6>;
 
 /*
 ** -------------- Constants ---------------
 */ 
+inline const Vector2 ZERO_VECTOR2 { 0.0, 0.0 };
+inline const Vector3 ZERO_VECTOR3 { 0.0, 0.0, 0.0 };
+inline const Vector6 ZERO_VECTOR6 { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
 // ------- Class Definition -------
 template <std::size_t N>

@@ -4,7 +4,7 @@
 #include "Dynamics.hh"
 #include "Vector.hh"
 #include "CelestialBody.hh"
-#include <cassert>	// for assert()
+
 
 /*
 ** -------------- Constants ---------------
@@ -29,15 +29,38 @@ Dynamics::Dynamics(SpacecraftBody& body) :
 
 }
 
+/*
+** ----------- Class Definition ------------
+*/ 
+// constructor
 TwoBodyDynamics::TwoBodyDynamics(SpacecraftBody& body) :
 	Dynamics(body)
 {
 
 }
 
-void TwoBodyDynamics::calcAwrtOexpN()
+const Vector3 TwoBodyDynamics::getAwrtOexpN()
 {
-	double rmag { _body.RwrtOexpN.mag() };
-	assert(rmag > 0.0);
-	_body.AwrtOexpN += -1.0 * EARTH.mu / (rmag * rmag * rmag) * _body.RwrtOexpN;
+	return ( -1.0 * EARTH.mu / _body.RwrtOexpNmag3 * _body.RwrtOexpN );
 }
+
+/*
+** ----------- Class Definition ------------
+*/ 
+// constructor
+J2Dynamics::J2Dynamics(SpacecraftBody& body) :
+	Dynamics(body),
+	_J2 { EARTH.J2.value() }
+{
+
+}
+
+const Vector3 J2Dynamics::getAwrtOexpN()
+{
+	return ( -1.5 * EARTH.mu * EARTH.radius * EARTH.radius * _J2
+			 / _body.RwrtOexpNmag5
+			 * ( _body.RwrtOexpN + 2.0 * _body.RwrtOexpN[2] * _zhat
+			 - 5.0 * _body.RwrtOexpN[2] * _body.RwrtOexpN[2]
+			 * _body.RwrtOexpN / _body.RwrtOexpNmag2 ) );
+}
+

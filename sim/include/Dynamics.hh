@@ -18,7 +18,7 @@ inline constexpr int MAX_DYNAMIC { 6 };	// max number dynamic options
 /*
 ** -------- Forward Declarations ----------
 */ 
-struct SpacecraftBody;
+
 
 /*
 ** --------- Namespace directives ---------
@@ -43,6 +43,7 @@ class Dynamics
 {
 protected:
 	SpacecraftBody& _body;
+	Vector3 _zhat { 0.0, 0.0, 1.0 };	// zhat unit vector
 
 public:
 	// default constructor
@@ -55,7 +56,7 @@ public:
 	virtual ~Dynamics() = default;
 
 	// forward declarations
-	virtual void calcAwrtOexpN() = 0;
+	virtual const Vector3 getAwrtOexpN() = 0;
 
 	// access functions
 
@@ -81,12 +82,86 @@ public:
 	~TwoBodyDynamics() = default;
 
 	// forward declarations
-	void calcAwrtOexpN() override;
+	const Vector3 getAwrtOexpN() override;
 
 	// access functions
 
 	// setter functions
 };
 
+/*
+** ----------- Class Definition ------------
+*/ 
+class J2Dynamics : public Dynamics
+{
+	const double _J2;
+
+public:
+	// default constructor
+	J2Dynamics() = delete;
+
+	// parameterized constructor
+	J2Dynamics(SpacecraftBody& body);
+
+	// destructor
+	~J2Dynamics() = default;
+
+	// forward declarations
+	const Vector3 getAwrtOexpN() override;
+
+	// access functions
+
+	// setter functions
+};
+
+/*
+** ----------- Class Definition ------------
+*/ 
+class J3Dynamics : public Dynamics
+{
+	const double _J3;
+
+public:
+	// default constructor
+	J3Dynamics() = delete;
+
+	// parameterized constructor
+	J3Dynamics(SpacecraftBody& body);
+
+	// destructor
+	~J3Dynamics() = default;
+
+	// forward declarations
+	const Vector3 getAwrtOexpN() override;
+
+	// access functions
+
+	// setter functions
+};
+
+/*
+** ----------- Class Definition ------------
+*/ 
+class J4Dynamics : public Dynamics
+{
+	const double _J4;
+
+public:
+	// default constructor
+	J4Dynamics() = delete;
+
+	// parameterized constructor
+	J4Dynamics(SpacecraftBody& body);
+
+	// destructor
+	~J4Dynamics() = default;
+
+	// forward declarations
+	const Vector3 getAwrtOexpN() override;
+
+	// access functions
+
+	// setter functions
+};
 
 #endif  // DYNAMICS_HH

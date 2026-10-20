@@ -1,4 +1,4 @@
-clear;
+clear; close all
 
 %% import sim input
 simFile = fileread("inputs/sim.json");
@@ -14,6 +14,11 @@ dt          = simData.timeStepRK4;
 RwrtOexpN_0 = spacecraftData.initialState.RwrtOexpN;
 VwrtOexpN_0 = spacecraftData.initialState.VwrtOexpN;
 
+opts = Const.propOpts();
+opts.J2 = spacecraftData.dynamics.J2;
+opts.J3 = spacecraftData.dynamics.J3;
+opts.J4 = spacecraftData.dynamics.J4;
+
 %% import sim output
 T_RK4 = readtable("outputs/Spacecraft.csv");
 time_RK4 = T_RK4.Time;
@@ -23,12 +28,12 @@ VwrtOexpN_RK4 = [T_RK4.VwrtOexpN_1, T_RK4.VwrtOexpN_2, T_RK4.VwrtOexpN_3]';
 %% compare against ode45
 x0_ECI = [RwrtOexpN_0; VwrtOexpN_0];
 tspan = startTime:dt:endTime;
-[t, x_ECI] = ode45(@(t, state) propagator(t, state), tspan, x0_ECI, Const.odeOpts);
+[t, x_ECI] = ode45(@(t, state) propagator(t, state, opts), tspan, x0_ECI, Const.odeOpts);
 x_ECI = x_ECI';
 
 %% verify time vectors are equivalent
 float_tol = 1e-12;
-if any(abs(time_RK4 - t) > float_tol) || any(abs(time_FE - t) > float_tol)
+if any(abs(time_RK4 - t) > float_tol)
     disp("Simulation and ode45 time vectors are not equivalent.");
 end
 

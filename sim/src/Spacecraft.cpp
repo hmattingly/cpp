@@ -2,6 +2,8 @@
 #include "Spacecraft.hh"
 #include "InputParser.hh"
 #include "Dynamics.hh"
+#include "Vector.hh"
+#include <cassert>	// for assert()
 #include <cstddef>  // for std::size_t
 #include <string>	// for std::string
 
@@ -60,7 +62,8 @@ void Spacecraft::initModel()
 	}
 	if ( true == _dynamicsOptions.j2 )
 	{
-		//
+		_pDynamics[_numDynamics] = new J2Dynamics(_body);
+		++_numDynamics;
 	}
 	if ( true == _dynamicsOptions.j3 )
 	{
@@ -84,21 +87,34 @@ void Spacecraft::initModel()
 
 }
 
+// called after state (position and velocity) is updated to next timestep
+void Spacecraft::updateStateDependents()
+{
+	// update position magnitudes
+	_body.RwrtOexpNmag = _body.RwrtOexpN.mag();
+	assert(_body.RwrtOexpNmag > 0.0);
+	_body.RwrtOexpNmag2 = _body.RwrtOexpNmag * _body.RwrtOexpNmag;
+	_body.RwrtOexpNmag3 = _body.RwrtOexpNmag2 * _body.RwrtOexpNmag;
+	_body.RwrtOexpNmag5 = _body.RwrtOexpNmag3 * _body.RwrtOexpNmag2;
+
+	// update velocity magnitudes
+	_body.VwrtOexpNmag = _body.VwrtOexpN.mag();
+	_body.VwrtOexpNmag2 = _body.VwrtOexpNmag * _body.VwrtOexpNmag;
+}
+
+// called after state dependents are updated to next timestep
 void Spacecraft::updateDerivs()
 {
 	// reset acceleration
-	_body.AwrtOexpN = { 0.0, 0.0, 0.0 };
+	_body.AwrtOexpN = { ZERO_VECTOR3 }; 
 
 	// loop through each dynamics model and update acceleration term
 	for ( std::size_t i { 0 }; i < _numDynamics; ++i )
 	{
-		_pDynamics[i]->calcAwrtOexpN();
+		_body.AwrtOexpN += _pDynamics[i]->getAwrtOexpN();
 	}
 }
-void Spacecraft::updateStateDependents()
-{
-	
-}
+
 
 // destructor
 Spacecraft::~Spacecraft()

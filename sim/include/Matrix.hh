@@ -17,9 +17,24 @@ template <std::size_t ROWS, std::size_t COLS>
 class Matrix;
 
 // ------- Type Aliases -------
-using Matrix3 = Matrix<3, 3>;
 using Matrix2 = Matrix<2, 2>;
+using Matrix3 = Matrix<3, 3>;
 using Matrix6 = Matrix<6, 6>;
+
+/*
+** -------------- Constants ---------------
+*/ 
+inline const Matrix2 ZERO_MATRIX2 { ZERO_VECTOR2, ZERO_VECTOR2 };
+inline const Matrix3 ZERO_MATRIX3 { ZERO_VECTOR3, ZERO_VECTOR3, ZERO_VECTOR3 };
+inline const Matrix6 ZERO_MATRIX6 { ZERO_VECTOR6, ZERO_VECTOR6, ZERO_VECTOR6, ZERO_VECTOR6, ZERO_VECTOR6, ZERO_VECTOR6 };
+inline const Matrix2 IDENTITY_MATRIX2 { { 1.0, 0.0 }, { 0.0, 1.0 } };
+inline const Matrix3 IDENTITY_MATRIX3 { { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 0.0, 0.0, 1.0 } };
+inline const Matrix6 IDENTITY_MATRIX6 { { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0 },
+										{ 0.0, 1.0, 0.0, 0.0, 0.0, 0.0 },
+										{ 0.0, 0.0, 1.0, 0.0, 0.0, 0.0 },
+										{ 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 },
+										{ 0.0, 0.0, 0.0, 0.0, 1.0, 0.0 },
+										{ 0.0, 0.0, 0.0, 0.0, 0.0, 1.0 } };
 
 // ------- Class Definition -------
 template <std::size_t ROWS, std::size_t COLS>
