@@ -59,7 +59,7 @@ const Vector3 J2Dynamics::getAwrtOexpN()
 {
 	return ( -1.5 * EARTH.mu * EARTH.radius * EARTH.radius * _J2
 			 / _body.RwrtOexpNmag5
-			 * ( _body.RwrtOexpN + 2.0 * _body.RwrtOexpN[2] * _zhat
+			 * ( _body.RwrtOexpN + 2.0 * _body.RwrtOexpN[2] * Z_UNIT_VECTOR3
 			 - 5.0 * _body.RwrtOexpN[2] * _body.RwrtOexpN[2]
 			 * _body.RwrtOexpN / _body.RwrtOexpNmag2 ) );
 }

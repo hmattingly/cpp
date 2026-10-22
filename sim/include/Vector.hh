@@ -20,13 +20,6 @@ using Vector2 = Vector<2>;
 using Vector3 = Vector<3>;
 using Vector6 = Vector<6>;
 
-/*
-** -------------- Constants ---------------
-*/ 
-inline const Vector2 ZERO_VECTOR2 { 0.0, 0.0 };
-inline const Vector3 ZERO_VECTOR3 { 0.0, 0.0, 0.0 };
-inline const Vector6 ZERO_VECTOR6 { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-
 // ------- Class Definition -------
 template <std::size_t N>
 class Vector
@@ -258,5 +251,15 @@ inline double angleBetween(const Vector<N>& a, const Vector<N>& b)
 	return std::acos(dot(a, b) / mags);
 }
 
+/*
+** -------------- Constants ---------------
+*/ 
+inline const Vector2 ZERO_VECTOR2 { 0.0, 0.0 };
+inline const Vector3 ZERO_VECTOR3 { 0.0, 0.0, 0.0 };
+inline const Vector6 ZERO_VECTOR6 { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+
+inline const Vector3 X_UNIT_VECTOR3 { 1.0, 0.0, 0.0 };
+inline const Vector3 Y_UNIT_VECTOR3 { 0.0, 1.0, 0.0 };
+inline const Vector3 Z_UNIT_VECTOR3 { 0.0, 0.0, 1.0 };
 
 #endif // VECTOR_HH

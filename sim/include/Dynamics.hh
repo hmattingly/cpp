@@ -43,7 +43,6 @@ class Dynamics
 {
 protected:
 	SpacecraftBody& _body;
-	Vector3 _zhat { 0.0, 0.0, 1.0 };	// zhat unit vector
 
 public:
 	// default constructor
