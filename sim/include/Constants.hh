@@ -7,6 +7,7 @@
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
+#define ABS(x) ((x) < 0.0 ? (-1.0 * (x)) : (x))
 
 // ------- Namespace directives -------
 namespace Constants

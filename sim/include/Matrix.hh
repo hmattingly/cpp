@@ -5,9 +5,9 @@
 
 // ------- Preprocessor directives -------
 #include <ostream>
-#include <cmath>
-#include <cassert>
-#include <array>
+#include <cmath>	// for std::sqrt()
+#include <cassert>	// for assert
+#include <array>	// for std::array
 #include <cstddef>	// for std::size_t
 #include "Vector.hh"
 #include "Constants.hh"
@@ -280,7 +280,7 @@ public:
 		{
 			for (std::size_t j = i + 1; j < COLS; ++j)
 			{
-				if (std::abs(_mat[i][j] - _mat[j][i]) > Constants::FLOAT_TOL)
+				if (ABS(_mat[i][j] - _mat[j][i]) > Constants::FLOAT_TOL)
 				{
 					return false;
 				}
@@ -298,7 +298,7 @@ public:
 			for (std::size_t j = 0; j < COLS; ++j)
 			{
 				double expected = (i == j) ? 1.0 : 0.0;
-				if (std::abs(_mat[i][j] - expected) > Constants::FLOAT_TOL)
+				if (ABS(_mat[i][j] - expected) > Constants::FLOAT_TOL)
 				{
 					return false;
 				}

@@ -66,6 +66,16 @@ void OutputProducer::registerOutput(const std::string& variableName, const Vecto
 	}
 }
 
+// register output variables to be outputted to csv (overload for Vector6)
+void OutputProducer::registerOutput(const std::string& variableName, const Vector6& variable)
+{
+	// add vectors to output, rename with _1, _2, and _3, ...
+	for ( std::size_t i { 0 }; i < 6; ++i )
+	{
+        registerOutput(variableName + "_" + std::to_string(i + 1), variable[i]);
+	}
+}
+
 void OutputProducer::output(const double& integratorTime)
 {
 	// open the file if not already open and write headers

@@ -42,14 +42,14 @@ struct DynamicsOptions {
 class Dynamics
 {
 protected:
-	SpacecraftBody& _body;
+	SpacecraftBody* _body;
 
 public:
 	// default constructor
 	Dynamics() = delete;
 
 	// parameterized constructor
-	Dynamics(SpacecraftBody& body);
+	Dynamics(SpacecraftBody* body);
 
 	// destructor
 	virtual ~Dynamics() = default;
@@ -75,7 +75,7 @@ public:
 	TwoBodyDynamics() = delete;
 
 	// parameterized constructor
-	TwoBodyDynamics(SpacecraftBody& body);
+	TwoBodyDynamics(SpacecraftBody* body);
 
 	// destructor
 	~TwoBodyDynamics() = default;
@@ -100,7 +100,7 @@ public:
 	J2Dynamics() = delete;
 
 	// parameterized constructor
-	J2Dynamics(SpacecraftBody& body);
+	J2Dynamics(SpacecraftBody* body);
 
 	// destructor
 	~J2Dynamics() = default;
@@ -125,7 +125,7 @@ public:
 	J3Dynamics() = delete;
 
 	// parameterized constructor
-	J3Dynamics(SpacecraftBody& body);
+	J3Dynamics(SpacecraftBody* body);
 
 	// destructor
 	~J3Dynamics() = default;
@@ -150,7 +150,7 @@ public:
 	J4Dynamics() = delete;
 
 	// parameterized constructor
-	J4Dynamics(SpacecraftBody& body);
+	J4Dynamics(SpacecraftBody* body);
 
 	// destructor
 	~J4Dynamics() = default;

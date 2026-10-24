@@ -58,8 +58,9 @@ public:
 	~OutputProducer() = default;
 
 	// forward declarations
-	void registerOutput(const std::string& pVariableName, const double& variable);
-	void registerOutput(const std::string& pVariablename, const Vector3& variable);
+	void registerOutput(const std::string& variableName, const double& variable);
+	void registerOutput(const std::string& variablename, const Vector3& variable);
+	void registerOutput(const std::string& variableName, const Vector6& variable);
 	void output(const double& integratorTime);
 
 	// setter functions

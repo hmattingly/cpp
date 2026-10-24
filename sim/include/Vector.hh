@@ -204,7 +204,7 @@ public:
 
 	bool isUnit() const
 	{
-		return std::abs(this->mag() - 1.0) < Constants::FLOAT_TOL;
+		return ABS(this->mag() - 1.0) < Constants::FLOAT_TOL;
 	}
 
 

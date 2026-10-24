@@ -8,7 +8,7 @@
 #include <string>	// for std::string
 
 // ------- Namespace directives -------
- 
+
 // ------- Class Definition -------
 Spacecraft::Spacecraft(const std::string& name) :
 	Model(name)
@@ -17,17 +17,20 @@ Spacecraft::Spacecraft(const std::string& name) :
 	const std::string inputFileName { "spacecraft.json" };
 	InputParser* pInputFile = new InputParser(inputFileName);
 
+	// build spacecraft body
+	_body = new SpacecraftBody();
+
 	// get spacecraft initial state
 	for ( std::size_t i { 0 }; i < 3; ++i )
 	{
-		_body.RwrtOexpN[i] = pInputFile->inputFileData["initialState"]["RwrtOexpN"][i].get<double>();
-		_body.VwrtOexpN[i] = pInputFile->inputFileData["initialState"]["VwrtOexpN"][i].get<double>();
+		_body->RwrtOexpN[i] = pInputFile->inputFileData["initialState"]["RwrtOexpN"][i].get<double>();
+		_body->VwrtOexpN[i] = pInputFile->inputFileData["initialState"]["VwrtOexpN"][i].get<double>();
 	}
 
 	// get spacecraft parameters
-	_body.AMR = pInputFile->inputFileData["areaToMassRatio"].get<double>();
-	_body.CRd = pInputFile->inputFileData["diffuseReflectivity"].get<double>();
-	_body.Cd  = pInputFile->inputFileData["dragCoefficient"].get<double>();
+	_body->AMR = pInputFile->inputFileData["areaToMassRatio"].get<double>();
+	_body->CRd = pInputFile->inputFileData["diffuseReflectivity"].get<double>();
+	_body->Cd  = pInputFile->inputFileData["dragCoefficient"].get<double>();
 
 	// get dynamic models
 	_dynamicsOptions.twoBody 	= pInputFile->inputFileData["dynamics"]["TwoBody"].get<bool>();
@@ -46,13 +49,20 @@ void Spacecraft::initModel()
 	// NOTE initModel() is executed when Model registered to Integrator
 
 	// register ECI states to be integrated
-	registerStates(_body.RwrtOexpN, _body.VwrtOexpN);
-	registerStates(_body.VwrtOexpN, _body.AwrtOexpN);
+	registerStates(_body->RwrtOexpN, _body->VwrtOexpN);
+	registerStates(_body->VwrtOexpN, _body->AwrtOexpN);
 
-	// register ECI outputs with integrator
-	registerOutput("RwrtOexpN", _body.RwrtOexpN);
-	registerOutput("VwrtOexpN", _body.VwrtOexpN);
-	registerOutput("AwrtOexpN", _body.AwrtOexpN);
+	// register outputs with integrator
+	registerOutput("RwrtOexpN", _body->RwrtOexpN);
+	registerOutput("VwrtOexpN", _body->VwrtOexpN);
+	registerOutput("AwrtOexpN", _body->AwrtOexpN);
+	// registerOutput("RwrtOexpE", _body->RwrtOexpE);
+	// registerOutput("VwrtOexpE", _body->VwrtOexpE);
+	registerOutput("RwrtOexpL", _body->RwrtOexpL);
+	registerOutput("VwrtOexpL", _body->VwrtOexpL);
+	registerOutput("RwrtOexpP", _body->RwrtOexpP);
+	registerOutput("VwrtOexpP", _body->VwrtOexpP);
+	registerOutput("kepOE", _body->kepOE);
 
 	// register applicable dynamics
 	if ( true == _dynamicsOptions.twoBody )
@@ -90,28 +100,19 @@ void Spacecraft::initModel()
 // called after state (position and velocity) is updated to next timestep
 void Spacecraft::updateStateDependents()
 {
-	// update position magnitudes
-	_body.RwrtOexpNmag = _body.RwrtOexpN.mag();
-	assert(_body.RwrtOexpNmag > 0.0);
-	_body.RwrtOexpNmag2 = _body.RwrtOexpNmag * _body.RwrtOexpNmag;
-	_body.RwrtOexpNmag3 = _body.RwrtOexpNmag2 * _body.RwrtOexpNmag;
-	_body.RwrtOexpNmag5 = _body.RwrtOexpNmag3 * _body.RwrtOexpNmag2;
-
-	// update velocity magnitudes
-	_body.VwrtOexpNmag = _body.VwrtOexpN.mag();
-	_body.VwrtOexpNmag2 = _body.VwrtOexpNmag * _body.VwrtOexpNmag;
+	_body->updateFromN();
 }
 
 // called after state dependents are updated to next timestep
 void Spacecraft::updateDerivs()
 {
 	// reset acceleration
-	_body.AwrtOexpN = { ZERO_VECTOR3 }; 
+	_body->AwrtOexpN = { ZERO_VECTOR3 }; 
 
 	// loop through each dynamics model and update acceleration term
 	for ( std::size_t i { 0 }; i < _numDynamics; ++i )
 	{
-		_body.AwrtOexpN += _pDynamics[i]->getAwrtOexpN();
+		_body->AwrtOexpN += _pDynamics[i]->getAwrtOexpN();
 	}
 }
 
@@ -123,4 +124,5 @@ Spacecraft::~Spacecraft()
 	{
 		delete _pDynamics[i];
 	}
+	delete _body;
 }

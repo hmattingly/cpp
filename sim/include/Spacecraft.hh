@@ -19,7 +19,7 @@
 // ------- Class Definition -------
 class Spacecraft : public Model
 {
-	SpacecraftBody _body;
+	SpacecraftBody* _body { nullptr };
 	DynamicsOptions _dynamicsOptions;
 	Dynamics* _pDynamics[MAX_DYNAMIC] { nullptr };
 	std::size_t _numDynamics { 0 };
@@ -42,7 +42,7 @@ public:
 	// setter functions
 
 	// access functions
-	const SpacecraftBody& getSpacecraftBody() const { return _body; }
+	const SpacecraftBody* getSpacecraftBody() const { return _body; }
 };
 
 
