@@ -22,13 +22,16 @@ SRC = $(wildcard src/*.cpp)
 # object files generated from source file names
 OBJ = $(SRC:src/%.cpp=obj/%.o)
 
+# dependency files (ensures re-compile when header is modified)
+DEP = $(OBJ:.o=.d)
+
 # link objects together
 $(TARGET): $(OBJ)
 	@$(CXX) $^ -o $(TARGET)
 
 # compile objects
 obj/%.o: src/%.cpp
-	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $< -o $@
+	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MMD -MP $< -o $@
 
 # build program
 build: $(TARGET)
@@ -39,6 +42,6 @@ run:
 
 # removes all object and executable files
 clean:
-	@rm -f obj/*.o $(TARGET)
+	@rm -f $(OBJ) $(DEP) $(TARGET)
 
-
+-include $(DEP)

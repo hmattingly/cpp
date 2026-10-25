@@ -63,37 +63,44 @@ public:
 	Vector3 RwrtOexpP { ZERO_VECTOR3 };
 	Vector3 VwrtOexpP { ZERO_VECTOR3 };
 
+	// specific angular momentum
+	Vector3 HwrtOexpN 	 { ZERO_VECTOR3 };	// specific angular momentum
+	Vector3 HwrtOexpNhat { ZERO_VECTOR3 };	// specific angular momentum unit vector
+	double HwrtOexpNmag  { 0.0 };			// specific angular momentum magnitude
+
+	// line of nodes
+	Vector3 NwrtOexpNhat { ZERO_VECTOR3 };	// line of nodes unit vector
+
+	// eccentricity vector
+	Vector3 EwrtOexpN    { ZERO_VECTOR3 };	// eccentricity vector
+
 	// Keplerian orbital elements
-	double a { 0.0 };  					// semi-major axis
-	double p { 0.0 };					// semi-latus rectum
-
-	Vector3 h 	 { ZERO_VECTOR3 };		// specific angular momentum
-	double hMag  { 0.0 };				// specific angular momentum magnitude
-	Vector3 hHat { ZERO_VECTOR3 };		// specific angular momentum unit vector
-
-	Vector3 nHat { ZERO_VECTOR3 };		// line of nodes unit vector
-
-	Vector3 ecc    { ZERO_VECTOR3 };	// eccentricity vector
-	double eccMag  { 0.0 };				// eccentricity
-	Vector3 eccHat { ZERO_VECTOR3 };	// eccentricity unit vector
-
-	double inc  { 0.0 };				// inclination
-	double raan { 0.0 };				// right ascension of the ascending node
-	double aop  { 0.0 };				// argument of periapsis
-	double aol  { 0.0 };				// argument of latitude
-	double ta   { 0.0 };				// true anomaly
-	double ea   { 0.0 };				// eccentric anomaly
-	double ma   { 0.0 };				// mean anomaly
-
-
+	double a 	{ 0.0 };  	// semi-major axis
+	double b	{ 0.0 };	// semi-minor axis
+	double p 	{ 0.0 };	// semi-latus rectum
+	double Rp	{ 0.0 };	// periapsis
+	double Ra	{ 0.0 };	// apoapsis
+	double ecc  { 0.0 };	// eccentricity
+	double inc  { 0.0 };	// inclination
+	double raan { 0.0 };	// right ascension of the ascending node
+	double aop  { 0.0 };	// argument of periapsis
+	double aol  { 0.0 };	// argument of latitude
+	double ta   { 0.0 };	// true anomaly
+	double E    { 0.0 };	// eccentric anomaly
+	double M    { 0.0 };	// mean anomaly
+	double n	{ 0.0 };	// mean motion
+	double P	{ 0.0 };	// orbital period
+	double energy { 0.0 };	// specific energy
+	double fpa	{ 0.0 };	// flight path angle
 
 	// spacecraft physical quantities
-	double AMR; // area to mass ratio [m^2/kg]
+	double AMR;	// area to mass ratio [m^2/kg]
 	double CRd; // diffuse reflectivity [unitless]
 	double Cd;	// drag coefficient [unitless]
 
 	// forward declarations
-	void updateFromN();
+	void updateFromN(const bool& atSolPoint);
+	void updateFromKepOE(const bool& atSolPoint);
 
 	// setter functions
 

@@ -62,7 +62,24 @@ void Spacecraft::initModel()
 	registerOutput("VwrtOexpL", _body->VwrtOexpL);
 	registerOutput("RwrtOexpP", _body->RwrtOexpP);
 	registerOutput("VwrtOexpP", _body->VwrtOexpP);
-	registerOutput("kepOE", _body->kepOE);
+	registerOutput("HwrtOexpN", _body->HwrtOexpN);
+	registerOutput("NwrtOexpNhat", _body->NwrtOexpNhat);
+	registerOutput("a", _body->a);
+	registerOutput("ecc", _body->ecc);
+	registerOutput("inc", _body->inc);
+	registerOutput("raan", _body->raan);
+	registerOutput("aop", _body->aop);
+	registerOutput("ta", _body->ta);
+	registerOutput("aol", _body->aol);
+	registerOutput("p", _body->p);
+	registerOutput("b", _body->b);
+	registerOutput("Rp", _body->Rp);
+	registerOutput("Ra", _body->Ra);
+	registerOutput("E", _body->E);
+	registerOutput("M", _body->M);
+	registerOutput("n", _body->n);
+	registerOutput("energy", _body->energy);
+	registerOutput("fpa", _body->fpa);
 
 	// register applicable dynamics
 	if ( true == _dynamicsOptions.twoBody )
@@ -100,7 +117,7 @@ void Spacecraft::initModel()
 // called after state (position and velocity) is updated to next timestep
 void Spacecraft::updateStateDependents()
 {
-	_body->updateFromN();
+	_body->updateFromN( _atSolutionPoint );
 }
 
 // called after state dependents are updated to next timestep
