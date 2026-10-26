@@ -133,7 +133,6 @@ void Spacecraft::updateDerivs()
 	}
 }
 
-
 // destructor
 Spacecraft::~Spacecraft()
 {

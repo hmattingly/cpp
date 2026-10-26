@@ -39,6 +39,10 @@ int main(int argc, char* argv[])
 	double simStartTime { pInputFile->inputFileData["simStartTime"].get<double>() };
 	double simEndTime { pInputFile->inputFileData["simEndTime"].get<double>() };
 	// ---------------------------
+	double year { pInputFile->inputFileData["epoch"]["year"].get<double>() };
+	double month { pInputFile->inputFileData["epoch"]["month"].get<double>() };
+	double day { pInputFile->inputFileData["epoch"]["day"].get<double>() };
+	double utc { pInputFile->inputFileData["epoch"]["utc"].get<double>() };
 
 	// instantiate Scheduler object and set parameters
 	Scheduler* pScheduler = new Scheduler(simStartTime, simEndTime);
