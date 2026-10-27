@@ -5,19 +5,19 @@
 // ------- Preprocessor directives -------
 #include <limits>			// for max double and int
 
-#define MIN(x, y) ((x) < (y) ? (x) : (y))
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
-#define ABS(x) ((x) < 0.0 ? (-1.0 * (x)) : (x))
+#define MIN(x, y) 	((x) < (y) ? (x) : (y))
+#define MAX(x, y) 	((x) > (y) ? (x) : (y))
+#define ABS(x) 		((x) < 0.0 ? (-1.0 * (x)) : (x))
 
 // ------- Namespace directives -------
 namespace Constants
 {	
 	// universal constants
-	inline constexpr double PI { 3.141592653589793116 };	// Pi
-	inline constexpr double TWO_PI { 2.0 * PI };			// 2*Pi
-	inline constexpr double G { 6.67430e-20 };				// gravitational constant in km^3/kg/s^2
-	inline constexpr double AU { 149'597'870.7 };			// astronomical unit in km
-	inline constexpr double c { 299'792.457999 };			// speed of light in km/s
+	inline constexpr double PI 		{ 3.141592653589793116 };	// Pi
+	inline constexpr double TWO_PI 	{ 2.0 * PI };				// 2*Pi
+	inline constexpr double G 		{ 6.67430e-20 };			// gravitational constant in km^3/kg/s^2
+	inline constexpr double AU 		{ 149'597'870.7 };			// astronomical unit in km
+	inline constexpr double c 		{ 299'792.457999 };			// speed of light in km/s
 
 	// angle conversions
 	inline constexpr double RAD2DEG { 180.0 / PI };			// radians to degrees
@@ -27,10 +27,14 @@ namespace Constants
 	inline constexpr double ARC2RAD { ARC2DEG * DEG2RAD };	// arcseconds to radians
 	inline constexpr double RAD2ARC { RAD2DEG * DEG2ARC };	// radians to arcseconds
 
+	// time conversions
+	inline constexpr double SOLAR_DAY 		{ 86'400.0 };			// solar day in seconds
+	inline constexpr double SIDEREAL_DAY 	{ 86'164.09053083288 };	// mean sidereal day in seconds
+
 	// C++ constants
-	inline constexpr double FLOAT_TOL { 1e-12 };	// tolerance for floating point comparisons
-	inline constexpr double MAX_DOUBLE { std::numeric_limits<double>::max() };	// max double value (~1.798e308)
-	inline constexpr int MAX_INT { std::numeric_limits<int>::max() };
+	inline constexpr double FLOAT_TOL 	{ 1e-12 };	// tolerance for floating point comparisons
+	inline constexpr double MAX_DOUBLE 	{ std::numeric_limits<double>::max() };	// max double value (~1.798e308)
+	inline constexpr int MAX_INT 		{ std::numeric_limits<int>::max() };
 
 }
 

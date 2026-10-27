@@ -19,7 +19,7 @@ class Integrator;
 // ------- Enum Definition -------
 enum SchedulerStatus
 {
-	UNINITIALIZED,
+	UNINITIALIZED = 0,
 	INITIALIZED,
 	RUNNING,
 	ENDTIME,
