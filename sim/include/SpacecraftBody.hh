@@ -7,6 +7,7 @@
 /*
 ** ------- Preprocessor directives -------
 */ 
+#include "Epoch.hh"
 #include "Vector.hh"
 #include "FrameTransform.hh"
 
@@ -30,10 +31,13 @@ class SpacecraftBody
 
 public:
 	// default constructor (disabled)
-	SpacecraftBody() = default;
+	SpacecraftBody();
 
 	// destructor
 	~SpacecraftBody() = default;
+
+	// epoch
+	Epoch* pEpoch { nullptr };
 
 	// ECI states
 	Vector3 RwrtOexpN { ZERO_VECTOR3 };
@@ -49,9 +53,9 @@ public:
 	double VwrtOexpNmag2 { 0.0 };
 
 	// ECEF states
-	// FrameTransform CfromNtoE;
-	// Vector3 RwrtOexpE { ZERO_VECTOR3 };
-	// Vector3 VwrtOexpE { ZERO_VECTOR3 };
+	FrameTransform CfromNtoE;
+	Vector3 RwrtOexpE { ZERO_VECTOR3 };
+	Vector3 VwrtOexpE { ZERO_VECTOR3 };
 
 	// LVLH / RTN states
 	FrameTransform CfromNtoL;

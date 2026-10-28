@@ -53,8 +53,7 @@ public:
 	int getYear() const { return _year; }
 	int getMonth() const { return _month; }
 	int getDay() const { return _day; }
-	double getUTChr() const { return _utc; }
-	double getUTCsec() const { return _utc * 3600.0; }
+	double getUTC() const { return _utc; }
 
 	// setter functions
 	void update(const double& dt);

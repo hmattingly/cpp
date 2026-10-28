@@ -2,6 +2,7 @@
 #include "Scheduler.hh"
 #include "Integrator.hh"
 #include "Constants.hh"
+#include "Epoch.hh"
 #include <cstdio>   // for printf()
 #include <cstdlib>  // for std::exit()
 #include <cassert>	// for assert()
@@ -12,7 +13,7 @@ using namespace Constants;
  
 // ------- Class Definition -------
 // Constructor
-Scheduler::Scheduler(const double startTime, const double endTime)
+Scheduler::Scheduler(const double startTime, const double endTime, Epoch* pEpoch)
 {
 	assert(startTime < endTime);
 
@@ -31,6 +32,9 @@ Scheduler::Scheduler(const double startTime, const double endTime)
 		_iStartTime = double2iTime(_startTime);
 		_iEndTime = double2iTime(_endTime);
 		_iTime = double2iTime(_time);
+
+		// set epoch
+		_pEpoch = pEpoch;
 	}
 	else
 	{
@@ -99,8 +103,12 @@ void Scheduler::run()
 		}
 
 		// set time to next update time
+		_dt = minUpdateTime - _time;
 		_time = minUpdateTime;
 		_iTime = double2iTime(_time);
+
+		// update epoch
+		_pEpoch->update(_dt);
 
 		// perform integration to update states of integrators that are ready
 		for ( std::size_t i { 0 }; i < _numIntegrators; ++i )

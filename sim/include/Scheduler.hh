@@ -15,6 +15,7 @@ using ITIME = std::int64_t;
 
 // ------ Forward Declarations -------
 class Integrator;
+class Epoch;
 
 // ------- Enum Definition -------
 enum SchedulerStatus
@@ -36,10 +37,13 @@ class Scheduler
 	static inline double _time { 0.0 };
 	static inline double _startTime { 0.0 };
 	static inline double _endTime { 0.0 };
+	double _dt { 0.0 };
 
 	ITIME _iTime { 0 };
 	ITIME _iStartTime { 0 };
 	ITIME _iEndTime { 0 };
+
+	static inline Epoch* _pEpoch { nullptr };
 
 	static inline Integrator* _pIntegratorArray[MAX_INTEGRATORS] { nullptr };
 	static inline std::size_t _numIntegrators { 0 };
@@ -52,7 +56,7 @@ public:
 	Scheduler() = delete;
 
 	// parameterized constructor
-	Scheduler(const double startTime, const double endTime);
+	Scheduler(const double startTime, const double endTime, Epoch* pEpoch);
 
 	// destructor
 	~Scheduler() = default;
@@ -67,6 +71,7 @@ public:
 	// access functions
 	static const SchedulerStatus& getStatus() { return _status; }
 	static const double& getCurrentTime() { return _time; }
+	static Epoch* getEpoch() { return _pEpoch; }
 };
 
 #endif // SCHEDULER_HH

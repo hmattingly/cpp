@@ -56,20 +56,23 @@ void Spacecraft::initModel()
 	registerOutput("RwrtOexpN", _body->RwrtOexpN);
 	registerOutput("VwrtOexpN", _body->VwrtOexpN);
 	registerOutput("AwrtOexpN", _body->AwrtOexpN);
-	// registerOutput("RwrtOexpE", _body->RwrtOexpE);
-	// registerOutput("VwrtOexpE", _body->VwrtOexpE);
+	registerOutput("RwrtOexpE", _body->RwrtOexpE);
+	registerOutput("VwrtOexpE", _body->VwrtOexpE);
 	registerOutput("RwrtOexpL", _body->RwrtOexpL);
 	registerOutput("VwrtOexpL", _body->VwrtOexpL);
 	registerOutput("RwrtOexpP", _body->RwrtOexpP);
 	registerOutput("VwrtOexpP", _body->VwrtOexpP);
+
 	registerOutput("HwrtOexpN", _body->HwrtOexpN);
 	registerOutput("NwrtOexpNhat", _body->NwrtOexpNhat);
+
 	registerOutput("a", _body->a);
 	registerOutput("ecc", _body->ecc);
 	registerOutput("inc", _body->inc);
 	registerOutput("raan", _body->raan);
 	registerOutput("aop", _body->aop);
 	registerOutput("ta", _body->ta);
+
 	registerOutput("aol", _body->aol);
 	registerOutput("p", _body->p);
 	registerOutput("b", _body->b);

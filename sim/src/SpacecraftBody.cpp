@@ -1,6 +1,7 @@
 /*
 ** ------- Preprocessor directives -------
-*/ 
+*/
+#include "Scheduler.hh" 
 #include "SpacecraftBody.hh"
 #include "FrameTransform.hh"
 #include "CoordinateTransform.hh"
@@ -22,6 +23,11 @@ using namespace CoordinateTransform;
 ** ----------- Class Definition ------------
 */ 
 
+SpacecraftBody::SpacecraftBody()
+{
+	pEpoch = Scheduler::getEpoch();
+}
+
 void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 {
 	// update position magnitudes
@@ -34,6 +40,11 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 	// update velocity magnitudes
 	VwrtOexpNmag = VwrtOexpN.mag();
 	VwrtOexpNmag2 = VwrtOexpNmag * VwrtOexpNmag;
+
+	// convert from ECI to ECEF
+	CfromNtoE.setN2E( pEpoch->getGMST() );
+	RwrtOexpE = CfromNtoE.getDCM() * RwrtOexpN;
+	VwrtOexpE = CfromNtoE.getDCM() * VwrtOexpN;
 
 	// optional parameters only need to be updated at solution point
 	if ( true == atSolPoint )
@@ -55,7 +66,7 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 		raan 	= kepOE[3];
 		aop 	= kepOE[4];
 		ta 		= kepOE[5];
-
+		
 		b 			= getSemiminorAxis( a, ecc );
 		p 			= getSemilatusRectum( HwrtOexpNmag );
 		Ra 			= getApoapsis( p, ecc );
@@ -98,6 +109,11 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 	// update velocity magnitudes
 	VwrtOexpNmag = VwrtOexpN.mag();
 	VwrtOexpNmag2 = VwrtOexpNmag * VwrtOexpNmag;
+
+	// convert from ECI to ECEF
+	CfromNtoE.setN2E( pEpoch->getGMST() );
+	RwrtOexpE = CfromNtoE.getDCM() * RwrtOexpN;
+	VwrtOexpE = CfromNtoE.getDCM() * VwrtOexpN;
 
 	// optional parameters only need to be updated at solution point
 	if ( true == atSolPoint )

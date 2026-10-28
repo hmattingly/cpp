@@ -3,7 +3,8 @@
 */ 
 #include "Epoch.hh"
 #include "Constants.hh"
-#include <cmath>
+#include <cmath>	// for std::fmod()
+#include <cassert>	// for assert()
 
 /*
 ** -------------- Constants ---------------
@@ -16,6 +17,7 @@
 /*
 ** --------- Namespace directives ---------
 */ 
+using namespace Constants;
 
 /*
 ** ----------- Class Definition ------------
@@ -23,45 +25,68 @@
 Epoch::Epoch(const int& year, const int& month, const int& day, const double& utc) :
 	_year { year }, _month { month }, _day { day }, _utc { utc }
 {
-	
+	// JD conversions are only valid for these dates
+	assert( _year >= 1901 & _year <= 2099 );
 }
 
 double Epoch::getJD0()
 {
-	return std::floor( 365.25 * _year ) + std::floor( 30.6001 * ( _month + 1 ) ) - 15.0 + 1720996.5 + _day;
+	// julian date referenced from Jan 1, 4713 BC at 00:00 midnight UT
+	return ( 1'721'013.5 + 367 * _year + std::floor( ( 7.0 / 4.0 ) 
+			 * std::floor( ( _month + 9.0 ) / 12.0 ) ) 
+			 + std::floor( 275.0 * _month / 9.0 ) + _day );
 }
 
 double Epoch::getJD()
 {
+	// julian date referenced from Jan 1, 4713 BC at 12:00 noon UT
 	return getJD0() + _utc / 24.0;
 }
 
 double Epoch::getMJD()
 {
-	return getJD() - 2400000.5;
+	// modified Julian date referenced from Nov 17, 1858 at 00:00 midnight UT
+	return getJD() - 2'400'000.5;
 }
 
 double Epoch::getT0()
 {
-	return ( getJD0() - 2451545.0 ) / 36525.0;
+	// julian centuries referenced from Jan 1, 2000 at 00:00 midnight UT
+	return ( getJD0() - 2'451'545.0 ) / 36'525.0;
 }
 
 double Epoch::getT1()
 {
-	return ( getJD() - 2451545.0 ) / 36525.0;
+	// julian centuries referenced from Jan 1, 2000 at 12:00 noon UT
+	return ( getJD() - 2'451'545.0 ) / 36'525.0;
 }
 
 double Epoch::getGMST()
 {
+	// greenwich mean sidereal time
 	double T0 { getT0() };
-	double T1 { getT1() };
 	double utcSec { _utc * 3600.0 };
-	double gmstDeg { 24110.54841 + 8640184.812866 * T0 + 0.093104 * T1 * T1 - 0.0000062 * T1 * T1 * T1 + 1.00272790935 * utcSec };
-	gmstDeg = std::fmod( gmstDeg / 240.0, 360.0 );
-	if ( gmstDeg < 0.0 )
+	double gmstSec { 24'110.54841 + 8'640'184.812866 * T0 
+					 + 0.093104 * T0 * T0
+					 - 0.0000062 * T0 * T0 * T0
+					 + 1.002737909350795 * utcSec };
+
+	// convert from sec to rad
+	double gmst = std::fmod( gmstSec / 240.0, 360.0 ) * DEG2RAD;
+	if ( gmst < 0.0 )
 	{
-		gmstDeg += 360.0;
+		gmst += TWO_PI;
 	}
 	
-	return gmstDeg * DEG2RAD;
+	return gmst;
+}
+
+void Epoch::update(const double& dt)
+{
+	_utc += dt / 3600.0;
+	if ( _utc > 24.0 )
+	{
+		_utc -= 24.0;
+		_day += 1;
+	}
 }

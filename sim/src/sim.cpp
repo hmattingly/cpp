@@ -3,6 +3,7 @@
 #include "Scheduler.hh"
 #include "Integrator.hh"
 #include "Spacecraft.hh"
+#include "Epoch.hh"
 #include <cstdio>		// for printf
 #include <filesystem>  	// for std::filesystem
 #include <string>		// for std::string
@@ -36,20 +37,21 @@ int main(int argc, char* argv[])
 	// ------- Sim Inputs -------
 	const std::string inputFileName { "sim.json" };
 	InputParser* pInputFile = new InputParser(inputFileName);
+
 	double simStartTime { pInputFile->inputFileData["simStartTime"].get<double>() };
 	double simEndTime 	{ pInputFile->inputFileData["simEndTime"].get<double>() };
-	double year 		{ pInputFile->inputFileData["epoch"]["year"].get<double>() };
-	double month 		{ pInputFile->inputFileData["epoch"]["month"].get<double>() };
-	double day 			{ pInputFile->inputFileData["epoch"]["day"].get<double>() };
+	double timeStepRK4 	{ pInputFile->inputFileData["timeStepRK4"].get<double>() };
+
+	int year 			{ pInputFile->inputFileData["epoch"]["year"].get<int>() };
+	int month 			{ pInputFile->inputFileData["epoch"]["month"].get<int>() };
+	int day 			{ pInputFile->inputFileData["epoch"]["day"].get<int>() };
 	double utc 			{ pInputFile->inputFileData["epoch"]["utc"].get<double>() };
 	// ---------------------------
-	
-
 	// instantiate Scheduler object and set parameters
-	Scheduler* pScheduler = new Scheduler(simStartTime, simEndTime);
+	Epoch* pEpoch = new Epoch(year, month, day, utc);
+	Scheduler* pScheduler = new Scheduler(simStartTime, simEndTime, pEpoch);
 
 	// build integrators
-	double timeStepRK4 { pInputFile->inputFileData["timeStepRK4"].get<double>() };
 	RK4* pIntegratorRK4 = new RK4(timeStepRK4);
 
 	// build models
