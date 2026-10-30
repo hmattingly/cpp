@@ -34,13 +34,11 @@ class Scheduler
 	// static member variables, shared across all instances of Scheduler
 	static inline SchedulerStatus _status { UNINITIALIZED };
 
-	static inline double _time { 0.0 };
-	static inline double _startTime { 0.0 };
+	static inline double _simTime { 0.0 };
 	static inline double _endTime { 0.0 };
 	double _dt { 0.0 };
 
-	ITIME _iTime { 0 };
-	ITIME _iStartTime { 0 };
+	ITIME _iSimTime { 0 };
 	ITIME _iEndTime { 0 };
 
 	static inline Epoch* _pEpoch { nullptr };
@@ -56,7 +54,7 @@ public:
 	Scheduler() = delete;
 
 	// parameterized constructor
-	Scheduler(const double startTime, const double endTime, Epoch* pEpoch);
+	Scheduler(Epoch* pEpoch, const double runTime);
 
 	// destructor
 	~Scheduler() = default;
@@ -70,7 +68,7 @@ public:
 	
 	// access functions
 	static const SchedulerStatus& getStatus() { return _status; }
-	static const double& getCurrentTime() { return _time; }
+	static const double& getCurrentTime() { return _simTime; }
 	static Epoch* getEpoch() { return _pEpoch; }
 };
 

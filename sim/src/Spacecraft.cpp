@@ -97,11 +97,13 @@ void Spacecraft::initModel()
 	}
 	if ( true == _dynamicsOptions.j3 )
 	{
-		//
+		_pDynamics[_numDynamics] = new J3Dynamics(_body);
+		++_numDynamics;
 	}
 	if ( true == _dynamicsOptions.j4 )
 	{
-		//
+		_pDynamics[_numDynamics] = new J4Dynamics(_body);
+		++_numDynamics;
 	}
 	if ( true == _dynamicsOptions.srp )
 	{

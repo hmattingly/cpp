@@ -12,8 +12,8 @@
 	{
 		"TwoBody": true,
 		"J2": true,
-		"J3": false,
-		"J4": false,
+		"J3": true,
+		"J4": true,
 		"SRP": false,
 		"Drag": false
 	}

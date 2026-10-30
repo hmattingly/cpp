@@ -31,15 +31,17 @@ SpacecraftBody::SpacecraftBody()
 void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 {
 	// update position magnitudes
-	RwrtOexpNmag = RwrtOexpN.mag();
-	assert(RwrtOexpNmag > 0.0);
-	RwrtOexpNmag2 = RwrtOexpNmag * RwrtOexpNmag;
-	RwrtOexpNmag3 = RwrtOexpNmag2 * RwrtOexpNmag;
-	RwrtOexpNmag5 = RwrtOexpNmag3 * RwrtOexpNmag2;
+	RwrtOmag = RwrtOexpN.mag();
+	assert(RwrtOmag > 0.0);
+	RwrtOmag2 = RwrtOmag * RwrtOmag;
+	RwrtOmag3 = RwrtOmag2 * RwrtOmag;
+	RwrtOmag5 = RwrtOmag3 * RwrtOmag2;
+	RwrtOmag7 = RwrtOmag5 * RwrtOmag2;
+	RwrtOmag9 = RwrtOmag7 * RwrtOmag2;
 
 	// update velocity magnitudes
-	VwrtOexpNmag = VwrtOexpN.mag();
-	VwrtOexpNmag2 = VwrtOexpNmag * VwrtOexpNmag;
+	VwrtOmag = VwrtOexpN.mag();
+	VwrtOmag2 = VwrtOmag * VwrtOmag;
 
 	// convert from ECI to ECEF
 	CfromNtoE.setN2E( pEpoch->getGMST() );
@@ -51,9 +53,9 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 	{
 		// specific angular momentum
 		HwrtOexpN = getSpecAngularMomentum( RwrtOexpN, VwrtOexpN );
-		HwrtOexpNmag = HwrtOexpN.mag();
-		assert(HwrtOexpNmag > 0.0);
-		HwrtOexpNhat = HwrtOexpN / HwrtOexpNmag;
+		HwrtOmag = HwrtOexpN.mag();
+		assert(HwrtOmag > 0.0);
+		HwrtOexpNhat = HwrtOexpN / HwrtOmag;
 
 		// line of nodes
 		NwrtOexpNhat = getLineOfNodesUnit( HwrtOexpN );
@@ -66,9 +68,9 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 		raan 	= kepOE[3];
 		aop 	= kepOE[4];
 		ta 		= kepOE[5];
-		
+
 		b 			= getSemiminorAxis( a, ecc );
-		p 			= getSemilatusRectum( HwrtOexpNmag );
+		p 			= getSemilatusRectum( HwrtOmag );
 		Ra 			= getApoapsis( p, ecc );
 		Rp 			= getPeriapsis( p, ecc );
 		n 			= getMeanMotion( a );
@@ -100,15 +102,17 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 	VwrtOexpN = { stateN[3], stateN[4], stateN[5] };
 
 	// update position magnitudes
-	RwrtOexpNmag = RwrtOexpN.mag();
-	assert(RwrtOexpNmag > 0.0);
-	RwrtOexpNmag2 = RwrtOexpNmag * RwrtOexpNmag;
-	RwrtOexpNmag3 = RwrtOexpNmag2 * RwrtOexpNmag;
-	RwrtOexpNmag5 = RwrtOexpNmag3 * RwrtOexpNmag2;
+	RwrtOmag = RwrtOexpN.mag();
+	assert(RwrtOmag > 0.0);
+	RwrtOmag2 = RwrtOmag * RwrtOmag;
+	RwrtOmag3 = RwrtOmag2 * RwrtOmag;
+	RwrtOmag5 = RwrtOmag3 * RwrtOmag2;
+	RwrtOmag7 = RwrtOmag5 * RwrtOmag2;
+	RwrtOmag9 = RwrtOmag7 * RwrtOmag2;
 
 	// update velocity magnitudes
-	VwrtOexpNmag = VwrtOexpN.mag();
-	VwrtOexpNmag2 = VwrtOexpNmag * VwrtOexpNmag;
+	VwrtOmag = VwrtOexpN.mag();
+	VwrtOmag2 = VwrtOmag * VwrtOmag;
 
 	// convert from ECI to ECEF
 	CfromNtoE.setN2E( pEpoch->getGMST() );
@@ -120,16 +124,16 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 	{
 		// specific angular momentum
 		HwrtOexpN = getSpecAngularMomentum( RwrtOexpN, VwrtOexpN );
-		HwrtOexpNmag = HwrtOexpN.mag();
-		assert(HwrtOexpNmag > 0.0);
-		HwrtOexpNhat = HwrtOexpN / HwrtOexpNmag;
+		HwrtOmag = HwrtOexpN.mag();
+		assert(HwrtOmag > 0.0);
+		HwrtOexpNhat = HwrtOexpN / HwrtOmag;
 
 		// line of nodes
 		NwrtOexpNhat = getLineOfNodesUnit( HwrtOexpN );
 
 		// get optional parameters
 		b 			= getSemiminorAxis( a, ecc );
-		p 			= getSemilatusRectum( HwrtOexpNmag );
+		p 			= getSemilatusRectum( HwrtOmag );
 		Ra 			= getApoapsis( p, ecc );
 		Rp 			= getPeriapsis( p, ecc );
 		n 			= getMeanMotion( a );

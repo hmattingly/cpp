@@ -4,6 +4,7 @@
 #include "Integrator.hh"
 #include "Spacecraft.hh"
 #include "Epoch.hh"
+#include <chrono>		// for steady_clock
 #include <cstdio>		// for printf
 #include <filesystem>  	// for std::filesystem
 #include <string>		// for std::string
@@ -16,6 +17,8 @@
 // ------- MAIN -------
 int main(int argc, char* argv[])
 {
+	auto simRealStartTime { std::chrono::steady_clock::now() };
+    
 	// display the program name and arguments passed to the program
 	printf("--------------------------------\n");
 	if (argc < 2)
@@ -38,8 +41,7 @@ int main(int argc, char* argv[])
 	const std::string inputFileName { "sim.json" };
 	InputParser* pInputFile = new InputParser(inputFileName);
 
-	double simStartTime { pInputFile->inputFileData["simStartTime"].get<double>() };
-	double simEndTime 	{ pInputFile->inputFileData["simEndTime"].get<double>() };
+	double simRunTime 	{ pInputFile->inputFileData["simRunTime"].get<double>() };
 	double timeStepRK4 	{ pInputFile->inputFileData["timeStepRK4"].get<double>() };
 
 	int year 			{ pInputFile->inputFileData["epoch"]["year"].get<int>() };
@@ -47,9 +49,10 @@ int main(int argc, char* argv[])
 	int day 			{ pInputFile->inputFileData["epoch"]["day"].get<int>() };
 	double utc 			{ pInputFile->inputFileData["epoch"]["utc"].get<double>() };
 	// ---------------------------
+
 	// instantiate Scheduler object and set parameters
 	Epoch* pEpoch = new Epoch(year, month, day, utc);
-	Scheduler* pScheduler = new Scheduler(simStartTime, simEndTime, pEpoch);
+	Scheduler* pScheduler = new Scheduler(pEpoch, simRunTime);
 
 	// build integrators
 	RK4* pIntegratorRK4 = new RK4(timeStepRK4);
@@ -64,6 +67,10 @@ int main(int argc, char* argv[])
 	{
 		pScheduler->run();
 	}
+	// display sim run time
+	auto simRealEndTime { std::chrono::steady_clock::now() };
+    std::chrono::duration<double> elapsedTime = simRealEndTime - simRealStartTime;
+    printf("Execution Time: %.2f seconds\n", elapsedTime.count());
 	printf("Exit Code: %d\n", pScheduler->getStatus());
 	printf("--------------------------------\n");
 
@@ -72,4 +79,5 @@ int main(int argc, char* argv[])
 	delete pScheduler;
 	delete pIntegratorRK4;
 	delete pSpacecraft;
+	delete pEpoch;
 }

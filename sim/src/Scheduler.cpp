@@ -13,9 +13,9 @@ using namespace Constants;
  
 // ------- Class Definition -------
 // Constructor
-Scheduler::Scheduler(const double startTime, const double endTime, Epoch* pEpoch)
+Scheduler::Scheduler(Epoch* pEpoch, const double runTime)
 {
-	assert(startTime < endTime);
+	assert(runTime > 0.0);
 
 	// check if the Scheduler already exists, 
 	if ( UNINITIALIZED == _status )
@@ -24,14 +24,11 @@ Scheduler::Scheduler(const double startTime, const double endTime, Epoch* pEpoch
 		_status = INITIALIZED;
 
 		// set double time
-		_startTime = startTime;
-		_endTime = endTime;
-		_time = _startTime;
+		_endTime = runTime;
 
 		// set integer time
-		_iStartTime = double2iTime(_startTime);
 		_iEndTime = double2iTime(_endTime);
-		_iTime = double2iTime(_time);
+		_iSimTime = double2iTime(_simTime);
 
 		// set epoch
 		_pEpoch = pEpoch;
@@ -103,9 +100,9 @@ void Scheduler::run()
 		}
 
 		// set time to next update time
-		_dt = minUpdateTime - _time;
-		_time = minUpdateTime;
-		_iTime = double2iTime(_time);
+		_dt = minUpdateTime - _simTime;
+		_simTime = minUpdateTime;
+		_iSimTime = double2iTime(_simTime);
 
 		// update epoch
 		_pEpoch->update(_dt);
@@ -113,7 +110,7 @@ void Scheduler::run()
 		// perform integration to update states of integrators that are ready
 		for ( std::size_t i { 0 }; i < _numIntegrators; ++i )
 		{
-			if ( _iTime == double2iTime(_pIntegratorArray[i]->getNextUpdateTime()) )
+			if ( _iSimTime == double2iTime(_pIntegratorArray[i]->getNextUpdateTime()) )
 			{
 				_pIntegratorArray[i]->updateStates();
 				_pIntegratorArray[i]->updateStateDependents();
@@ -152,7 +149,7 @@ void Scheduler::registerIntegrator(Integrator* pIntegrator)
 void Scheduler::_checkExitConditions()
 {
 	// check if we've reached the end of the sim with all integrators at solution point
-	if ( _iTime == _iEndTime )
+	if ( _iSimTime == _iEndTime )
 	{
 		for ( std::size_t i { 0 }; i < _numIntegrators; ++i )
 		{
@@ -163,7 +160,7 @@ void Scheduler::_checkExitConditions()
 		}
 		_status = ENDTIME;
 	}
-	else if ( _iTime > _iEndTime )
+	else if ( _iSimTime > _iEndTime )
 	{
 		_status = ERROR;
 	}

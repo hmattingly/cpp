@@ -1,13 +1,11 @@
 {
-	"simStartTime": 0.0,
-	"simEndTime": 86400.0,
-	"timeStepRK4": 1,
-	"timeStepFE": 1,
 	"epoch":
 	{
 		"year": 2026,
 		"month": 1,
 		"day": 1,
 		"utc": 5.5
-	}
+	},
+	"simRunTime": 86400.0,
+	"timeStepRK4": 1
 }

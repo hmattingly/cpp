@@ -44,13 +44,15 @@ public:
 	Vector3 VwrtOexpN { ZERO_VECTOR3 };
 	Vector3 AwrtOexpN { ZERO_VECTOR3 };
 
-	double RwrtOexpNmag  { 0.0 };
-	double RwrtOexpNmag2 { 0.0 };
-	double RwrtOexpNmag3 { 0.0 };
-	double RwrtOexpNmag5 { 0.0 };
+	double RwrtOmag  { 0.0 };
+	double RwrtOmag2 { 0.0 };
+	double RwrtOmag3 { 0.0 };
+	double RwrtOmag5 { 0.0 };
+	double RwrtOmag7 { 0.0 };
+	double RwrtOmag9 { 0.0 };
 
-	double VwrtOexpNmag  { 0.0 };
-	double VwrtOexpNmag2 { 0.0 };
+	double VwrtOmag  { 0.0 };
+	double VwrtOmag2 { 0.0 };
 
 	// ECEF states
 	FrameTransform CfromNtoE;
@@ -70,7 +72,7 @@ public:
 	// specific angular momentum
 	Vector3 HwrtOexpN 	 { ZERO_VECTOR3 };	// specific angular momentum
 	Vector3 HwrtOexpNhat { ZERO_VECTOR3 };	// specific angular momentum unit vector
-	double HwrtOexpNmag  { 0.0 };			// specific angular momentum magnitude
+	double HwrtOmag  { 0.0 };			// specific angular momentum magnitude
 
 	// line of nodes
 	Vector3 NwrtOexpNhat { ZERO_VECTOR3 };	// line of nodes unit vector
