@@ -7,7 +7,6 @@
 /*
 ** ------- Preprocessor directives -------
 */ 
-#include "Epoch.hh"
 #include "Vector.hh"
 #include "FrameTransform.hh"
 
@@ -18,6 +17,7 @@
 /*
 ** -------- Forward Declarations ----------
 */ 
+class Earth;
 
 /*
 ** --------- Namespace directives ---------
@@ -28,16 +28,14 @@
 */ 
 class SpacecraftBody
 {
+	Earth* _pEarth { nullptr };
 
 public:
-	// default constructor (disabled)
-	SpacecraftBody();
+	// default constructor
+	SpacecraftBody(Earth* pEarth);
 
 	// destructor
 	~SpacecraftBody() = default;
-
-	// epoch
-	Epoch* pEpoch { nullptr };
 
 	// ECI states
 	Vector3 RwrtOexpN { ZERO_VECTOR3 };
@@ -72,7 +70,7 @@ public:
 	// specific angular momentum
 	Vector3 HwrtOexpN 	 { ZERO_VECTOR3 };	// specific angular momentum
 	Vector3 HwrtOexpNhat { ZERO_VECTOR3 };	// specific angular momentum unit vector
-	double HwrtOmag  { 0.0 };			// specific angular momentum magnitude
+	double HwrtOmag  { 0.0 };				// specific angular momentum magnitude
 
 	// line of nodes
 	Vector3 NwrtOexpNhat { ZERO_VECTOR3 };	// line of nodes unit vector

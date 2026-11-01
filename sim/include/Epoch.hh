@@ -31,6 +31,12 @@ private:
 	int _day 	{ 1 };		// day of month
 	double _utc { 0.0 };	// UTC provided in hours
 
+	double _JD   { 0.0 };	// Julian date referenced from Jan 1, 4713 BC at 12:00 noon UT
+	double _JD0  { 0.0 };	// Julian date referenced from Jan 1, 4713 BC at 00:00 midnight UT
+	double _MJD  { 0.0 };	// modified Julian date referenced from Nov 17, 1858 at 00:00 midnight UT
+	double _T0 	 { 0.0 };	// Julian centuries referenced from Jan 1, 2000 at 00:00 midnight UT
+	double _T1 	 { 0.0 };	// julian centuries referenced from Jan 1, 2000 at 12:00 noon UT
+
 public:
 	// default constructor (disabled)
 	Epoch() = default;
@@ -42,18 +48,17 @@ public:
 	~Epoch() = default;
 
 	// forward declarations
-	double getJD();
-	double getJD0();
-	double getMJD();
-	double getT0();
-	double getT1();
-	double getGMST();
 
 	// access functions
-	int getYear() const { return _year; }
-	int getMonth() const { return _month; }
-	int getDay() const { return _day; }
-	double getUTC() const { return _utc; }
+	const int& getYear() const { return _year; }
+	const int& getMonth() const { return _month; }
+	const int& getDay() const { return _day; }
+	const double& getUTC() const { return _utc; }
+	const double& getJD() const { return _JD; }
+	const double& getJD0() const { return _JD0; }
+	const double& getMJD() const { return _MJD; }
+	const double& getT0() const { return _T0; }
+	const double& getT1() const { return _T1; }
 
 	// setter functions
 	void update(const double& dt);

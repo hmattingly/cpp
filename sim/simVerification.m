@@ -14,7 +14,7 @@ dt          = simData.timeStepRK4;
 year = simData.epoch.year;
 month = simData.epoch.month;
 day = simData.epoch.day;
-utc = simData.epoch.utc;
+utc0 = simData.epoch.utc;
 
 RwrtOexpN_0 = spacecraftData.initialState.RwrtOexpN;
 VwrtOexpN_0 = spacecraftData.initialState.VwrtOexpN;
@@ -23,19 +23,102 @@ opts = Const.propOpts();
 opts.J2 = spacecraftData.dynamics.J2;
 opts.J3 = spacecraftData.dynamics.J3;
 opts.J4 = spacecraftData.dynamics.J4;
-opts.epoch = [year, month, day, utc];
+opts.epoch = [year, month, day, utc0];
+[~,~,~,~,MJD] = date2jd(year, month, day, utc0);
+[xp, yp] = get_xp_yp(MJD);
+opts.xp = xp;
+opts.yp = yp;
 
 %% import sim output
 T = readtable("outputs/Spacecraft.csv");
 time = T.Time;
 RwrtOexpN = [T.RwrtOexpN_1, T.RwrtOexpN_2, T.RwrtOexpN_3]';
-VwrtOexpN= [T.VwrtOexpN_1, T.VwrtOexpN_2, T.VwrtOexpN_3]';
+VwrtOexpN = [T.VwrtOexpN_1, T.VwrtOexpN_2, T.VwrtOexpN_3]';
+RwrtOexpE = [T.RwrtOexpE_1, T.RwrtOexpE_2, T.RwrtOexpE_3]';
+VwrtOexpE = [T.VwrtOexpE_1, T.VwrtOexpE_2, T.VwrtOexpE_3]';
+RwrtOexpL = [T.RwrtOexpL_1, T.RwrtOexpL_2, T.RwrtOexpL_3]';
+VwrtOexpL = [T.VwrtOexpL_1, T.VwrtOexpL_2, T.VwrtOexpL_3]';
+RwrtOexpP = [T.RwrtOexpP_1, T.RwrtOexpP_2, T.RwrtOexpP_3]';
+VwrtOexpP = [T.VwrtOexpP_1, T.VwrtOexpP_2, T.VwrtOexpP_3]';
+
+HwrtOexpN = [T.HwrtOexpN_1, T.HwrtOexpN_2, T.HwrtOexpN_3]';
+NwrtOexpNhat = [T.NwrtOexpNhat_1, T.NwrtOexpNhat_2, T.NwrtOexpNhat_3]';
+
+a = T.a';
+ecc = T.ecc';
+inc = T.inc';
+raan = T.raan';
+aop = T.aop';
+ta = T.ta';
+
+aol = T.aol';
+p = T.p';
+b = T.b';
+Rp = T.Rp';
+Ra = T.Ra';
+E = T.E';
+M = T.M';
+n = T.n';
+P = T.P';
+energy = T.energy';
+fpa = T.fpa';
+
+T = readtable("outputs/Earth.csv");
+gmst = T.gmst';
+gast = T.gast';
 
 %% compare against ode45
 x0_ECI = [RwrtOexpN_0; VwrtOexpN_0];
 tspan = startTime:dt:endTime;
 [t, x_ECI] = ode45(@(t, state) propagator(t, state, opts), tspan, x0_ECI, Const.odeOpts);
 x_ECI = x_ECI';
+
+%% get all other state parameters and representations
+x_OE = zeros(6,length(t));
+x_LVLH = zeros(6,length(t));
+x_ECEF = zeros(6,length(t));
+x_Peri = zeros(6,length(t));
+E_mat = zeros(1,length(t));
+M_mat = zeros(1,length(t));
+p_mat = zeros(1,length(t));
+h_mat = zeros(3,length(t));
+hmag_mat = zeros(1,length(t));
+nhat_mat = zeros(3,length(t));
+energy_mat = zeros(1,length(t));
+n_mat = zeros(1,length(t));
+P_mat = zeros(1,length(t));
+fpa_mat = zeros(1,length(t));
+gmst_mat = zeros(1,length(t));
+
+PI = polar_motion(xp, yp);
+for k = 1:length(t)
+    xk_ECI = x_ECI(:,k);
+    [xk_OE, extras] = eci2oe(xk_ECI, Const.muE);
+    x_OE(:,k) = xk_OE;
+
+    utck = utc0 + t(k)/3600;
+    [~,T1,theta0] = date2jd(year, month, day, utck);
+    gmst_mat(1,k) = theta0;
+
+    [NU, dpsi, ep_mean] = nutation(T1);
+    PR = precession(T1);
+    TH = rot3(theta0 + dpsi*cosd(ep_mean));
+    r_ECEF = PI*TH*NU*PR*xk_ECI(1:3);
+    v_ECEF = PI*TH*NU*PR*xk_ECI(4:6);
+    x_ECEF(:,k) = [r_ECEF;v_ECEF];
+
+    E_mat(1,k) = extras.E;
+    M_mat(1,k) = extras.M;
+    p_mat(1,k) = extras.p;
+    h_mat(:,k) = extras.h;
+    hmag_mat(1,k) = extras.hmag;
+    nhat_mat(:,k) = extras.nhat;
+
+    energy_mat(1,k) = -.5*Const.muE/x_OE(1,k);
+    n_mat(1,k) = sqrt(Const.muE/x_OE(1,k)^3);
+    P_mat(1,k) = 2*pi/n_mat(1,k);
+    fpa_mat(1,k) = atan2d(dot(xk_ECI(1:3), xk_ECI(4:6)), hmag_mat(1,k));
+end
 
 %% verify time vectors are equivalent
 float_tol = 1e-12;
@@ -44,61 +127,170 @@ if any(abs(time - t) > float_tol)
 end
 
 %% plot results
-% RK4 vs. ode45 comparison
+% Sim vs. Matlab ECI state comparison
 figure(1)
-sgtitle('RK4 vs. ODE45')
+sgtitle(sprintf('Sim vs. Matlab\nECI State Errors'))
 subplot(3,2,1)
-plot(t, (x_ECI(1,:) - RwrtOexpN(1,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(1,:) - RwrtOexpN(1,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-xlabel('Time [s]')
 ylabel('RwrtOexpN_1 Error [m]')
 
 subplot(3,2,3)
-plot(t, (x_ECI(2,:) - RwrtOexpN(2,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(2,:) - RwrtOexpN(2,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-xlabel('Time [s]')
 ylabel('RwrtOexpN_2 Error [m]')
 
 subplot(3,2,5)
-plot(t, (x_ECI(3,:) - RwrtOexpN(3,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(3,:) - RwrtOexpN(3,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-xlabel('Time [s]')
+xlabel('Time [hr]')
 ylabel('RwrtOexpN_3 Error [m]')
 
 subplot(3,2,2)
-plot(t, (x_ECI(4,:) - VwrtOexpN(1,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(4,:) - VwrtOexpN(1,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-xlabel('Time [s]')
 ylabel('VwrtOexpN_1 Error [m/s]')
 
 subplot(3,2,4)
-plot(t, (x_ECI(5,:) - VwrtOexpN(2,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(5,:) - VwrtOexpN(2,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-xlabel('Time [s]')
 ylabel('VwrtOexpN_2 Error [m/s]')
 
 subplot(3,2,6)
-plot(t, (x_ECI(6,:) - VwrtOexpN(3,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(6,:) - VwrtOexpN(3,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-xlabel('Time [s]')
+xlabel('Time [hr]')
 ylabel('VwrtOexpN_3 Error [m/s]')
 
-% position over time
+
+% Sim vs. Matlab ECEF state comparison
 figure(2)
-sgtitle('Position Over Time')
-plot3(x_ECI(1,:), x_ECI(2,:), x_ECI(3,:))
+sgtitle(sprintf('Sim vs. Matlab\nECEF State Errors'))
+subplot(3,2,1)
+plot(t/3600, (x_ECEF(1,:) - RwrtOexpE(1,:))*1000, 'LineWidth', 1.5)
 hold on
-plot3(RwrtOexpN(1,:), RwrtOexpN(2,:), RwrtOexpN(3,:))
 grid on
-xlabel('x [km]')
-ylabel('y [km]')
-zlabel('z [km]')
-legend('ode45', 'sim')
+ylabel('RwrtOexpE_1 Error [m]')
+
+subplot(3,2,3)
+plot(t/3600, (x_ECEF(2,:) - RwrtOexpE(2,:))*1000, 'LineWidth', 1.5)
+hold on
+grid on
+ylabel('RwrtOexpE_2 Error [m]')
+
+subplot(3,2,5)
+plot(t/3600, (x_ECEF(3,:) - RwrtOexpE(3,:))*1000, 'LineWidth', 1.5)
+hold on
+grid on
+xlabel('Time [hr]')
+ylabel('RwrtOexpE_3 Error [m]')
+
+subplot(3,2,2)
+plot(t/3600, (x_ECEF(4,:) - VwrtOexpE(1,:))*1000, 'LineWidth', 1.5)
+hold on
+grid on
+ylabel('VwrtOexpE_1 Error [m/s]')
+
+subplot(3,2,4)
+plot(t/3600, (x_ECEF(5,:) - VwrtOexpE(2,:))*1000, 'LineWidth', 1.5)
+hold on
+grid on
+ylabel('VwrtOexpE_2 Error [m/s]')
+
+subplot(3,2,6)
+plot(t/3600, (x_ECEF(6,:) - VwrtOexpE(3,:))*1000, 'LineWidth', 1.5)
+hold on
+grid on
+xlabel('Time [hr]')
+ylabel('VwrtOexpE_3 Error [m/s]')
+
+% Sim vs. Matlab OE state comparison
+figure(3)
+sgtitle(sprintf('Sim vs. Matlab\nOrbital Element Errors'))
+subplot(3,2,1)
+plot(t/3600, (x_OE(1,:) - a)*1000, 'LineWidth', 1.5)
+hold on
+grid on
+ylabel(sprintf('Semimajor Axis Error [m]'))
+
+subplot(3,2,3)
+plot(t/3600, x_OE(2,:) - ecc, 'LineWidth', 1.5)
+hold on
+grid on
+ylabel(sprintf('Eccentricity Error [-]'))
+
+subplot(3,2,5)
+plot(t/3600, x_OE(3,:) - inc*(180/pi), 'LineWidth', 1.5)
+hold on
+grid on
+xlabel('Time [hr]')
+ylabel(sprintf('Inclination Error [deg]'))
+
+subplot(3,2,2)
+plot(t/3600, x_OE(4,:) - raan*(180/pi), 'LineWidth', 1.5)
+hold on
+grid on
+ylabel(sprintf('RAAN Error [deg]'))
+
+subplot(3,2,4)
+plot(t/3600, x_OE(5,:) - aop*(180/pi), 'LineWidth', 1.5)
+hold on
+grid on
+ylabel(sprintf('AOP Error [deg]'))
+
+subplot(3,2,6)
+plot(t/3600, x_OE(6,:) - ta*(180/pi), 'LineWidth', 1.5)
+hold on
+grid on
+xlabel('Time [hr]')
+ylabel(sprintf('True Anomaly Error [deg]'))
+
+% Sim vs. Matlab other parameter comparisons
+figure(4)
+sgtitle(sprintf('Sim vs. Matlab\nOther Parameter Errors'))
+subplot(3,2,1)
+plot(t/3600, gmst_mat - gmst*(180/pi), 'LineWidth', 1.5)
+hold on
+grid on
+ylabel('GMST Error [deg]')
+
+subplot(3,2,2)
+plot(t/3600, n_mat - n, 'LineWidth', 1.5)
+hold on
+grid on
+ylabel(sprintf('Mean Motion Error [rad/s]'))
+
+subplot(3,2,3)
+plot(t/3600, (E_mat - E)*(180/pi), 'LineWidth', 1.5)
+hold on
+grid on
+xlabel('Time [hr]')
+ylabel(sprintf('Eccentric Anomaly Error [deg]'))
+
+subplot(3,2,4)
+plot(t/3600, (M_mat - M)*(180/pi), 'LineWidth', 1.5)
+hold on
+grid on
+ylabel(sprintf('Mean Anomaly Error [deg]'))
+
+subplot(3,2,5)
+plot(t/3600, energy_mat - energy, 'LineWidth', 1.5)
+hold on
+grid on
+ylabel(sprintf('Specific Energy Error [deg]'))
+
+subplot(3,2,6)
+plot(t/3600, fpa_mat - fpa*(180/pi), 'LineWidth', 1.5)
+hold on
+grid on
+xlabel('Time [hr]')
+ylabel(sprintf('Flight Path Angle Error [deg]'))
+
 
 toc

@@ -1,5 +1,6 @@
 // ------- Preprocessor directives -------
 #include "Spacecraft.hh"
+#include "Scheduler.hh"
 #include "InputParser.hh"
 #include "Dynamics.hh"
 #include "Vector.hh"
@@ -10,15 +11,15 @@
 // ------- Namespace directives -------
 
 // ------- Class Definition -------
-Spacecraft::Spacecraft(const std::string& name) :
-	Model(name)
+Spacecraft::Spacecraft(const std::string& name, Earth* pEarth) :
+	Model(name), _pEarth { pEarth }
 {
 	// ------- Spacecraft Inputs -------
 	const std::string inputFileName { "spacecraft.json" };
 	InputParser* pInputFile = new InputParser(inputFileName);
 
 	// build spacecraft body
-	_body = new SpacecraftBody();
+	_body = new SpacecraftBody(pEarth);
 
 	// get spacecraft initial state
 	for ( std::size_t i { 0 }; i < 3; ++i )
@@ -81,6 +82,7 @@ void Spacecraft::initModel()
 	registerOutput("E", _body->E);
 	registerOutput("M", _body->M);
 	registerOutput("n", _body->n);
+	registerOutput("P", _body->P);
 	registerOutput("energy", _body->energy);
 	registerOutput("fpa", _body->fpa);
 

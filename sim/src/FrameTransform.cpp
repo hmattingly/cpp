@@ -3,8 +3,10 @@
 */ 
 #include "FrameTransform.hh"
 #include "Matrix.hh"
+#include "CelestialBody.hh"
 #include <cmath>	// for std::sqrt(), std::acos(), etc.
 #include <cassert>	// for assert
+#include <cstddef>  // for std::size_t
 
 /*
 ** -------------- Constants ---------------
@@ -69,64 +71,73 @@ const Matrix3 FrameTransform::getRot3(const double& theta)
 	};
 }
 
-void FrameTransform::setEulerAngles121(const double& psi, const double& theta, const double& phi)
+// Euler a-b-c = Rotc(psi)*Rotb(theta)*Rota(phi)
+  // phi = first rotation angle
+  // theta = second rotation angle
+  // psi = third rotation angle
+
+  // a = first rotation axis
+  // b = second rotation axis
+  // c = third rotation axis
+
+void FrameTransform::setEulerAngles121(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot1( phi ) * FrameTransform::getRot2( theta ) * FrameTransform::getRot1( psi );
+	_dcm = FrameTransform::getRot1( psi ) * FrameTransform::getRot2( theta ) * FrameTransform::getRot1( phi );
 }
 
-void FrameTransform::setEulerAngles123(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles123(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot3( phi ) * FrameTransform::getRot2( theta ) * FrameTransform::getRot1( psi );
+	_dcm = FrameTransform::getRot3( psi ) * FrameTransform::getRot2( theta ) * FrameTransform::getRot1( phi );
 }
 
-void FrameTransform::setEulerAngles131(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles131(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot1( phi ) * FrameTransform::getRot3( theta ) * FrameTransform::getRot1( psi );
+	_dcm = FrameTransform::getRot1( psi ) * FrameTransform::getRot3( theta ) * FrameTransform::getRot1( phi );
 }
 
-void FrameTransform::setEulerAngles132(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles132(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot2( phi ) * FrameTransform::getRot3( theta ) * FrameTransform::getRot1( psi );
+	_dcm = FrameTransform::getRot2( psi ) * FrameTransform::getRot3( theta ) * FrameTransform::getRot1( phi );
 }
 
-void FrameTransform::setEulerAngles212(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles212(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot2( phi ) * FrameTransform::getRot1( theta ) * FrameTransform::getRot2( psi );
+	_dcm = FrameTransform::getRot2( psi ) * FrameTransform::getRot1( theta ) * FrameTransform::getRot2( phi );
 }
 
-void FrameTransform::setEulerAngles213(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles213(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot3( phi ) * FrameTransform::getRot1( theta ) * FrameTransform::getRot2( psi );
+	_dcm = FrameTransform::getRot3( psi ) * FrameTransform::getRot1( theta ) * FrameTransform::getRot2( phi );
 }
 
-void FrameTransform::setEulerAngles231(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles231(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot1( phi ) * FrameTransform::getRot3( theta ) * FrameTransform::getRot2( psi );
+	_dcm = FrameTransform::getRot1( psi ) * FrameTransform::getRot3( theta ) * FrameTransform::getRot2( phi );
 }
 
-void FrameTransform::setEulerAngles232(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles232(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot2( phi ) * FrameTransform::getRot3( theta ) * FrameTransform::getRot2( psi );
+	_dcm = FrameTransform::getRot2( psi ) * FrameTransform::getRot3( theta ) * FrameTransform::getRot2( phi );
 }
 
-void FrameTransform::setEulerAngles312(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles312(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot2( phi ) * FrameTransform::getRot1( theta ) * FrameTransform::getRot3( psi );
+	_dcm = FrameTransform::getRot2( psi ) * FrameTransform::getRot1( theta ) * FrameTransform::getRot3( phi );
 }
 
-void FrameTransform::setEulerAngles313(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles313(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot3( phi ) * FrameTransform::getRot1( theta ) * FrameTransform::getRot3( psi );
+	_dcm = FrameTransform::getRot3( psi ) * FrameTransform::getRot1( theta ) * FrameTransform::getRot3( phi );
 }
 
-void FrameTransform::setEulerAngles321(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles321(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot1( phi ) * FrameTransform::getRot2( theta ) * FrameTransform::getRot3( psi );
+	_dcm = FrameTransform::getRot1( psi ) * FrameTransform::getRot2( theta ) * FrameTransform::getRot3( phi );
 }
 
-void FrameTransform::setEulerAngles323(const double& psi, const double& theta, const double& phi)
+void FrameTransform::setEulerAngles323(const double& phi, const double& theta, const double& psi)
 {
-	_dcm = FrameTransform::getRot3( phi ) * FrameTransform::getRot2( theta ) * FrameTransform::getRot3( psi );
+	_dcm = FrameTransform::getRot3( psi ) * FrameTransform::getRot2( theta ) * FrameTransform::getRot3( phi );
 }
 
 void FrameTransform::setL2N(const double& inc, const double& raan, const double& aol)
@@ -149,12 +160,18 @@ void FrameTransform::setN2P(const double& inc, const double& raan, const double&
 	setEulerAngles313( raan, inc, aop );
 }
 
-void FrameTransform::setE2N(const double& gmst)
+void FrameTransform::setE2N(Earth* pEarth)
 {
-	_dcm = FrameTransform::getRot3( -1.0 * gmst );
+	_dcm = pEarth->getPrecessionDCM().transpose()
+		   * pEarth->getNutationDCM().transpose()
+		   * pEarth->getEarthRotationDCM().transpose() 
+		   * pEarth->getPolarMotionDCM().transpose();
 }
 
-void FrameTransform::setN2E(const double& gmst)
+void FrameTransform::setN2E(Earth* pEarth)
 {
-	_dcm = FrameTransform::getRot3( gmst );
+	_dcm = pEarth->getPolarMotionDCM() 
+		   * pEarth->getEarthRotationDCM()
+		   * pEarth->getNutationDCM()
+		   * pEarth->getPrecessionDCM();
 }

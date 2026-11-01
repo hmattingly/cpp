@@ -23,7 +23,6 @@
 /*
 ** --------- Namespace directives ---------
 */ 
-using namespace CelestialBodies;
 using namespace Constants;
 
 namespace CoordinateTransform
@@ -55,8 +54,8 @@ namespace CoordinateTransform
 		double VwrtOexpNmag { VwrtOexpN.mag() };
 
 		return Vector3 {
-			( ( VwrtOexpNmag * VwrtOexpNmag - EARTH.mu / RwrtOexpNmag ) 
-			* RwrtOexpN - dot( RwrtOexpN, VwrtOexpN ) * VwrtOexpN ) / EARTH.mu
+			( ( VwrtOexpNmag * VwrtOexpNmag - Earth::mu / RwrtOexpNmag ) 
+			* RwrtOexpN - dot( RwrtOexpN, VwrtOexpN ) * VwrtOexpN ) / Earth::mu
 		};
 	}
 
@@ -79,7 +78,7 @@ namespace CoordinateTransform
 		}
 		else
 		{
-			return -1.0 * EARTH.mu * RwrtOexpNmag / ( VwrtOexpNmag * VwrtOexpNmag * RwrtOexpNmag - 2.0 * EARTH.mu );
+			return -1.0 * Earth::mu * RwrtOexpNmag / ( VwrtOexpNmag * VwrtOexpNmag * RwrtOexpNmag - 2.0 * Earth::mu );
 		}
 	}
 
@@ -92,7 +91,7 @@ namespace CoordinateTransform
 		}
 		else
 		{
-			return -1.0 * EARTH.mu * RwrtOexpNmag / ( VwrtOexpNmag * VwrtOexpNmag * RwrtOexpNmag - 2.0 * EARTH.mu );
+			return -1.0 * Earth::mu * RwrtOexpNmag / ( VwrtOexpNmag * VwrtOexpNmag * RwrtOexpNmag - 2.0 * Earth::mu );
 		}
 	}
 
@@ -116,7 +115,7 @@ namespace CoordinateTransform
 	{
 		double HwrtOexpNmag { getSpecAngularMomentum( RwrtOexpN, VwrtOexpN ).mag() };
 		
-		return HwrtOexpNmag * HwrtOexpNmag / EARTH.mu;
+		return HwrtOexpNmag * HwrtOexpNmag / Earth::mu;
 	}
 
 	// (overload) semilatus rectum (p) given semimajor axis and eccentricity magnitude
@@ -135,7 +134,7 @@ namespace CoordinateTransform
 	// (overload) semilatus rectum (p) given specific angular momentum magnitude
 	const double getSemilatusRectum(const double& HwrtOexpNmag)
 	{
-		return HwrtOexpNmag * HwrtOexpNmag / EARTH.mu;
+		return HwrtOexpNmag * HwrtOexpNmag / Earth::mu;
 	}
 
 	// apoapsis (Ra) given ECI position and velocity
@@ -188,7 +187,7 @@ namespace CoordinateTransform
 		double a { getSemimajorAxis( RwrtOexpN, VwrtOexpN) };
 		assert(a > 0.0);
 
-		return std::sqrt( EARTH.mu / ( a * a * a ) );
+		return std::sqrt( Earth::mu / ( a * a * a ) );
 	}
 
 	// (overload) mean motion (n) given semimajor axis
@@ -196,19 +195,19 @@ namespace CoordinateTransform
 	{
 		assert(a > 0.0);
 
-		return std::sqrt( EARTH.mu / ( a * a * a ) );
+		return std::sqrt( Earth::mu / ( a * a * a ) );
 	}
 
 	// specific energy (energy) given ECI position and velocity
 	const double getSpecEnergy(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
 	{
-		return 0.5 * VwrtOexpN.mag2() - EARTH.mu / RwrtOexpN.mag();
+		return 0.5 * VwrtOexpN.mag2() - Earth::mu / RwrtOexpN.mag();
 	}
 
 	// (overload) specific energy (energy) given semimajor axis
 	inline const double getSpecEnergy(const double& a)
 	{
-		return -0.5 * EARTH.mu / a;
+		return -0.5 * Earth::mu / a;
 	}
 
 	// inclination (inc) given ECI position and velocity
@@ -564,7 +563,7 @@ namespace CoordinateTransform
 
 		// velocity in perifocal frame
 		Vector3 VwrtOexpP { ZERO_VECTOR3 };
-		double sqrtMuOP { std::sqrt( EARTH.mu / p ) };
+		double sqrtMuOP { std::sqrt( Earth::mu / p ) };
 		VwrtOexpP[0] = -1.0 * sqrtMuOP * sTheta;
 		VwrtOexpP[1] = sqrtMuOP * ( ecc + cTheta );
 

@@ -6,7 +6,6 @@
 #include "Model.hh"
 #include "Vector.hh"
 #include "Dynamics.hh"
-#include "SpacecraftBody.hh"
 #include <cstddef>  // for std::size_t
 #include <string>	// for std::string
 
@@ -14,11 +13,13 @@
 
 
 // ------ Forward Declarations -------
-
+class Earth;
+class SpacecraftBody;
 
 // ------- Class Definition -------
 class Spacecraft : public Model
 {
+	Earth* _pEarth { nullptr };
 	SpacecraftBody* _body { nullptr };
 	DynamicsOptions _dynamicsOptions;
 	Dynamics* _pDynamics[MAX_DYNAMIC] { nullptr };
@@ -29,7 +30,7 @@ public:
 	Spacecraft() = delete;
 
 	// parameterized constructor
-	Spacecraft(const std::string& pName);
+	Spacecraft(const std::string& name, Earth* pEarth);
 
 	// destructor
 	~Spacecraft();

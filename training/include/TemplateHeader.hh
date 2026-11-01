@@ -25,7 +25,6 @@
 */ 
 class Template
 {
-private:
 	int _variable { 0 };
 
 public:

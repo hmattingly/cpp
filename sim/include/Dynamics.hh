@@ -93,8 +93,6 @@ public:
 */ 
 class J2Dynamics : public Dynamics
 {
-	const double _J2;
-
 public:
 	// default constructor
 	J2Dynamics() = delete;
@@ -118,7 +116,6 @@ public:
 */ 
 class J3Dynamics : public Dynamics
 {
-	const double _J3;
 
 public:
 	// default constructor
@@ -143,7 +140,6 @@ public:
 */ 
 class J4Dynamics : public Dynamics
 {
-	const double _J4;
 
 public:
 	// default constructor

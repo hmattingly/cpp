@@ -3,6 +3,7 @@
 #include "Scheduler.hh"
 #include "Integrator.hh"
 #include "Spacecraft.hh"
+#include "CelestialBody.hh"
 #include "Epoch.hh"
 #include <chrono>		// for steady_clock
 #include <cstdio>		// for printf
@@ -58,7 +59,11 @@ int main(int argc, char* argv[])
 	RK4* pIntegratorRK4 = new RK4(timeStepRK4);
 
 	// build models
-	Spacecraft* pSpacecraft = new Spacecraft("Spacecraft");
+	Earth* pEarth = new Earth();
+	pEarth->setXp(5.345667963089925e-07);
+	pEarth->setYp(1.607037482694467e-06);
+	pIntegratorRK4->registerModel(pEarth);  // ensure Earth is registered first
+	Spacecraft* pSpacecraft = new Spacecraft("Spacecraft", pEarth);
 	pIntegratorRK4->registerModel(pSpacecraft);
 	
 	// run sim

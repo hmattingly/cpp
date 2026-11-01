@@ -21,6 +21,7 @@
 /*
 ** --------- Namespace directives ---------
 */ 
+class Earth;
 
 /*
 ** ----------- Class Definition ------------
@@ -55,25 +56,25 @@ public:
 	Matrix3 getDCM() const { return _dcm; }
 
 	// setter functions
-	void setEulerAngles121(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles123(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles131(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles132(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles212(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles213(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles231(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles232(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles312(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles313(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles321(const double& psi, const double& theta, const double& phi);
-	void setEulerAngles323(const double& psi, const double& theta, const double& phi);
+	void setEulerAngles121(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles123(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles131(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles132(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles212(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles213(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles231(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles232(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles312(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles313(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles321(const double& phi, const double& theta, const double& psi);
+	void setEulerAngles323(const double& phi, const double& theta, const double& psi);
 
 	void setL2N(const double& inc, const double& raan, const double& aol);
 	void setN2L(const double& inc, const double& raan, const double& aol);
 	void setP2N(const double& inc, const double& raan, const double& aop);
 	void setN2P(const double& inc, const double& raan, const double& aop);
-	void setE2N(const double& gmst);
-	void setN2E(const double& gmst);
+	void setE2N(Earth* pEarth);
+	void setN2E(Earth* pEarth);
 	
 };
 

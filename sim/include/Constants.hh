@@ -20,12 +20,16 @@ namespace Constants
 	inline constexpr double c 		{ 299'792.457999 };			// speed of light in km/s
 
 	// angle conversions
-	inline constexpr double RAD2DEG { 180.0 / PI };			// radians to degrees
-	inline constexpr double DEG2RAD { PI / 180.0 };			// degrees to radians
-	inline constexpr double DEG2ARC { 3600.0 };				// degrees to arcseconds
-	inline constexpr double ARC2DEG { 1.0 / 3600.0 };		// arcseconds to degrees
-	inline constexpr double ARC2RAD { ARC2DEG * DEG2RAD };	// arcseconds to radians
-	inline constexpr double RAD2ARC { RAD2DEG * DEG2ARC };	// radians to arcseconds
+	inline constexpr double RAD2DEG    { 180.0 / PI };			// radians to degrees
+	inline constexpr double DEG2RAD    { 1.0 / RAD2DEG };		// degrees to radians
+	inline constexpr double DEG2ARCMIN { 60.0 };				// degrees to arcminutes
+	inline constexpr double ARCMIN2DEG { 1.0 / DEG2ARCMIN };	// arcminutes to degrees
+	inline constexpr double ARCMIN2RAD { ARCMIN2DEG * DEG2RAD };// arcminutes to radians
+	inline constexpr double RAD2ARCMIN { RAD2DEG * DEG2ARCMIN };// radians to arcminutes
+	inline constexpr double DEG2ARCSEC { 3600.0 };				// degrees to arcseconds
+	inline constexpr double ARCSEC2DEG { 1.0 / DEG2ARCSEC };	// arcseconds to degrees
+	inline constexpr double ARCSEC2RAD { ARCSEC2DEG * DEG2RAD };// arcseconds to radians
+	inline constexpr double RAD2ARCSEC { RAD2DEG * DEG2ARCSEC };// radians to arcseconds
 
 	// time conversions
 	inline constexpr double SOLAR_DAY 		{ 86'400.0 };			// solar day in seconds

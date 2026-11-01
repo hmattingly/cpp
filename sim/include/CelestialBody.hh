@@ -1,74 +1,254 @@
-// ------- Header Guard -------
+/*
+** ------------ Header Guard -------------
+*/ 
 #ifndef CELESTIALBODY_HH  
 #define CELESTIALBODY_HH
 
-// ------- Preprocessor directives -------
-#include "Constants.hh"
+/*
+** ------- Preprocessor directives -------
+*/ 
 #include "Vector.hh"
-#include <optional>			// for std::optional<>
+#include "Matrix.hh"
+#include "Model.hh"
+#include "Constants.hh"
 #include <string>			// for std::string
 
-// ------- Struct Definition -------
-struct CelestialBody
-{
-	const std::string name;
-	double mu;
-	double radius;
+/*
+** -------------- Constants ---------------
+*/ 
 
-	std::optional<double> J2;
-	std::optional<double> J3;
-	std::optional<double> J4;
-	std::optional<double> eccentricity;
-	std::optional<double> epsilon; 			// mean obliquity of the ecliptic
-	std::optional<double> siderealDay;		// length of sidereal day in seconds
-	std::optional<Vector3> omega;			// rotation rate
+/*
+** -------- Forward Declarations ----------
+*/ 
+class Epoch;
+
+/*
+** --------- Namespace directives ---------
+*/ 
+namespace EarthOrientation
+{
+    inline constexpr std::size_t NUTATION_ROW_COUNT { 106 };
+    inline constexpr std::size_t NUTATION_COL_COUNT { 9 };
+
+    using NutationTable =
+        Matrix<NUTATION_ROW_COUNT, NUTATION_COL_COUNT>;
+
+    inline const NutationTable NUTATION_COEFF {
+        {  0,  0,  0,  0, 1, -171996.0, -174.2,  92025.0,  8.9 },
+        {  0,  0,  0,  0, 2,    2062.0,    0.2,   -895.0,  0.5 },
+        { -2,  0,  2,  0, 1,      46.0,    0.0,    -24.0,  0.0 },
+        {  2,  0, -2,  0, 0,      11.0,    0.0,      0.0,  0.0 },
+        { -2,  0,  2,  0, 2,      -3.0,    0.0,      1.0,  0.0 },
+        {  1, -1,  0, -1, 0,      -3.0,    0.0,      0.0,  0.0 },
+        {  0, -2,  2, -2, 1,      -2.0,    0.0,      1.0,  0.0 },
+        {  2,  0, -2,  0, 1,       1.0,    0.0,      0.0,  0.0 },
+        {  0,  0,  2, -2, 2,  -13187.0,   -1.6,   5736.0, -3.1 },
+        {  0,  1,  0,  0, 0,    1426.0,   -3.4,     54.0, -0.1 },
+        {  0,  1,  2, -2, 2,    -517.0,    1.2,    224.0, -0.6 },
+        {  0, -1,  2, -2, 2,     217.0,   -0.5,    -95.0,  0.3 },
+        {  0,  0,  2, -2, 1,     129.0,    0.1,    -70.0,  0.0 },
+        {  2,  0,  0, -2, 0,      48.0,    0.0,      1.0,  0.0 },
+        {  0,  0,  2, -2, 0,     -22.0,    0.0,      0.0,  0.0 },
+        {  0,  2,  0,  0, 0,      17.0,   -0.1,      0.0,  0.0 },
+        {  0,  1,  0,  0, 1,     -15.0,    0.0,      9.0,  0.0 },
+        {  0,  2,  2, -2, 2,     -16.0,    0.1,      7.0,  0.0 },
+        {  0, -1,  0,  0, 1,     -12.0,    0.0,      6.0,  0.0 },
+        { -2,  0,  0,  2, 1,      -6.0,    0.0,      3.0,  0.0 },
+        {  0, -1,  2, -2, 1,      -5.0,    0.0,      3.0,  0.0 },
+        {  2,  0,  0, -2, 1,       4.0,    0.0,     -2.0,  0.0 },
+        {  0,  1,  2, -2, 1,       4.0,    0.0,     -2.0,  0.0 },
+        {  1,  0,  0, -1, 0,      -4.0,    0.0,      0.0,  0.0 },
+        {  2,  1,  0, -2, 0,       1.0,    0.0,      0.0,  0.0 },
+        {  0,  0, -2,  2, 1,       1.0,    0.0,      0.0,  0.0 },
+        {  0,  1, -2,  2, 0,      -1.0,    0.0,      0.0,  0.0 },
+        {  0,  1,  0,  0, 2,       1.0,    0.0,      0.0,  0.0 },
+        { -1,  0,  0,  1, 1,       1.0,    0.0,      0.0,  0.0 },
+        {  0,  1,  2, -2, 0,      -1.0,    0.0,      0.0,  0.0 },
+        {  0,  0,  2,  0, 2,   -2274.0,   -0.2,    977.0, -0.5 },
+        {  1,  0,  0,  0, 0,     712.0,    0.1,     -7.0,  0.0 },
+        {  0,  0,  2,  0, 1,    -386.0,   -0.4,    200.0,  0.0 },
+        {  1,  0,  2,  0, 2,    -301.0,    0.0,    129.0, -0.1 },
+        {  1,  0,  0, -2, 0,    -158.0,    0.0,     -1.0,  0.0 },
+        { -1,  0,  2,  0, 2,     123.0,    0.0,    -53.0,  0.0 },
+        {  0,  0,  0,  2, 0,      63.0,    0.0,     -2.0,  0.0 },
+        {  1,  0,  0,  0, 1,      63.0,    0.1,    -33.0,  0.0 },
+        { -1,  0,  0,  0, 1,     -58.0,   -0.1,     32.0,  0.0 },
+        { -1,  0,  2,  2, 2,     -59.0,    0.0,     26.0,  0.0 },
+        {  1,  0,  2,  0, 1,     -51.0,    0.0,     27.0,  0.0 },
+        {  0,  0,  2,  2, 2,     -38.0,    0.0,     16.0,  0.0 },
+        {  2,  0,  0,  0, 0,      29.0,    0.0,     -1.0,  0.0 },
+        {  1,  0,  2, -2, 2,      29.0,    0.0,    -12.0,  0.0 },
+        {  2,  0,  2,  0, 2,     -31.0,    0.0,     13.0,  0.0 },
+        {  0,  0,  2,  0, 0,      26.0,    0.0,     -1.0,  0.0 },
+        { -1,  0,  2,  0, 1,      21.0,    0.0,    -10.0,  0.0 },
+        { -1,  0,  0,  2, 1,      16.0,    0.0,     -8.0,  0.0 },
+        {  1,  0,  0, -2, 1,     -13.0,    0.0,      7.0,  0.0 },
+        { -1,  0,  2,  2, 1,     -10.0,    0.0,      5.0,  0.0 },
+        {  1,  1,  0, -2, 0,      -7.0,    0.0,      0.0,  0.0 },
+        {  0,  1,  2,  0, 2,       7.0,    0.0,     -3.0,  0.0 },
+        {  0, -1,  2,  0, 2,      -7.0,    0.0,      3.0,  0.0 },
+        {  1,  0,  2,  2, 2,      -8.0,    0.0,      3.0,  0.0 },
+        {  1,  0,  0,  2, 0,       6.0,    0.0,      0.0,  0.0 },
+        {  2,  0,  2, -2, 2,       6.0,    0.0,     -3.0,  0.0 },
+        {  0,  0,  0,  2, 1,      -6.0,    0.0,      3.0,  0.0 },
+        {  0,  0,  2,  2, 1,      -7.0,    0.0,      3.0,  0.0 },
+        {  1,  0,  2, -2, 1,       6.0,    0.0,     -3.0,  0.0 },
+        {  0,  0,  0, -2, 1,      -5.0,    0.0,      3.0,  0.0 },
+        {  1, -1,  0,  0, 0,       5.0,    0.0,      0.0,  0.0 },
+        {  2,  0,  2,  0, 1,      -5.0,    0.0,      3.0,  0.0 },
+        {  0,  1,  0, -2, 0,      -4.0,    0.0,      0.0,  0.0 },
+        {  1,  0, -2,  0, 0,       4.0,    0.0,      0.0,  0.0 },
+        {  0,  0,  0,  1, 0,      -4.0,    0.0,      0.0,  0.0 },
+        {  1,  1,  0,  0, 0,      -3.0,    0.0,      0.0,  0.0 },
+        {  1,  0,  2,  0, 0,       3.0,    0.0,      0.0,  0.0 },
+        {  1, -1,  2,  0, 2,      -3.0,    0.0,      1.0,  0.0 },
+        { -1, -1,  2,  2, 2,      -3.0,    0.0,      1.0,  0.0 },
+        { -2,  0,  0,  0, 1,      -2.0,    0.0,      1.0,  0.0 },
+        {  3,  0,  2,  0, 2,      -3.0,    0.0,      1.0,  0.0 },
+        {  0, -1,  2,  2, 2,      -3.0,    0.0,      1.0,  0.0 },
+        {  1,  1,  2,  0, 2,       2.0,    0.0,     -1.0,  0.0 },
+        { -1,  0,  2, -2, 1,      -2.0,    0.0,      1.0,  0.0 },
+        {  2,  0,  0,  0, 1,       2.0,    0.0,     -1.0,  0.0 },
+        {  1,  0,  0,  0, 2,      -2.0,    0.0,      1.0,  0.0 },
+        {  3,  0,  0,  0, 0,       2.0,    0.0,      0.0,  0.0 },
+        {  0,  0,  2,  1, 2,       2.0,    0.0,     -1.0,  0.0 },
+        { -1,  0,  0,  0, 2,       1.0,    0.0,     -1.0,  0.0 },
+        {  1,  0,  0, -4, 0,      -1.0,    0.0,      0.0,  0.0 },
+        { -2,  0,  2,  2, 2,       1.0,    0.0,     -1.0,  0.0 },
+        { -1,  0,  2,  4, 2,      -2.0,    0.0,      1.0,  0.0 },
+        {  2,  0,  0, -4, 0,      -1.0,    0.0,      0.0,  0.0 },
+        {  1,  1,  2, -2, 2,       1.0,    0.0,     -1.0,  0.0 },
+        {  1,  0,  2,  2, 1,      -1.0,    0.0,      1.0,  0.0 },
+        { -2,  0,  2,  4, 2,      -1.0,    0.0,      1.0,  0.0 },
+        { -1,  0,  4,  0, 2,       1.0,    0.0,      0.0,  0.0 },
+        {  1, -1,  0, -2, 0,       1.0,    0.0,      0.0,  0.0 },
+        {  2,  0,  2, -2, 1,       1.0,    0.0,     -1.0,  0.0 },
+        {  2,  0,  2,  2, 2,      -1.0,    0.0,      0.0,  0.0 },
+        {  1,  0,  0,  2, 1,      -1.0,    0.0,      0.0,  0.0 },
+        {  0,  0,  4, -2, 2,       1.0,    0.0,      0.0,  0.0 },
+        {  3,  0,  2, -2, 2,       1.0,    0.0,      0.0,  0.0 },
+        {  1,  0,  2, -2, 0,      -1.0,    0.0,      0.0,  0.0 },
+        {  0,  1,  2,  0, 1,       1.0,    0.0,      0.0,  0.0 },
+        { -1, -1,  0,  2, 1,       1.0,    0.0,      0.0,  0.0 },
+        {  0,  0, -2,  0, 1,      -1.0,    0.0,      0.0,  0.0 },
+        {  0,  0,  2, -1, 2,      -1.0,    0.0,      0.0,  0.0 },
+        {  0,  1,  0,  2, 0,      -1.0,    0.0,      0.0,  0.0 },
+        {  1,  0, -2, -2, 0,      -1.0,    0.0,      0.0,  0.0 },
+        {  0, -1,  2,  0, 1,      -1.0,    0.0,      0.0,  0.0 },
+        {  1,  1,  0, -2, 1,      -1.0,    0.0,      0.0,  0.0 },
+        {  1,  0, -2,  2, 0,      -1.0,    0.0,      0.0,  0.0 },
+        {  2,  0,  0,  2, 0,       1.0,    0.0,      0.0,  0.0 },
+        {  0,  0,  2,  4, 2,      -1.0,    0.0,      0.0,  0.0 },
+        {  0,  1,  0,  1, 0,       1.0,    0.0,      0.0,  0.0 }
+    };
+}
+
+/*
+** ----------- Class Definition ------------
+*/ 
+class Earth : public Model
+{
+	Epoch* _pEpoch { nullptr };
+
+	double _gmst { 0.0 };						// Greenwich mean sidereal time in rad
+	double _gast { 0.0 };						// Greenwich apparent sidereal time in rad
+	double _trueEpsilon { .409092804028403 };	// true obliquity of the ecliptic in rad (initialized to J2000)
+	double _meanEpsilon { .409092804028403 }; 	// mean obliquity of the ecliptic in rad (initialized to J2000)
+	double _xp { 2.102636934972058e-07 };		// polar motion x in rad (initialized to J2000)
+	double _yp { 1.831747290652104e-06 };		// polar motion y in rad (initialized to J2000)
+	double _dPsi { -6.750247617532480e-05 };	// nutation of longitude in rad (initialized to J2000)
+	Matrix3 _PI { IDENTITY_MATRIX3 };			// polar motion DCM
+	Matrix3 _TH { IDENTITY_MATRIX3 };			// Greenwich DCM
+	Matrix3 _NU { IDENTITY_MATRIX3 };			// nutation DCM
+	Matrix3 _PR { IDENTITY_MATRIX3 };			// precession DCM
+
+public:
+	static inline const std::string name { "Earth" };						// name of body
+	static inline const double mu { 5.972168489579432e+24 * Constants::G };	// gravitational parameter in km^3/s^2
+	static inline const double radius { 6378.1363 };						// mean equatorial radius in km
+	static inline const double J2 { .001082626174 };						// J2 harmonic coefficient (unitless)
+	static inline const double J3 { -.000002532411 };						// J3 harmonic coefficient (unitless)
+	static inline const double J4 { -.000001619897 };						// J4 harmonic coefficient (unitless)
+	static inline const double eccentricity { .081919084262 };			// geometric eccentricity (unitless)
+	static inline const Vector3 omega { {0.0, 0.0, .00007292115} };		// rotation rate in rad/s
+	static inline const EarthOrientation::NutationTable& nutationCoeff { EarthOrientation::NUTATION_COEFF };	// IAU 1980 nutation coefficients
+
+	// default constructor
+	Earth();
+
+	// destructor
+	~Earth() = default;
+
+	// forward declarations
+	virtual void initModel() override;
+	virtual void updateDerivs() override;
+	virtual void updateStateDependents() override;
+
+	// access functions
+	const double& getGMST() const { return _gmst; }
+	const double& getGAST() const { return _gast; }
+	const double& getTrueEpsilon() const { return _trueEpsilon; }
+	const double& getMeanEpsilon() const { return _meanEpsilon; }
+	const double& getXp() const { return _xp; }
+	const double& getYp() const { return _yp; }
+	const double& getDPsi() const { return _dPsi; }
+	const Matrix3& getPolarMotionDCM() const { return _PI; }
+	const Matrix3& getEarthRotationDCM() const { return _TH; }
+	const Matrix3& getNutationDCM() const { return _NU; }
+	const Matrix3& getPrecessionDCM() const { return _PR; }
+
+	// setter functions
+	void setXp(const double xp) { _xp = xp; }
+	void setYp(const double yp) { _yp = yp; }
 
 };
 
-// ------- Namespace directives -------
-namespace CelestialBodies
+/*
+** ----------- Class Definition ------------
+*/ 
+class Moon
 {
-	inline const CelestialBody EARTH 
-	{
-		"Earth",								// name
-		5.972168489579432e+24 * Constants::G,	// gravitational parameter in km^3/s^2
-		6378.1363,								// equatorial radius in km
-		.001082626174,							// J2 (unitless)
-		-.000002532411,							// J3 (unitless)
-		-.000001619897,							// J4 (unitless)
-		.081919084262,							// eccentricity (unitless)
-		.409092804028403,						// mean obliquity of the ecliptic in rad
-		86164.0905308,							// sidereal day in seconds
-		Vector3 {0.0, 0.0, .00007292115}		// rotation rate in rad/s
-	};
+public:
+	static inline const std::string name { "Moon" };						// name of body
+	static inline const double mu { 7.345789943736122e+22 * Constants::G };	// gravitational parameter in km^3/s^2
+	static inline const double radius { 1737.4 };							// mean equatorial radius in km
 
-	inline const CelestialBody MOON
-	{
-		"Moon",									// name	
-		7.345789943736122e+22 * Constants::G,	// gravitational parameter in km^3/s^2
-		1737.4,									// equatorial radius in km
-		std::nullopt,							// J2 (unitless)
-		std::nullopt,							// J3 (unitless)
-		std::nullopt,							// J4 (unitless)
-		std::nullopt,							// eccentricity (unitless)
-		std::nullopt,							// mean obliquity of the ecliptic in rad
-		std::nullopt,							// sidereal day in seconds
-		std::nullopt							// rotation rate in rad/s
-	};
+	// default constructor
+	Moon() = default;
 
-	inline const CelestialBody SUN
-	{
-		"Sun",									// name
-		1.988409870967592e+30 * Constants::G,	// gravitational parameter in km^3/s^2
-		695'700,								// equatorial radius in km
-		std::nullopt,							// J2 (unitless)
-		std::nullopt,							// J3 (unitless)
-		std::nullopt,							// J4 (unitless)
-		std::nullopt,							// eccentricity (unitless)
-		std::nullopt,							// mean obliquity of the ecliptic in rad
-		std::nullopt,							// sidereal day in seconds
-		std::nullopt							// rotation rate in rad/s
-	};
-}
+	// destructor
+	~Moon() = default;
 
-#endif // CELESTIALBODY_HH
+	// forward declarations
+
+	// access functions
+
+	// setter functions
+
+};
+
+/*
+** ----------- Class Definition ------------
+*/ 
+class Sun
+{
+public:
+	static inline const std::string name { "Sun" };							// name of body
+	static inline const double mu { 1.988409870967592e+30 * Constants::G };	// gravitational parameter in km^3/s^2
+	static inline const double radius { 695'700 };							// mean equatorial radius in km
+
+	// default constructor
+	Sun() = default;
+
+	// destructor
+	~Sun() = default;
+
+	// forward declarations
+
+	// access functions
+
+	// setter functions
+
+};
+
+#endif  // CELESTIALBODY_HH

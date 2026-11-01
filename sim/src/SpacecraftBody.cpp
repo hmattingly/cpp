@@ -23,9 +23,10 @@ using namespace CoordinateTransform;
 ** ----------- Class Definition ------------
 */ 
 
-SpacecraftBody::SpacecraftBody()
+SpacecraftBody::SpacecraftBody(Earth* pEarth) : 
+	_pEarth { pEarth }
 {
-	pEpoch = Scheduler::getEpoch();
+
 }
 
 void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
@@ -44,7 +45,7 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 	VwrtOmag2 = VwrtOmag * VwrtOmag;
 
 	// convert from ECI to ECEF
-	CfromNtoE.setN2E( pEpoch->getGMST() );
+	CfromNtoE.setN2E( _pEarth );
 	RwrtOexpE = CfromNtoE.getDCM() * RwrtOexpN;
 	VwrtOexpE = CfromNtoE.getDCM() * VwrtOexpN;
 
@@ -115,7 +116,7 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 	VwrtOmag2 = VwrtOmag * VwrtOmag;
 
 	// convert from ECI to ECEF
-	CfromNtoE.setN2E( pEpoch->getGMST() );
+	CfromNtoE.setN2E( _pEarth );
 	RwrtOexpE = CfromNtoE.getDCM() * RwrtOexpN;
 	VwrtOexpE = CfromNtoE.getDCM() * VwrtOexpN;
 
