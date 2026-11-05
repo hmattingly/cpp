@@ -25,7 +25,7 @@ Spacecraft::Spacecraft(const std::string& name, Earth* pEarth) :
 	for ( std::size_t i { 0 }; i < 3; ++i )
 	{
 		_body->RwrtOexpN[i] = pInputFile->inputFileData["initialState"]["RwrtOexpN"][i].get<double>();
-		_body->VwrtOexpN[i] = pInputFile->inputFileData["initialState"]["VwrtOexpN"][i].get<double>();
+		_body->VwrtNexpN[i] = pInputFile->inputFileData["initialState"]["VwrtNexpN"][i].get<double>();
 	}
 
 	// get spacecraft parameters
@@ -50,19 +50,20 @@ void Spacecraft::initModel()
 	// NOTE initModel() is executed when Model registered to Integrator
 
 	// register ECI states to be integrated
-	registerStates(_body->RwrtOexpN, _body->VwrtOexpN);
-	registerStates(_body->VwrtOexpN, _body->AwrtOexpN);
+	registerStates(_body->RwrtOexpN, _body->VwrtNexpN);
+	registerStates(_body->VwrtNexpN, _body->AwrtNexpN);
 
 	// register outputs with integrator
 	registerOutput("RwrtOexpN", _body->RwrtOexpN);
-	registerOutput("VwrtOexpN", _body->VwrtOexpN);
-	registerOutput("AwrtOexpN", _body->AwrtOexpN);
+	registerOutput("VwrtNexpN", _body->VwrtNexpN);
+	registerOutput("AwrtNexpN", _body->AwrtNexpN);
 	registerOutput("RwrtOexpE", _body->RwrtOexpE);
-	registerOutput("VwrtOexpE", _body->VwrtOexpE);
+	registerOutput("VwrtNexpE", _body->VwrtNexpE);
+	registerOutput("VwrtEexpE", _body->VwrtEexpE);
 	registerOutput("RwrtOexpL", _body->RwrtOexpL);
-	registerOutput("VwrtOexpL", _body->VwrtOexpL);
+	registerOutput("VwrtNexpL", _body->VwrtNexpL);
 	registerOutput("RwrtOexpP", _body->RwrtOexpP);
-	registerOutput("VwrtOexpP", _body->VwrtOexpP);
+	registerOutput("VwrtNexpP", _body->VwrtNexpP);
 
 	registerOutput("HwrtOexpN", _body->HwrtOexpN);
 	registerOutput("NwrtOexpNhat", _body->NwrtOexpNhat);
@@ -131,12 +132,12 @@ void Spacecraft::updateStateDependents()
 void Spacecraft::updateDerivs()
 {
 	// reset acceleration
-	_body->AwrtOexpN = { ZERO_VECTOR3 }; 
+	_body->AwrtNexpN = { ZERO_VECTOR3 }; 
 
 	// loop through each dynamics model and update acceleration term
 	for ( std::size_t i { 0 }; i < _numDynamics; ++i )
 	{
-		_body->AwrtOexpN += _pDynamics[i]->getAwrtOexpN();
+		_body->AwrtNexpN += _pDynamics[i]->getAwrtNexpN();
 	}
 }
 

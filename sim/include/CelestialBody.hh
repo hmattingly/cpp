@@ -183,6 +183,10 @@ public:
 	virtual void initModel() override;
 	virtual void updateDerivs() override;
 	virtual void updateStateDependents() override;
+	void calcPolarMotion();
+	void calcNutation();
+	void calcPrecession();
+	void calcEarthRotation();
 
 	// access functions
 	const double& getGMST() const { return _gmst; }

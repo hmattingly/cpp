@@ -1,4 +1,6 @@
-// ------- Preprocessor directives -------
+/*
+** ------- Preprocessor directives -------
+*/ 
 #include "InputParser.hh"
 #include "Scheduler.hh"
 #include "Integrator.hh"
@@ -10,12 +12,25 @@
 #include <filesystem>  	// for std::filesystem
 #include <string>		// for std::string
 
+/*
+** -------------- Constants ---------------
+*/ 
 
-// ------- Namespace directives -------
- 
-// ------- User-Defined Functions -------
- 
-// ------- MAIN -------
+/*
+** -------- Forward Declarations ----------
+*/ 
+
+/*
+** --------- Namespace directives ---------
+*/ 
+
+/*
+** -------- User-Defined Functions --------
+*/ 
+
+/*
+** ------------ Main Function -------------
+*/ 
 int main(int argc, char* argv[])
 {
 	auto simRealStartTime { std::chrono::steady_clock::now() };
@@ -60,9 +75,8 @@ int main(int argc, char* argv[])
 
 	// build models
 	Earth* pEarth = new Earth();
-	pEarth->setXp(5.345667963089925e-07);
-	pEarth->setYp(1.607037482694467e-06);
 	pIntegratorRK4->registerModel(pEarth);  // ensure Earth is registered first
+
 	Spacecraft* pSpacecraft = new Spacecraft("Spacecraft", pEarth);
 	pIntegratorRK4->registerModel(pSpacecraft);
 	
@@ -72,6 +86,7 @@ int main(int argc, char* argv[])
 	{
 		pScheduler->run();
 	}
+	
 	// display sim run time
 	auto simRealEndTime { std::chrono::steady_clock::now() };
     std::chrono::duration<double> elapsedTime = simRealEndTime - simRealStartTime;
@@ -83,6 +98,7 @@ int main(int argc, char* argv[])
 	delete pInputFile;
 	delete pScheduler;
 	delete pIntegratorRK4;
+	delete pEarth;
 	delete pSpacecraft;
 	delete pEpoch;
 }

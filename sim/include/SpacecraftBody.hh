@@ -26,6 +26,16 @@ class Earth;
 /*
 ** ---------- Class Definition -----------
 */ 
+
+// reference definitions
+  // O = Center of Earth
+  // B = Center of Mass of Body
+// frame definitions
+  // N = ECI
+  // E = ECEF
+  // P = Perifocal
+  // L = LVLH / RTN
+
 class SpacecraftBody
 {
 	Earth* _pEarth { nullptr };
@@ -39,8 +49,8 @@ public:
 
 	// ECI states
 	Vector3 RwrtOexpN { ZERO_VECTOR3 };
-	Vector3 VwrtOexpN { ZERO_VECTOR3 };
-	Vector3 AwrtOexpN { ZERO_VECTOR3 };
+	Vector3 VwrtNexpN { ZERO_VECTOR3 };
+	Vector3 AwrtNexpN { ZERO_VECTOR3 };
 
 	double RwrtOmag  { 0.0 };
 	double RwrtOmag2 { 0.0 };
@@ -49,23 +59,24 @@ public:
 	double RwrtOmag7 { 0.0 };
 	double RwrtOmag9 { 0.0 };
 
-	double VwrtOmag  { 0.0 };
-	double VwrtOmag2 { 0.0 };
+	double VwrtNmag  { 0.0 };
+	double VwrtNmag2 { 0.0 };
 
 	// ECEF states
 	FrameTransform CfromNtoE;
 	Vector3 RwrtOexpE { ZERO_VECTOR3 };
-	Vector3 VwrtOexpE { ZERO_VECTOR3 };
+	Vector3 VwrtNexpE { ZERO_VECTOR3 };
+	Vector3 VwrtEexpE { ZERO_VECTOR3 };
 
 	// LVLH / RTN states
 	FrameTransform CfromNtoL;
 	Vector3 RwrtOexpL { ZERO_VECTOR3 };
-	Vector3 VwrtOexpL { ZERO_VECTOR3 };
+	Vector3 VwrtNexpL { ZERO_VECTOR3 };
 
 	// Perifocal states
 	FrameTransform CfromNtoP;
 	Vector3 RwrtOexpP { ZERO_VECTOR3 };
-	Vector3 VwrtOexpP { ZERO_VECTOR3 };
+	Vector3 VwrtNexpP { ZERO_VECTOR3 };
 
 	// specific angular momentum
 	Vector3 HwrtOexpN 	 { ZERO_VECTOR3 };	// specific angular momentum

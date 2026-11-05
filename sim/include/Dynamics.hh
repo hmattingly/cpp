@@ -55,7 +55,7 @@ public:
 	virtual ~Dynamics() = default;
 
 	// forward declarations
-	virtual const Vector3 getAwrtOexpN() = 0;
+	virtual const Vector3 getAwrtNexpN() = 0;
 
 	// access functions
 
@@ -81,7 +81,7 @@ public:
 	~TwoBodyDynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtOexpN() override;
+	const Vector3 getAwrtNexpN() override;
 
 	// access functions
 
@@ -104,7 +104,7 @@ public:
 	~J2Dynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtOexpN() override;
+	const Vector3 getAwrtNexpN() override;
 
 	// access functions
 
@@ -128,7 +128,7 @@ public:
 	~J3Dynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtOexpN() override;
+	const Vector3 getAwrtNexpN() override;
 
 	// access functions
 
@@ -152,7 +152,7 @@ public:
 	~J4Dynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtOexpN() override;
+	const Vector3 getAwrtNexpN() override;
 
 	// access functions
 

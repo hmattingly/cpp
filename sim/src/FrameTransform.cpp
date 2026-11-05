@@ -20,6 +20,9 @@
 ** --------- Namespace directives ---------
 */ 
 
+// reference definitions
+  // O = Center of Earth
+  // B = Center of Mass of Body
 // frame definitions
   // N = ECI
   // E = ECEF

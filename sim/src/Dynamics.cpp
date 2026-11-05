@@ -39,7 +39,7 @@ TwoBodyDynamics::TwoBodyDynamics(SpacecraftBody* body) :
 
 }
 
-const Vector3 TwoBodyDynamics::getAwrtOexpN()
+const Vector3 TwoBodyDynamics::getAwrtNexpN()
 {
 	return ( -1.0 * Earth::mu / _body->RwrtOmag3 * _body->RwrtOexpN );
 }
@@ -54,7 +54,7 @@ J2Dynamics::J2Dynamics(SpacecraftBody* body) :
 
 }
 
-const Vector3 J2Dynamics::getAwrtOexpN()
+const Vector3 J2Dynamics::getAwrtNexpN()
 {
 	return ( -1.5 * Earth::mu * Earth::radius * Earth::radius * Earth::J2
 			 / _body->RwrtOmag5
@@ -73,10 +73,10 @@ J3Dynamics::J3Dynamics(SpacecraftBody* body) :
 
 }
 
-const Vector3 J3Dynamics::getAwrtOexpN()
+const Vector3 J3Dynamics::getAwrtNexpN()
 {
 	Matrix3 CfromEtoN { _body->CfromNtoE.getDCM().transpose() };
-	Vector3 AwrtOexpE { 
+	Vector3 AwrtNexpE { 
 		-1.0 * Earth::mu * Earth::radius * Earth::radius * Earth::radius * Earth::J3
 		/ ( 2.0 * _body->RwrtOmag7 ) * ( ( 15.0 * _body->RwrtOexpE[2] 
 		- 35.0 * _body->RwrtOexpE[2] * _body->RwrtOexpE[2] * _body->RwrtOexpE[2] 
@@ -84,7 +84,7 @@ const Vector3 J3Dynamics::getAwrtOexpN()
 		* _body->RwrtOexpE[2] - 3.0 * _body->RwrtOmag2 ) * Z_UNIT_VECTOR3 )
 	};
 
-	return CfromEtoN * AwrtOexpE;
+	return CfromEtoN * AwrtNexpE;
 	
 }
 
@@ -98,10 +98,10 @@ J4Dynamics::J4Dynamics(SpacecraftBody* body) :
 
 }
 
-const Vector3 J4Dynamics::getAwrtOexpN()
+const Vector3 J4Dynamics::getAwrtNexpN()
 {
 	Matrix3 CfromEtoN { _body->CfromNtoE.getDCM().transpose() };
-	Vector3 AwrtOexpE { 
+	Vector3 AwrtNexpE { 
 		-5.0 * Earth::mu * Earth::radius * Earth::radius * Earth::radius * Earth::radius
 		* Earth::J4 / ( 8.0 * _body->RwrtOmag9 ) * ( ( 42.0 * _body->RwrtOexpE[2] * _body->RwrtOexpE[2]
 		- 3.0 * _body->RwrtOmag2 - 63.0 * _body->RwrtOexpE[2] * _body->RwrtOexpE[2]
@@ -110,6 +110,6 @@ const Vector3 J4Dynamics::getAwrtOexpN()
 		- 12.0 * _body->RwrtOexpE[2] * _body->RwrtOmag2 ) * Z_UNIT_VECTOR3 )
 	};
 
-	return CfromEtoN * AwrtOexpE;
+	return CfromEtoN * AwrtNexpE;
 	
 }

@@ -8,6 +8,7 @@
 #include "Matrix.hh"
 #include "FrameTransform.hh"
 #include "Model.hh"
+#include "InputParser.hh"
 #include <cmath>	// for std::fmod()
 
 /*
@@ -29,7 +30,19 @@ using namespace Constants;
 Earth::Earth() :
 	Model( Earth::name )
 {
+	// ------- Earth Inputs -------
+	const std::string inputFileName { "earth.json" };
+	InputParser* pInputFile = new InputParser(inputFileName);
+
+	// grab polar motion values
+	setXp(pInputFile->inputFileData["xp"].get<double>());
+	setYp(pInputFile->inputFileData["yp"].get<double>());
+
+	// get Epoch pointer
     _pEpoch = Scheduler::getEpoch();
+
+	// free up memory
+	delete pInputFile;
 }
 
 void Earth::initModel()
@@ -44,24 +57,8 @@ void Earth::initModel()
 	_initialized = true;
 }
 
-void Earth::updateDerivs()
+void Earth::calcPolarMotion()
 {
-	// no derivatives to update
-}
-
-void Earth::updateStateDependents()
-{
-	double t0 { _pEpoch->getT0() };
-	double t0_2 { t0 * t0 };
-	double t0_3 { t0 * t0_2 };
-
-	double t1 { _pEpoch->getT1() };
-	double t1_2  { t1 * t1 };
-	double t1_3  { t1 * t1_2 };
-
-	double utc { _pEpoch->getUTC() };
-
-	// update polar motion matrix
 	double cNXp { std::cos( -1.0 * _xp ) };
 	double sNXp { std::sin( -1.0 * _xp ) };
 	double cNYp { std::cos( -1.0 * _yp ) };
@@ -79,6 +76,13 @@ void Earth::updateStateDependents()
 	};
 
 	_PI = Ry * Rx;
+}
+
+void Earth::calcNutation()
+{
+	double t1 { _pEpoch->getT1() };
+	double t1_2  { t1 * t1 };
+	double t1_3  { t1 * t1_2 };
 
 	// phi coefficients
 	double L { 134.0 * DEG2RAD + 57.0 * ARCMIN2RAD + 46.733 * ARCSEC2RAD
@@ -126,6 +130,7 @@ void Earth::updateStateDependents()
 		dPsi += ( a + b * t1 ) * std::sin( phi );
 		dEpsilon += ( c + d * t1 ) * std::cos( phi );
 	}
+
 	// update nutation of longitude
 	_dPsi = dPsi;
 
@@ -139,15 +144,29 @@ void Earth::updateStateDependents()
 	FrameTransform nutationTransform;
 	nutationTransform.setEulerAngles131( _meanEpsilon, -1.0 * dPsi, -1.0 * _trueEpsilon );
 	_NU = nutationTransform.getDCM();
+}
 
-	// update precession matrix
+void Earth::calcPrecession()
+{
+	double t1 { _pEpoch->getT1() };
+	double t1_2  { t1 * t1 };
+	double t1_3  { t1 * t1_2 };
+
 	double zeta  { ARCSEC2RAD * ( 2306.2181 * t1 + .30188 * t1_2 + .017998 * t1_3 ) };
-	double theta { ARCSEC2RAD * ( 2004.3109 * t1 - .42665 * t1_2 - .000205 * t1_3 ) };
+	double theta { ARCSEC2RAD * ( 2004.3109 * t1 - .42665 * t1_2 - .041833 * t1_3 ) };
 	double z 	 { zeta + ARCSEC2RAD * ( .79280 * t1_2 + .000205 * t1_3 ) };
 
 	FrameTransform precessionTransform;
 	precessionTransform.setEulerAngles323( -1.0 * zeta, theta, -1.0 * z );
 	_PR = precessionTransform.getDCM();
+}
+
+void Earth::calcEarthRotation()
+{
+	double t0 { _pEpoch->getT0() };
+	double t0_2 { t0 * t0 };
+	double t0_3 { t0 * t0_2 };
+	double utc { _pEpoch->getUTC() };
 
 	// update GMST
 	double gmstSec { 24'110.54841 + 8'640'184.812866 * t0 
@@ -167,5 +186,25 @@ void Earth::updateStateDependents()
 
 	// update Earth rotation matrix
 	_TH = FrameTransform::getRot3( _gast );
+}
+
+void Earth::updateDerivs()
+{
+	// no derivatives to update
+}
+
+void Earth::updateStateDependents()
+{
+	// update polar motion matrix
+	calcPolarMotion();
+
+	// update nutation matrix
+	calcNutation();
+
+	// update precession matrix
+	calcPrecession();
+
+	// update Earth rotation matrix (must be called after calcNutation)
+	calcEarthRotation();
 }
 
