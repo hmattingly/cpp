@@ -586,6 +586,58 @@ namespace CoordinateTransform
 	{
 		return kepoe2N( state[0], state[1], state[2], state[3], state[4], state[5] );
 	}
+
+	// geocentric latitude
+	inline const double getGeocentricLatitude(const Vector3& RwrtOexpE)
+	{
+		return std::asin( RwrtOexpE[2] / RwrtOexpE.mag() );
+	}
+
+	// (overload) geocentric latitude
+	inline const double getGeocentricLatitude(const Vector3& RwrtOexpE, const double& RwrtOmag)
+	{
+		return std::asin( RwrtOexpE[2] / RwrtOmag );
+	}
+
+	// geodetic latitude
+	inline const double getGeodeticLatitude(const Vector3& RwrtOexpE)
+	{
+		double N { Earth::getGeoidHeight( getGeocentricLatitude( RwrtOexpE ) ) }; 
+		return std::asin( RwrtOexpE[2] / ( N * ( 1.0 - Earth::eccentricity * Earth::eccentricity ) ) );
+	}
+
+	// (overload) geodetic latitude
+	inline const double getGeodeticLatitude(const Vector3& RwrtOexpE, const double& geocentricLat)
+	{
+		double N { Earth::getGeoidHeight( geocentricLat ) }; 
+		return std::asin( RwrtOexpE[2] / ( N * ( 1.0 - Earth::eccentricity * Earth::eccentricity ) ) );
+	}
+
+	// longitude
+	inline const double getLongitude(const Vector3& RwrtOexpE)
+	{
+		return std::atan2( RwrtOexpE[1], RwrtOexpE[0] );
+	}
+
+	// altitude
+	inline const double getAltitude(const Vector3& RwrtOexpE)
+	{
+		double N { Earth::getGeoidHeight( getGeocentricLatitude( RwrtOexpE ) ) }; 
+		return RwrtOexpE.mag() - N;
+	}
+
+	// (overload) altitude
+	inline const double getAltitude(const double& RwrtOmag, const double& geocentricLat)
+	{
+		double N { Earth::getGeoidHeight( geocentricLat ) }; 
+		return RwrtOmag - N;
+	}
+
+	// right ascension
+	inline const double getRightAscension(const Vector3& RwrtOexpN)
+	{
+		return std::atan2( RwrtOexpN[1], RwrtOexpN[0] );
+	}
 };
 
 #endif  // COORDINATETRANSFORM_HH

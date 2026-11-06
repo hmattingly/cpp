@@ -93,6 +93,14 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 		M 			= getMeanAnomaly( ecc, E );
 		fpa 		= getFlightPathAngle( RwrtOexpN, VwrtNexpN );
 
+		geocentricLat	= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
+		geodeticLat		= getGeodeticLatitude( RwrtOexpE, geocentricLat );
+		lon				= getLongitude( RwrtOexpE );
+		alt				= getAltitude( RwrtOmag, geocentricLat );
+		ra				= getRightAscension( RwrtOexpN );
+		decl			= geocentricLat;
+		gmha			= _pEarth->getGMST() - ra;
+
 		// convert from ECI to LVLH
 		CfromNtoL.setN2L( inc, raan, aol );
 		RwrtOexpL = CfromNtoL.getDCM() * RwrtOexpN;
@@ -156,6 +164,14 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 		E 			= getEccentricAnomaly( ecc, ta );
 		M 			= getMeanAnomaly( ecc, E );
 		fpa 		= getFlightPathAngle( RwrtOexpN, VwrtNexpN );
+
+		geocentricLat	= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
+		geodeticLat		= getGeodeticLatitude( RwrtOexpE, geocentricLat );
+		lon				= getLongitude( RwrtOexpE );
+		alt				= getAltitude( RwrtOmag, geocentricLat );
+		ra				= getRightAscension( RwrtOexpN );
+		decl			= geocentricLat;
+		gmha			= _pEarth->getGMST() - ra;
 
 		// convert from ECI to LVLH
 		CfromNtoL.setN2L( inc, raan, aol );

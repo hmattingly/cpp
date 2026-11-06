@@ -45,6 +45,33 @@ Earth::Earth() :
 	delete pInputFile;
 }
 
+const double Earth::getDensity(const double& alt)
+{
+	assert( alt >= 0.0 );
+
+	double h;
+	double densityRef;
+	double hRef;
+	double scaleHeight;
+	std::size_t i { 0 };
+
+	do
+	{
+		h = densityLookup[i][0];
+		densityRef = densityLookup[i][1];
+		hRef = densityLookup[i][2];
+		scaleHeight = densityLookup[i][3];
+		++i;
+	} while ( alt > h );
+
+	return densityRef * std::exp( ( hRef - alt ) / scaleHeight );
+}
+
+const double Earth::getGeoidHeight(const double& geocentricLat)
+{
+	return radius / std::sqrt( 1.0 - eccentricity * eccentricity * std::sin( geocentricLat ) * std::sin( geocentricLat ) );
+}
+
 void Earth::initModel()
 {
 	// NOTE initModel() is executed when Model registered to Integrator

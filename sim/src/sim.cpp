@@ -86,12 +86,16 @@ int main(int argc, char* argv[])
 	{
 		pScheduler->run();
 	}
-	
+
 	// display sim run time
 	auto simRealEndTime { std::chrono::steady_clock::now() };
     std::chrono::duration<double> elapsedTime = simRealEndTime - simRealStartTime;
     printf("Execution Time: %.2f seconds\n", elapsedTime.count());
 	printf("Exit Code: %d\n", pScheduler->getStatus());
+	if (ERROR == pScheduler->getStatus())
+	{
+		printf("  Error: %s\n", pScheduler->getErrorMessage().c_str());
+	}
 	printf("--------------------------------\n");
 
 	// clean up

@@ -6,6 +6,7 @@
 #include <cassert>  // for assert()
 #include <cstdint>  // for std::int64_t
 #include <cstddef>  // for std::size_t
+#include <string>	// for std::string
 
 // ------ Constants -------
 inline constexpr int MAX_INTEGRATORS { 10 };
@@ -33,6 +34,7 @@ class Scheduler
 {
 	// static member variables, shared across all instances of Scheduler
 	static inline SchedulerStatus _status { UNINITIALIZED };
+	static inline std::string _errorMsg { "" };
 
 	static inline double _simTime { 0.0 };
 	static inline double _endTime { 0.0 };
@@ -68,8 +70,13 @@ public:
 	
 	// access functions
 	static const SchedulerStatus& getStatus() { return _status; }
+	static const std::string& getErrorMessage() { return _errorMsg; }
 	static const double& getCurrentTime() { return _simTime; }
 	static Epoch* getEpoch() { return _pEpoch; }
+
+	// setter functions
+	static void forceEnd() { _status = FORCEDEND; }
+	static void forceError(const std::string& errorMsg) { _status = ERROR; _errorMsg = errorMsg; }
 };
 
 #endif // SCHEDULER_HH
