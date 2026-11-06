@@ -93,13 +93,13 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 		M 			= getMeanAnomaly( ecc, E );
 		fpa 		= getFlightPathAngle( RwrtOexpN, VwrtNexpN );
 
-		geocentricLat	= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
-		geodeticLat		= getGeodeticLatitude( RwrtOexpE, geocentricLat );
-		lon				= getLongitude( RwrtOexpE );
-		alt				= getAltitude( RwrtOmag, geocentricLat );
-		ra				= getRightAscension( RwrtOexpN );
-		decl			= geocentricLat;
-		gmha			= _pEarth->getGMST() - ra;
+		gcLat		= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
+		gdLat		= getGeodeticLatitude( RwrtOexpE, gcLat );
+		lon			= getLongitude( RwrtOexpE );
+		alt			= getAltitude( RwrtOmag, gcLat );
+		gcRA		= getRightAscension( RwrtOexpN );
+		gcDecl		= gcLat;
+		gmha		= _pEarth->getGMST() - gcRA;
 
 		// convert from ECI to LVLH
 		CfromNtoL.setN2L( inc, raan, aol );
@@ -165,13 +165,13 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 		M 			= getMeanAnomaly( ecc, E );
 		fpa 		= getFlightPathAngle( RwrtOexpN, VwrtNexpN );
 
-		geocentricLat	= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
-		geodeticLat		= getGeodeticLatitude( RwrtOexpE, geocentricLat );
-		lon				= getLongitude( RwrtOexpE );
-		alt				= getAltitude( RwrtOmag, geocentricLat );
-		ra				= getRightAscension( RwrtOexpN );
-		decl			= geocentricLat;
-		gmha			= _pEarth->getGMST() - ra;
+		gcLat		= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
+		gdLat		= getGeodeticLatitude( RwrtOexpE, gcLat );
+		lon			= getLongitude( RwrtOexpE );
+		alt			= getAltitude( RwrtOmag, gcLat );
+		gcRA		= getRightAscension( RwrtOexpN );
+		gcDecl		= gcLat;
+		gmha		= _pEarth->getGMST() - gcRA;
 
 		// convert from ECI to LVLH
 		CfromNtoL.setN2L( inc, raan, aol );

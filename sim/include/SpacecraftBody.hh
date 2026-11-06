@@ -109,13 +109,13 @@ public:
 	double fpa	{ 0.0 };	// flight path angle
 
 	// latitude, longitude, altitude
-	double geocentricLat { 0.0 };	// geocentric latitude
-	double geodeticLat { 0.0 };		// geodetic latitude
-	double lon { 0.0 };				// longitude
-	double alt { 0.0 };				// altitude above geoid
-	double ra { 0.0 };	            // right ascension
-	double decl { 0.0 };			// declination
-	double gmha { 0.0 };			// Greenwich mean hour angle
+	double gcLat  	{ 0.0 };	// geocentric latitude
+	double gdLat    { 0.0 };  	// geodetic latitude
+	double lon		{ 0.0 };	// longitude
+	double alt 		{ 0.0 };	// altitude above geoid
+	double gcRA   	{ 0.0 };	// geocentric right ascension
+	double gcDecl 	{ 0.0 };	// geocentric declination
+	double gmha		{ 0.0 };	// Greenwich mean hour angle
 
 	// spacecraft physical quantities
 	double AMR;	// area to mass ratio [m^2/kg]
