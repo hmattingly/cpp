@@ -7,5 +7,12 @@
 		"utc": 5.5
 	},
 	"simRunTime": 86400.0,
-	"timeStepRK4": 1
+	"ForwardEuler": 
+	{
+		"timeStep": 1.0
+	},
+	"RK4": 
+	{
+		"timeStep": 1.0
+	}
 }

@@ -1,7 +1,10 @@
 {
-	"gdlat": 40,
-	"lon": 45,
-	"alt": 50,
-	"heading": 20,
-	"speed": 0.0
+	"Hunter":
+	{
+		"gdLat": 40,
+		"lon": 45,
+		"alt": 50,
+		"heading": 20,
+		"speed": 0.0
+	}
 }

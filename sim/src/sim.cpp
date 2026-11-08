@@ -6,11 +6,13 @@
 #include "Integrator.hh"
 #include "Spacecraft.hh"
 #include "CelestialBody.hh"
-#include "Epoch.hh"
+#include "Observer.hh"
 #include <chrono>		// for steady_clock
 #include <cstdio>		// for printf
+#include <cstddef>  	// for std::size_t
 #include <filesystem>  	// for std::filesystem
 #include <string>		// for std::string
+#include <vector>		// for std::vector
 
 /*
 ** -------------- Constants ---------------
@@ -54,31 +56,46 @@ int main(int argc, char* argv[])
 	printf("--------------------------------\n");
 
 	// ------- Sim Inputs -------
-	const std::string inputFileName { "sim.json" };
-	InputParser* pInputFile = new InputParser(inputFileName);
-
-	double simRunTime 	{ pInputFile->inputFileData["simRunTime"].get<double>() };
-	double timeStepRK4 	{ pInputFile->inputFileData["timeStepRK4"].get<double>() };
-
-	int year 			{ pInputFile->inputFileData["epoch"]["year"].get<int>() };
-	int month 			{ pInputFile->inputFileData["epoch"]["month"].get<int>() };
-	int day 			{ pInputFile->inputFileData["epoch"]["day"].get<int>() };
-	double utc 			{ pInputFile->inputFileData["epoch"]["utc"].get<double>() };
+	InputParser* pSimConfigFile = new InputParser( "sim.json" );
+	InputParser* pSpacecraftConfigFile = new InputParser( "spacecraft.json" );
+	InputParser* pObserverConfigFile = new InputParser( "observer.json" );
 	// ---------------------------
 
 	// instantiate Scheduler object and set parameters
-	Epoch* pEpoch = new Epoch(year, month, day, utc);
-	Scheduler* pScheduler = new Scheduler(pEpoch, simRunTime);
+	Scheduler* pScheduler = new Scheduler(pSimConfigFile);
 
 	// build integrators
-	RK4* pIntegratorRK4 = new RK4(timeStepRK4);
+	RK4* pIntegratorRK4 = new RK4(pSimConfigFile);
 
-	// build models
+	// build Earth model
 	Earth* pEarth = new Earth();
 	pIntegratorRK4->registerModel(pEarth);  // ensure Earth is registered first
 
-	Spacecraft* pSpacecraft = new Spacecraft("Spacecraft", pEarth);
-	pIntegratorRK4->registerModel(pSpacecraft);
+	// build spacecrafts
+	const std::size_t numSpacecraft { pSpacecraftConfigFile->inputFileData.size() };
+	std::vector<Spacecraft*> pSpacecraftArray ( numSpacecraft, nullptr );
+	std::size_t i { 0 };
+	for ( const auto& [spacecraftName, spacecraftConfig] : pSpacecraftConfigFile->inputFileData.items() )
+	{
+		pSpacecraftArray[i] = new Spacecraft(spacecraftName, spacecraftConfig, pEarth);
+		pIntegratorRK4->registerModel(pSpacecraftArray[i]);
+		++i;
+	}
+
+	// build observers
+	const std::size_t numObservers { pObserverConfigFile->inputFileData.size() };
+	std::vector<Observer*> pObserverArray ( numObservers, nullptr );
+	i = 0;
+	for ( const auto& [observerName, observerConfig] : pObserverConfigFile->inputFileData.items() )
+	{
+		pObserverArray[i] = new Observer(observerName, observerConfig, pEarth);
+		pIntegratorRK4->registerModel(pObserverArray[i]);
+		for ( std::size_t k { 0 }; k < numSpacecraft; ++k )
+		{
+			pObserverArray[i]->registerSpacecraft(pSpacecraftArray[k]);
+		}
+		++i;
+	}
 	
 	// run sim
 	pScheduler->start();
@@ -99,10 +116,18 @@ int main(int argc, char* argv[])
 	printf("--------------------------------\n");
 
 	// clean up
-	delete pInputFile;
-	delete pScheduler;
+	for ( std::size_t i { 0 }; i < numObservers; ++i )
+	{
+		delete pObserverArray[i];
+	}
+	for ( std::size_t i { 0 }; i < numSpacecraft; ++i )
+	{
+		delete pSpacecraftArray[i];
+	}
 	delete pIntegratorRK4;
+	delete pScheduler;
 	delete pEarth;
-	delete pSpacecraft;
-	delete pEpoch;
+	delete pSimConfigFile;
+	delete pSpacecraftConfigFile;
+	delete pObserverConfigFile;
 }

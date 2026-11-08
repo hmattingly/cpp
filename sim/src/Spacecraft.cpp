@@ -11,38 +11,35 @@
 // ------- Namespace directives -------
 
 // ------- Class Definition -------
-Spacecraft::Spacecraft(const std::string& name, Earth* pEarth) :
+Spacecraft::Spacecraft(const std::string& name, json inputFileData, Earth* pEarth) :
 	Model(name), _pEarth { pEarth }
 {
-	// ------- Spacecraft Inputs -------
-	const std::string inputFileName { "spacecraft.json" };
-	InputParser* pInputFile = new InputParser(inputFileName);
-
 	// build spacecraft body
-	_body = new SpacecraftBody(pEarth);
+	_pBody = new SpacecraftBody(pEarth);
 
 	// get spacecraft initial state
 	for ( std::size_t i { 0 }; i < 3; ++i )
 	{
-		_body->RwrtOexpN[i] = pInputFile->inputFileData["initialState"]["RwrtOexpN"][i].get<double>();
-		_body->VwrtNexpN[i] = pInputFile->inputFileData["initialState"]["VwrtNexpN"][i].get<double>();
+		_pBody->RwrtOexpN[i] = inputFileData["initialState"]["RwrtOexpN"][i].get<double>();
+		_pBody->VwrtNexpN[i] = inputFileData["initialState"]["VwrtNexpN"][i].get<double>();
 	}
 
 	// get spacecraft parameters
-	_body->AMR = pInputFile->inputFileData["areaToMassRatio"].get<double>();
-	_body->CRd = pInputFile->inputFileData["diffuseReflectivity"].get<double>();
-	_body->Cd  = pInputFile->inputFileData["dragCoefficient"].get<double>();
+	_pBody->AMR = inputFileData["areaToMassRatio"].get<double>();
+	_pBody->CRd = inputFileData["diffuseReflectivity"].get<double>();
+	_pBody->Cd  = inputFileData["dragCoefficient"].get<double>();
 
 	// get dynamic models
-	_dynamicsOptions.twoBody 	= pInputFile->inputFileData["dynamics"]["TwoBody"].get<bool>();
-	_dynamicsOptions.j2 		= pInputFile->inputFileData["dynamics"]["J2"].get<bool>();
-	_dynamicsOptions.j3 		= pInputFile->inputFileData["dynamics"]["J3"].get<bool>();
-	_dynamicsOptions.j4 		= pInputFile->inputFileData["dynamics"]["J4"].get<bool>();
-	_dynamicsOptions.srp 		= pInputFile->inputFileData["dynamics"]["SRP"].get<bool>();
-	_dynamicsOptions.drag 		= pInputFile->inputFileData["dynamics"]["Drag"].get<bool>();
+	_dynamicsOptions.twoBody 	= inputFileData["dynamics"]["TwoBody"].get<bool>();
+	_dynamicsOptions.j2 		= inputFileData["dynamics"]["J2"].get<bool>();
+	_dynamicsOptions.j3 		= inputFileData["dynamics"]["J3"].get<bool>();
+	_dynamicsOptions.j4 		= inputFileData["dynamics"]["J4"].get<bool>();
+	_dynamicsOptions.srp 		= inputFileData["dynamics"]["SRP"].get<bool>();
+	_dynamicsOptions.drag 		= inputFileData["dynamics"]["Drag"].get<bool>();
 
-	// free up memory
-	delete pInputFile;
+	// populate initial values
+	updateStateDependents();
+	
 }
 
 void Spacecraft::initModel()
@@ -50,62 +47,70 @@ void Spacecraft::initModel()
 	// NOTE initModel() is executed when Model registered to Integrator
 
 	// register ECI states to be integrated
-	registerStates(_body->RwrtOexpN, _body->VwrtNexpN);
-	registerStates(_body->VwrtNexpN, _body->AwrtNexpN);
+	registerStates(_pBody->RwrtOexpN, _pBody->VwrtNexpN);
+	registerStates(_pBody->VwrtNexpN, _pBody->AwrtNexpN);
 
 	// register outputs with integrator
-	registerOutput("RwrtOexpN", _body->RwrtOexpN);
-	registerOutput("VwrtNexpN", _body->VwrtNexpN);
-	registerOutput("AwrtNexpN", _body->AwrtNexpN);
-	registerOutput("RwrtOexpE", _body->RwrtOexpE);
-	registerOutput("VwrtNexpE", _body->VwrtNexpE);
-	registerOutput("VwrtEexpE", _body->VwrtEexpE);
-	registerOutput("RwrtOexpL", _body->RwrtOexpL);
-	registerOutput("VwrtNexpL", _body->VwrtNexpL);
-	registerOutput("RwrtOexpP", _body->RwrtOexpP);
-	registerOutput("VwrtNexpP", _body->VwrtNexpP);
+	registerOutput("RwrtOexpN", _pBody->RwrtOexpN);
+	registerOutput("VwrtNexpN", _pBody->VwrtNexpN);
+	registerOutput("AwrtNexpN", _pBody->AwrtNexpN);
+	registerOutput("RwrtOexpE", _pBody->RwrtOexpE);
+	registerOutput("VwrtNexpE", _pBody->VwrtNexpE);
+	registerOutput("VwrtEexpE", _pBody->VwrtEexpE);
+	registerOutput("RwrtOexpL", _pBody->RwrtOexpL);
+	registerOutput("VwrtNexpL", _pBody->VwrtNexpL);
+	registerOutput("RwrtOexpP", _pBody->RwrtOexpP);
+	registerOutput("VwrtNexpP", _pBody->VwrtNexpP);
 
-	registerOutput("HwrtOexpN", _body->HwrtOexpN);
-	registerOutput("NwrtOexpNhat", _body->NwrtOexpNhat);
+	registerOutput("HwrtOexpN", _pBody->HwrtOexpN);
+	registerOutput("NwrtOexpNhat", _pBody->NwrtOexpNhat);
 
-	registerOutput("a", _body->a);
-	registerOutput("ecc", _body->ecc);
-	registerOutput("inc", _body->inc);
-	registerOutput("raan", _body->raan);
-	registerOutput("aop", _body->aop);
-	registerOutput("ta", _body->ta);
+	registerOutput("a", _pBody->a);
+	registerOutput("ecc", _pBody->ecc);
+	registerOutput("inc", _pBody->inc);
+	registerOutput("raan", _pBody->raan);
+	registerOutput("aop", _pBody->aop);
+	registerOutput("ta", _pBody->ta);
 
-	registerOutput("aol", _body->aol);
-	registerOutput("p", _body->p);
-	registerOutput("b", _body->b);
-	registerOutput("Rp", _body->Rp);
-	registerOutput("Ra", _body->Ra);
-	registerOutput("E", _body->E);
-	registerOutput("M", _body->M);
-	registerOutput("n", _body->n);
-	registerOutput("P", _body->P);
-	registerOutput("energy", _body->energy);
-	registerOutput("fpa", _body->fpa);
+	registerOutput("aol", _pBody->aol);
+	registerOutput("p", _pBody->p);
+	registerOutput("b", _pBody->b);
+	registerOutput("Rp", _pBody->Rp);
+	registerOutput("Ra", _pBody->Ra);
+	registerOutput("E", _pBody->E);
+	registerOutput("M", _pBody->M);
+	registerOutput("n", _pBody->n);
+	registerOutput("P", _pBody->P);
+	registerOutput("energy", _pBody->energy);
+	registerOutput("fpa", _pBody->fpa);
+
+	registerOutput("gcLat", _pBody->gcLat);
+	registerOutput("gdLat", _pBody->gdLat);
+	registerOutput("lon", _pBody->lon);
+	registerOutput("alt", _pBody->alt);
+	registerOutput("gcRA", _pBody->gcRA);
+	registerOutput("gcDecl", _pBody->gcDecl);
+	registerOutput("gmha", _pBody->gmha);
 
 	// register applicable dynamics
 	if ( true == _dynamicsOptions.twoBody )
 	{
-		_pDynamics[_numDynamics] = new TwoBodyDynamics(_body);
+		_pDynamics[_numDynamics] = new TwoBodyDynamics(_pBody, _pEarth);
 		++_numDynamics;
 	}
 	if ( true == _dynamicsOptions.j2 )
 	{
-		_pDynamics[_numDynamics] = new J2Dynamics(_body);
+		_pDynamics[_numDynamics] = new J2Dynamics(_pBody, _pEarth);
 		++_numDynamics;
 	}
 	if ( true == _dynamicsOptions.j3 )
 	{
-		_pDynamics[_numDynamics] = new J3Dynamics(_body);
+		_pDynamics[_numDynamics] = new J3Dynamics(_pBody, _pEarth);
 		++_numDynamics;
 	}
 	if ( true == _dynamicsOptions.j4 )
 	{
-		_pDynamics[_numDynamics] = new J4Dynamics(_body);
+		_pDynamics[_numDynamics] = new J4Dynamics(_pBody, _pEarth);
 		++_numDynamics;
 	}
 	if ( true == _dynamicsOptions.srp )
@@ -125,19 +130,19 @@ void Spacecraft::initModel()
 // called after state (position and velocity) is updated to next timestep
 void Spacecraft::updateStateDependents()
 {
-	_body->updateFromN( _atSolutionPoint );
+	_pBody->updateFromN( _atSolutionPoint );
 }
 
 // called after state dependents are updated to next timestep
 void Spacecraft::updateDerivs()
 {
 	// reset acceleration
-	_body->AwrtNexpN = { ZERO_VECTOR3 }; 
+	_pBody->AwrtNexpN = { ZERO_VECTOR3 }; 
 
 	// loop through each dynamics model and update acceleration term
 	for ( std::size_t i { 0 }; i < _numDynamics; ++i )
 	{
-		_body->AwrtNexpN += _pDynamics[i]->getAwrtNexpN();
+		_pBody->AwrtNexpN += _pDynamics[i]->getAwrtNexpN();
 	}
 }
 
@@ -148,5 +153,5 @@ Spacecraft::~Spacecraft()
 	{
 		delete _pDynamics[i];
 	}
-	delete _body;
+	delete _pBody;
 }

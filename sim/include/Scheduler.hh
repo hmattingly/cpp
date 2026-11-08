@@ -17,6 +17,7 @@ using ITIME = std::int64_t;
 // ------ Forward Declarations -------
 class Integrator;
 class Epoch;
+class InputParser;
 
 // ------- Enum Definition -------
 enum SchedulerStatus
@@ -56,10 +57,10 @@ public:
 	Scheduler() = delete;
 
 	// parameterized constructor
-	Scheduler(Epoch* pEpoch, const double runTime);
+	Scheduler(InputParser* pSimConfigFile);
 
 	// destructor
-	~Scheduler() = default;
+	~Scheduler();
 
 	// forward declarations
 	void start();

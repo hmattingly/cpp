@@ -5,7 +5,14 @@
 #include "Model.hh"
 #include "CelestialBody.hh"
 #include "InputParser.hh"
+#include "Constants.hh"
+#include "CoordinateTransform.hh"
+#include "Spacecraft.hh"
 #include <string>	// for std::string
+#include <cstddef>  // for std::size_t
+#include <cstdio>	// for printf
+#include <cstdlib>  // for std::exit()
+#include <cmath>	// for std::sqrt(), std::acos(), etc.
 
 /*
 ** -------------- Constants ---------------
@@ -18,39 +25,40 @@
 /*
 ** --------- Namespace directives ---------
 */ 
+using namespace Constants;
+using namespace CoordinateTransform;
 
 /*
 ** ----------- Class Definition ------------
 */ 
-Observer::Observer(const std::string& name) :
-	Model( name )
+Observer::Observer(const std::string& name, json inputFileData, Earth* pEarth) :
+	Model( name ), _pEarth { pEarth }
 {
-	// ------- Spacecraft Inputs -------
-	const std::string inputFileName { "observer.json" };
-	InputParser* pInputFile = new InputParser(inputFileName);
 
-	// get spacecraft initial state
-	for ( std::size_t i { 0 }; i < 3; ++i )
-	{
-		_body->RwrtOexpN[i] = pInputFile->inputFileData["initialState"]["RwrtOexpN"][i].get<double>();
-		_body->VwrtNexpN[i] = pInputFile->inputFileData["initialState"]["VwrtNexpN"][i].get<double>();
-	}
+	// get observer initial state
+	gdLat = inputFileData["gdLat"].get<double>() * DEG2RAD;
+	lon = inputFileData["lon"].get<double>() * DEG2RAD;
+	alt = inputFileData["alt"].get<double>();
+	double heading { inputFileData["heading"].get<double>() * DEG2RAD };
+	double speed { inputFileData["speed"].get<double>() * M2KM };
 
-	// get spacecraft parameters
-	_body->AMR = pInputFile->inputFileData["areaToMassRatio"].get<double>();
-	_body->CRd = pInputFile->inputFileData["diffuseReflectivity"].get<double>();
-	_body->Cd  = pInputFile->inputFileData["dragCoefficient"].get<double>();
+	// build initial state
+	RwrtOexpE = {
+		( _pEarth->getGeoidHeight( gdLat ) + alt ) * std::cos( gdLat ) * std::cos( lon ),
+		( _pEarth->getGeoidHeight( gdLat ) + alt ) * std::cos( gdLat ) * std::sin( lon ),
+		( _pEarth->getGeoidHeight( gdLat ) * ( 1.0 - Earth::eccentricity * Earth::eccentricity ) + alt ) * std::sin( gdLat )
+	};
+	Vector3 VwrtEexpD { 
+		speed * std::cos( heading ),
+		speed * std::sin( heading ),
+		0.0
+	};
+	FrameTransform CfromDtoE;
+	CfromDtoE.setD2E( gdLat, lon );
+	VwrtEexpE = CfromDtoE.getDCM() * VwrtEexpD;
 
-	// get dynamic models
-	_dynamicsOptions.twoBody 	= pInputFile->inputFileData["dynamics"]["TwoBody"].get<bool>();
-	_dynamicsOptions.j2 		= pInputFile->inputFileData["dynamics"]["J2"].get<bool>();
-	_dynamicsOptions.j3 		= pInputFile->inputFileData["dynamics"]["J3"].get<bool>();
-	_dynamicsOptions.j4 		= pInputFile->inputFileData["dynamics"]["J4"].get<bool>();
-	_dynamicsOptions.srp 		= pInputFile->inputFileData["dynamics"]["SRP"].get<bool>();
-	_dynamicsOptions.drag 		= pInputFile->inputFileData["dynamics"]["Drag"].get<bool>();
-
-	// free up memory
-	delete pInputFile;
+	// populate initial values
+	updateStateDependents();
 }
 
 void Observer::initModel()
@@ -58,72 +66,19 @@ void Observer::initModel()
 	// NOTE initModel() is executed when Model registered to Integrator
 
 	// register ECI states to be integrated
-	registerStates(_body->RwrtOexpN, _body->VwrtNexpN);
-	registerStates(_body->VwrtNexpN, _body->AwrtNexpN);
+	registerStates(RwrtOexpE, VwrtEexpE);
 
 	// register outputs with integrator
-	registerOutput("RwrtOexpN", _body->RwrtOexpN);
-	registerOutput("VwrtNexpN", _body->VwrtNexpN);
-	registerOutput("AwrtNexpN", _body->AwrtNexpN);
-	registerOutput("RwrtOexpE", _body->RwrtOexpE);
-	registerOutput("VwrtNexpE", _body->VwrtNexpE);
-	registerOutput("VwrtEexpE", _body->VwrtEexpE);
-	registerOutput("RwrtOexpL", _body->RwrtOexpL);
-	registerOutput("VwrtNexpL", _body->VwrtNexpL);
-	registerOutput("RwrtOexpP", _body->RwrtOexpP);
-	registerOutput("VwrtNexpP", _body->VwrtNexpP);
+	registerOutput("RwrtOexpN", RwrtOexpN);
+	registerOutput("RwrtOexpE", RwrtOexpE);
+	registerOutput("VwrtEexpE", VwrtEexpE);
+	registerOutput("VwrtNexpN", VwrtNexpN);
 
-	registerOutput("HwrtOexpN", _body->HwrtOexpN);
-	registerOutput("NwrtOexpNhat", _body->NwrtOexpNhat);
-
-	registerOutput("a", _body->a);
-	registerOutput("ecc", _body->ecc);
-	registerOutput("inc", _body->inc);
-	registerOutput("raan", _body->raan);
-	registerOutput("aop", _body->aop);
-	registerOutput("ta", _body->ta);
-
-	registerOutput("aol", _body->aol);
-	registerOutput("p", _body->p);
-	registerOutput("b", _body->b);
-	registerOutput("Rp", _body->Rp);
-	registerOutput("Ra", _body->Ra);
-	registerOutput("E", _body->E);
-	registerOutput("M", _body->M);
-	registerOutput("n", _body->n);
-	registerOutput("P", _body->P);
-	registerOutput("energy", _body->energy);
-	registerOutput("fpa", _body->fpa);
-
-	// register applicable dynamics
-	if ( true == _dynamicsOptions.twoBody )
-	{
-		_pDynamics[_numDynamics] = new TwoBodyDynamics(_body);
-		++_numDynamics;
-	}
-	if ( true == _dynamicsOptions.j2 )
-	{
-		_pDynamics[_numDynamics] = new J2Dynamics(_body);
-		++_numDynamics;
-	}
-	if ( true == _dynamicsOptions.j3 )
-	{
-		_pDynamics[_numDynamics] = new J3Dynamics(_body);
-		++_numDynamics;
-	}
-	if ( true == _dynamicsOptions.j4 )
-	{
-		_pDynamics[_numDynamics] = new J4Dynamics(_body);
-		++_numDynamics;
-	}
-	if ( true == _dynamicsOptions.srp )
-	{
-		//
-	}
-	if ( true == _dynamicsOptions.drag )
-	{
-		//
-	}
+	registerOutput("gcLat", gcLat);
+	registerOutput("gdLat", gdLat);
+	registerOutput("lon", lon);
+	registerOutput("alt", alt);
+	registerOutput("st", st);
 
 	// set initialized flag
 	_initialized = true;
@@ -133,18 +88,86 @@ void Observer::initModel()
 // called after state (position and velocity) is updated to next timestep
 void Observer::updateStateDependents()
 {
-	_body->updateFromN( _atSolutionPoint );
+	RwrtOexpN = _pEarth->getCfromEtoN() * RwrtOexpE;
+	VwrtNexpN = _pEarth->getCfromEtoN() * ( VwrtEexpE + cross( _pEarth->omega, RwrtOexpE ) );
+	
+	// get longitude, latitude, altitude, and sidereal time
+	gcLat = getGeocentricLatitude( RwrtOexpE, RwrtOexpE.mag() );
+	gdLat = getGeodeticLatitude( gcLat );
+	lon = getLongitude( RwrtOexpE );
+	alt = getAltitude( RwrtOexpE, gdLat );
+	st = getSiderealTime( RwrtOexpN );
+
+	// set NED tranformation
+	CfromNtoD.setN2D( gdLat, st );
+	RwrtOexpD = CfromNtoD.getDCM() * RwrtOexpN;
+	VwrtNexpD = CfromNtoD.getDCM() * VwrtNexpN;
+
+	// set tropocentric transformation
+	CfromNtoT.setN2T( gdLat, st );
+	RwrtOexpT = CfromNtoT.getDCM() * RwrtOexpN;
+	VwrtNexpT = CfromNtoT.getDCM() * VwrtNexpN;
+
+	Vector3 RwrtSexpD { ZERO_VECTOR3 };
+
+	for ( std::size_t i { 0 }; i < _numSpacecraft; ++i )
+	{
+		// get range vectors
+		RwrtSexpNArray[i] = _pSpacecraftArray[i]->getSpacecraftBody()->RwrtOexpN - RwrtOexpN;
+		RwrtSexpEArray[i] = _pSpacecraftArray[i]->getSpacecraftBody()->RwrtOexpE - RwrtOexpE;
+
+		// get right ascension and declination of range vector
+		raArray[i] = std::atan2( RwrtSexpNArray[i][1], RwrtSexpNArray[i][0] );
+		declArray[i] = std::asin( RwrtSexpNArray[i][2] / RwrtSexpNArray[i].mag() );
+
+		// get azimuth and elevation
+		RwrtSexpD = ( CfromNtoD.getDCM() * ( _pSpacecraftArray[i]->getSpacecraftBody()->RwrtOexpN ) ) - RwrtOexpD;
+		azArray[i] = std::atan2( RwrtSexpD[1], RwrtSexpD[0] );
+		elArray[i] = std::asin( -1.0 * RwrtSexpD[2] / RwrtSexpD.mag() );
+	}
 }
 
 // called after state dependents are updated to next timestep
 void Observer::updateDerivs()
 {
-	// reset acceleration
-	_body->AwrtNexpN = { ZERO_VECTOR3 }; 
+	// assume constant velocity with respect to ECEF
+}
 
-	// loop through each dynamics model and update acceleration term
-	for ( std::size_t i { 0 }; i < _numDynamics; ++i )
+// register spacecraft to track
+void Observer::registerSpacecraft(Spacecraft* pSpacecraft)
+{
+	if ( nullptr == pSpacecraft )
 	{
-		_body->AwrtNexpN += _pDynamics[i]->getAwrtNexpN();
+		printf("Error: Cannot register null Spacecraft to Observer!\n");
+		std::exit(EXIT_FAILURE);
 	}
+
+	// check if model has already been registered
+	for ( std::size_t i { 0 }; i < _numSpacecraft; ++i )
+	{
+		if ( pSpacecraft == _pSpacecraftArray[i] )
+		{
+			printf("Error: Spacecraft %s already registered with Observer %s!\n", (pSpacecraft->getName()).c_str(), getName().c_str());
+			std::exit(EXIT_FAILURE);
+		}
+	}
+
+	// check if max number of Spacecraft reached
+	if ( _numSpacecraft >= MAX_SPACECRAFT_TO_TRACK )
+	{
+		printf("Error: Maximum number of tracked Spacecraft reached!\n");
+		std::exit(EXIT_FAILURE);
+	}
+
+	// register variables to output
+	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_RwrtSexpN", RwrtSexpNArray[_numSpacecraft] );
+	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_RwrtSexpE", RwrtSexpEArray[_numSpacecraft] );
+	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_ra", raArray[_numSpacecraft] );
+	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_decl", declArray[_numSpacecraft] );
+	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_az", azArray[_numSpacecraft] );
+	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_el", elArray[_numSpacecraft] );
+
+	// add spacecraft to tracker
+	_pSpacecraftArray[_numSpacecraft] = pSpacecraft;
+	++_numSpacecraft;
 }

@@ -23,6 +23,7 @@ inline constexpr int MAX_DYNAMIC { 6 };	// max number dynamic options
 /*
 ** --------- Namespace directives ---------
 */ 
+class Earth;
 
 /*
 ** ---------- Struct Definition -----------
@@ -42,14 +43,16 @@ struct DynamicsOptions {
 class Dynamics
 {
 protected:
-	SpacecraftBody* _body;
+
+	SpacecraftBody* _pBody;
+	Earth* _pEarth;
 
 public:
 	// default constructor
 	Dynamics() = delete;
 
 	// parameterized constructor
-	Dynamics(SpacecraftBody* body);
+	Dynamics(SpacecraftBody* pBody, Earth* pEarth);
 
 	// destructor
 	virtual ~Dynamics() = default;
@@ -75,7 +78,7 @@ public:
 	TwoBodyDynamics() = delete;
 
 	// parameterized constructor
-	TwoBodyDynamics(SpacecraftBody* body);
+	TwoBodyDynamics(SpacecraftBody* pBody, Earth* pEarth);
 
 	// destructor
 	~TwoBodyDynamics() = default;
@@ -98,7 +101,7 @@ public:
 	J2Dynamics() = delete;
 
 	// parameterized constructor
-	J2Dynamics(SpacecraftBody* body);
+	J2Dynamics(SpacecraftBody* pBody, Earth* pEarth);
 
 	// destructor
 	~J2Dynamics() = default;
@@ -122,7 +125,7 @@ public:
 	J3Dynamics() = delete;
 
 	// parameterized constructor
-	J3Dynamics(SpacecraftBody* body);
+	J3Dynamics(SpacecraftBody* pBody, Earth* pEarth);
 
 	// destructor
 	~J3Dynamics() = default;
@@ -146,7 +149,7 @@ public:
 	J4Dynamics() = delete;
 
 	// parameterized constructor
-	J4Dynamics(SpacecraftBody* body);
+	J4Dynamics(SpacecraftBody* pBody, Earth* pEarth);
 
 	// destructor
 	~J4Dynamics() = default;

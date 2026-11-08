@@ -11,6 +11,7 @@
 #include "Constants.hh"
 #include "CelestialBody.hh"
 #include "FrameTransform.hh"
+#include <cmath>	// for std::sqrt(), std::acos(), etc.
 
 /*
 ** -------------- Constants ---------------
@@ -132,7 +133,7 @@ namespace CoordinateTransform
 	}
 
 	// (overload) semilatus rectum (p) given specific angular momentum magnitude
-	const double getSemilatusRectum(const double& HwrtOexpNmag)
+	inline const double getSemilatusRectum(const double& HwrtOexpNmag)
 	{
 		return HwrtOexpNmag * HwrtOexpNmag / Earth::mu;
 	}
@@ -199,7 +200,7 @@ namespace CoordinateTransform
 	}
 
 	// specific energy (energy) given ECI position and velocity
-	const double getSpecEnergy(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getSpecEnergy(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
 	{
 		return 0.5 * VwrtOexpN.mag2() - Earth::mu / RwrtOexpN.mag();
 	}
@@ -587,54 +588,71 @@ namespace CoordinateTransform
 		return kepoe2N( state[0], state[1], state[2], state[3], state[4], state[5] );
 	}
 
-	// geocentric latitude
+	// geocentric latitude given ECEF position
 	inline const double getGeocentricLatitude(const Vector3& RwrtOexpE)
 	{
 		return std::asin( RwrtOexpE[2] / RwrtOexpE.mag() );
 	}
 
-	// (overload) geocentric latitude
+	// (overload) geocentric latitude given ECEF position and magnitude
 	inline const double getGeocentricLatitude(const Vector3& RwrtOexpE, const double& RwrtOmag)
 	{
 		return std::asin( RwrtOexpE[2] / RwrtOmag );
 	}
 
-	// geodetic latitude
+	// (overload) geocentric latitude given geodetic latitude
+	inline const double getGeocentricLatitude(const double& gdLat)
+	{
+		return std::atan( ( 1.0 - Earth::eccentricity * Earth::eccentricity ) * std::tan( gdLat ) );
+	}
+
+	// geodetic latitude given geocentric latitude
+	inline const double getGeodeticLatitude(const double& gcLat)
+	{
+		return std::atan( std::tan( gcLat ) / ( 1.0 - Earth::eccentricity * Earth::eccentricity ) );
+	}
+
+	// (overload) geodetic latitude given ECEF position
 	inline const double getGeodeticLatitude(const Vector3& RwrtOexpE)
 	{
-		double N { Earth::getGeoidHeight( getGeocentricLatitude( RwrtOexpE ) ) }; 
-		return std::asin( RwrtOexpE[2] / ( N * ( 1.0 - Earth::eccentricity * Earth::eccentricity ) ) );
+		return getGeodeticLatitude( getGeocentricLatitude( RwrtOexpE ) );
 	}
 
-	// (overload) geodetic latitude
-	inline const double getGeodeticLatitude(const Vector3& RwrtOexpE, const double& geocentricLat)
-	{
-		double N { Earth::getGeoidHeight( geocentricLat ) }; 
-		return std::asin( RwrtOexpE[2] / ( N * ( 1.0 - Earth::eccentricity * Earth::eccentricity ) ) );
-	}
-
-	// longitude
+	// longitude given ECEF position
 	inline const double getLongitude(const Vector3& RwrtOexpE)
 	{
 		return std::atan2( RwrtOexpE[1], RwrtOexpE[0] );
 	}
 
-	// altitude
+	// altitude given ECEF position
 	inline const double getAltitude(const Vector3& RwrtOexpE)
 	{
-		double N { Earth::getGeoidHeight( getGeocentricLatitude( RwrtOexpE ) ) }; 
-		return RwrtOexpE.mag() - N;
+		double p { std::sqrt( RwrtOexpE[0] * RwrtOexpE[0] + RwrtOexpE[1] * RwrtOexpE[1] ) }; 
+		double gdLat { getGeodeticLatitude( RwrtOexpE ) };
+		return (
+			p * std::cos( gdLat ) + RwrtOexpE[2] * std::sin( gdLat ) - Earth::radius 
+			* std::sqrt( 1.0 - Earth::eccentricity * Earth::eccentricity * std::sin( gdLat ) * std::sin( gdLat ) )
+		);
 	}
 
-	// (overload) altitude
-	inline const double getAltitude(const double& RwrtOmag, const double& geocentricLat)
+	// (overload) altitude ECEF position and geocetric latitude
+	inline const double getAltitude(const Vector3& RwrtOexpE, const double& gdLat)
 	{
-		double N { Earth::getGeoidHeight( geocentricLat ) }; 
-		return RwrtOmag - N;
+		double p { std::sqrt( RwrtOexpE[0] * RwrtOexpE[0] + RwrtOexpE[1] * RwrtOexpE[1] ) }; 
+		return (
+			p * std::cos( gdLat ) + RwrtOexpE[2] * std::sin( gdLat ) - Earth::radius 
+			* std::sqrt( 1.0 - Earth::eccentricity * Earth::eccentricity * std::sin( gdLat ) * std::sin( gdLat ) )
+		);
 	}
 
-	// right ascension
+	// right ascension given ECI position
 	inline const double getRightAscension(const Vector3& RwrtOexpN)
+	{
+		return std::atan2( RwrtOexpN[1], RwrtOexpN[0] );
+	}
+
+	// sidereal time given ECI position
+	inline const double getSiderealTime(const Vector3& RwrtOexpN)
 	{
 		return std::atan2( RwrtOexpN[1], RwrtOexpN[0] );
 	}

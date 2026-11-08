@@ -2,6 +2,7 @@
 #include "Scheduler.hh"
 #include "Integrator.hh"
 #include "Model.hh"
+#include "InputParser.hh"
 #include <cstdio>   // for printf()
 #include <cstdlib>  // for std::exit()
 #include <cstddef>  // for std::size_t
@@ -64,12 +65,8 @@ void IntegratorData::addStates(Vector3& x, Vector3& dx)
 
 // ------- Class Definition -------
 // constructor
-Integrator::Integrator(const double dt) :
-	_dt { dt }
+Integrator::Integrator()
 {
-	// only support positive values of dt
-	assert(dt > 0.0);
-
 	// add integrator to Scheduler's integrator array
 	Scheduler::registerIntegrator(this);
 }
@@ -148,9 +145,13 @@ void Integrator::output()
 
 // ------- Class Definition -------
 // constructor
-ForwardEuler::ForwardEuler(const double dt) :
-	Integrator(dt)
+ForwardEuler::ForwardEuler(InputParser* pSimConfigFile) :
+	Integrator()
 {
+	// only support positive values of dt
+	_dt = pSimConfigFile->inputFileData["ForwardEuler"]["timeStep"].get<double>();
+	assert(_dt > 0.0);
+
 	_time = Scheduler::getCurrentTime();
 	setNextUpdateTime();
 }
@@ -187,12 +188,17 @@ void ForwardEuler::updateStates()
 
 // ------- Class Definition -------
 // constructor
-RK4::RK4(const double dt) :
-	Integrator(dt),
-	_dt2 { dt / 2.0 },
-	_dt3 { dt / 3.0 },
-	_dt6 { dt / 6.0 }
+RK4::RK4(InputParser* pSimConfigFile) :
+	Integrator()
 {
+	// only support positive values of dt
+	_dt = pSimConfigFile->inputFileData["RK4"]["timeStep"].get<double>();
+	assert(_dt > 0.0);
+
+	_dt2 = _dt / 2.0;
+	_dt3 = _dt / 3.0;
+	_dt6 = _dt / 6.0;
+
 	_time = Scheduler::getCurrentTime();
 	_nextUpdateTime = _time;
 }

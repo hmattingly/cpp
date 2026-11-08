@@ -3,6 +3,7 @@
 #include "Integrator.hh"
 #include "Constants.hh"
 #include "Epoch.hh"
+#include "InputParser.hh"
 #include <cstdio>   // for printf()
 #include <cstdlib>  // for std::exit()
 #include <cassert>	// for assert()
@@ -13,9 +14,9 @@ using namespace Constants;
  
 // ------- Class Definition -------
 // Constructor
-Scheduler::Scheduler(Epoch* pEpoch, const double runTime)
+Scheduler::Scheduler(InputParser* pSimConfigFile)
 {
-	assert(runTime > 0.0);
+	
 
 	// check if the Scheduler already exists, 
 	if ( UNINITIALIZED == _status )
@@ -23,15 +24,24 @@ Scheduler::Scheduler(Epoch* pEpoch, const double runTime)
 		// start Scheduler
 		_status = INITIALIZED;
 
+		// read input file
+		double simRunTime 	{ pSimConfigFile->inputFileData["simRunTime"].get<double>() };
+		int year 			{ pSimConfigFile->inputFileData["epoch"]["year"].get<int>() };
+		int month 			{ pSimConfigFile->inputFileData["epoch"]["month"].get<int>() };
+		int day 			{ pSimConfigFile->inputFileData["epoch"]["day"].get<int>() };
+		double utc 			{ pSimConfigFile->inputFileData["epoch"]["utc"].get<double>() };
+
+		assert(simRunTime > 0.0);
+
 		// set double time
-		_endTime = runTime;
+		_endTime = simRunTime;
 
 		// set integer time
 		_iEndTime = double2iTime(_endTime);
 		_iSimTime = double2iTime(_simTime);
 
 		// set epoch
-		_pEpoch = pEpoch;
+		_pEpoch = new Epoch(year, month, day, utc);;
 	}
 	else
 	{
@@ -164,4 +174,10 @@ void Scheduler::_checkExitConditions()
 	{
 		_status = ERROR;
 	}
+}
+
+// destructor
+Scheduler::~Scheduler()
+{
+	delete _pEpoch;
 }

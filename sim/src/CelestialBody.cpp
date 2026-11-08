@@ -41,6 +41,9 @@ Earth::Earth() :
 	// get Epoch pointer
     _pEpoch = Scheduler::getEpoch();
 
+	// populate initial values
+	updateStateDependents();
+
 	// free up memory
 	delete pInputFile;
 }
@@ -67,9 +70,9 @@ const double Earth::getDensity(const double& alt)
 	return densityRef * std::exp( ( hRef - alt ) / scaleHeight );
 }
 
-const double Earth::getGeoidHeight(const double& geocentricLat)
+const double Earth::getGeoidHeight(const double& gdLat)
 {
-	return radius / std::sqrt( 1.0 - eccentricity * eccentricity * std::sin( geocentricLat ) * std::sin( geocentricLat ) );
+	return radius / std::sqrt( 1.0 - eccentricity * eccentricity * std::sin( gdLat ) * std::sin( gdLat ) );
 }
 
 void Earth::initModel()
@@ -233,5 +236,9 @@ void Earth::updateStateDependents()
 
 	// update Earth rotation matrix (must be called after calcNutation)
 	calcEarthRotation();
+
+	// update transformation matrices
+	_CfromNtoE.setN2E( this );
+	_CfromEtoN.setE2N( this );
 }
 

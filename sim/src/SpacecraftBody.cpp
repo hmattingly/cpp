@@ -54,10 +54,9 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 	VwrtNmag2 = VwrtNmag * VwrtNmag;
 
 	// convert from ECI to ECEF
-	CfromNtoE.setN2E( _pEarth );
-	RwrtOexpE = CfromNtoE.getDCM() * RwrtOexpN;
-	VwrtNexpE = CfromNtoE.getDCM() * VwrtNexpN;
-	VwrtEexpE = CfromNtoE.getDCM() * VwrtNexpN - cross( _pEarth->omega, RwrtOexpE );
+	RwrtOexpE = _pEarth->getCfromNtoE() * RwrtOexpN;
+	VwrtNexpE = _pEarth->getCfromNtoE() * VwrtNexpN;
+	VwrtEexpE = VwrtNexpE - cross( _pEarth->omega, RwrtOexpE );
 
 	// optional parameters only need to be updated at solution point
 	if ( true == atSolPoint )
@@ -94,9 +93,9 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 		fpa 		= getFlightPathAngle( RwrtOexpN, VwrtNexpN );
 
 		gcLat		= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
-		gdLat		= getGeodeticLatitude( RwrtOexpE, gcLat );
+		gdLat		= getGeodeticLatitude( gcLat );
 		lon			= getLongitude( RwrtOexpE );
-		alt			= getAltitude( RwrtOmag, gcLat );
+		alt			= getAltitude( RwrtOexpE, gdLat );
 		gcRA		= getRightAscension( RwrtOexpN );
 		gcDecl		= gcLat;
 		gmha		= _pEarth->getGMST() - gcRA;
@@ -134,9 +133,8 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 	VwrtNmag2 = VwrtNmag * VwrtNmag;
 
 	// convert from ECI to ECEF
-	CfromNtoE.setN2E( _pEarth );
-	RwrtOexpE = CfromNtoE.getDCM() * RwrtOexpN;
-	VwrtNexpE = CfromNtoE.getDCM() * VwrtNexpN;
+	RwrtOexpE = _pEarth->getCfromNtoE() * RwrtOexpN;
+	VwrtNexpE = _pEarth->getCfromNtoE() * VwrtNexpN;
 	VwrtEexpE = VwrtNexpE - cross( _pEarth->omega, RwrtOexpE );
 
 	// optional parameters only need to be updated at solution point
@@ -166,9 +164,9 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 		fpa 		= getFlightPathAngle( RwrtOexpN, VwrtNexpN );
 
 		gcLat		= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
-		gdLat		= getGeodeticLatitude( RwrtOexpE, gcLat );
+		gdLat		= getGeodeticLatitude( gcLat );
 		lon			= getLongitude( RwrtOexpE );
-		alt			= getAltitude( RwrtOmag, gcLat );
+		alt			= getAltitude( RwrtOexpE, gdLat );
 		gcRA		= getRightAscension( RwrtOexpN );
 		gcDecl		= gcLat;
 		gmha		= _pEarth->getGMST() - gcRA;

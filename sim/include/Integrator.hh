@@ -12,6 +12,7 @@ inline constexpr int MAX_MODELS { 16 };	// max number of models per integrator
 
 // ------ Forward Declarations -------
 class Model;
+class InputParser;
 
 // ------- Class Definition -------
 class IntegratorData
@@ -54,11 +55,8 @@ protected:
 	bool _atSolutionPoint { true };
 
 public:
-	// default constructor (disabled)
-	Integrator() = delete;
-
-	// parameterized constructor
-	Integrator(const double dt);
+	// default constructor
+	Integrator();
 
 	// destructor
 	virtual ~Integrator() = default;
@@ -90,7 +88,7 @@ public:
 	ForwardEuler() = delete;
 
 	// parameterized constructor
-	ForwardEuler(const double dt);
+	ForwardEuler(InputParser* pSimConfigFile);
 
 	// destructor
 	~ForwardEuler() = default;
@@ -121,7 +119,7 @@ public:
 	RK4() = delete;
 
 	// parameterized constructor
-	RK4(const double dt);
+	RK4(InputParser* pSimConfigFile);
 
 	// destructor
 	~RK4() = default;

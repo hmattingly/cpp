@@ -11,6 +11,7 @@
 #include "Matrix.hh"
 #include "Model.hh"
 #include "Constants.hh"
+#include "FrameTransform.hh"
 #include <string>			// for std::string
 
 /*
@@ -152,7 +153,7 @@ namespace EarthAtmosphere
         Matrix<DENSLOOKUP_ROW_COUNT, DENSLOOKUP_COL_COUNT>;
 
 	inline const DensityLookupTable DENS_LOOKUP {
-		// altitude (km), ref density (kg/m^3), ref altitude (km), scale height (km)
+		// altitude [km], ref density [kg/m^3], ref altitude [km], scale height [km]
 		{ 0, 	1.225, 		0, 		7.249 },
 		{ 25, 	3.899e-2, 	25, 	6.349 },
 		{ 30, 	1.774e-2, 	30, 	6.682 },
@@ -191,13 +192,15 @@ class Earth : public Model
 {
 	Epoch* _pEpoch { nullptr };
 
-	double _gmst { 0.0 };						// Greenwich mean sidereal time in rad
-	double _gast { 0.0 };						// Greenwich apparent sidereal time in rad
-	double _trueEpsilon { .409092804028403 };	// true obliquity of the ecliptic in rad (initialized to J2000)
-	double _meanEpsilon { .409092804028403 }; 	// mean obliquity of the ecliptic in rad (initialized to J2000)
-	double _xp { 2.102636934972058e-07 };		// polar motion x in rad (initialized to J2000)
-	double _yp { 1.831747290652104e-06 };		// polar motion y in rad (initialized to J2000)
-	double _dPsi { -6.750247617532480e-05 };	// nutation of longitude in rad (initialized to J2000)
+	double _gmst { 0.0 };						// Greenwich mean sidereal time [rad]
+	double _gast { 0.0 };						// Greenwich apparent sidereal time [rad]
+	double _trueEpsilon { .409092804028403 };	// true obliquity of the ecliptic [rad] (initialized to J2000)
+	double _meanEpsilon { .409092804028403 }; 	// mean obliquity of the ecliptic [rad] (initialized to J2000)
+	double _xp { 2.102636934972058e-07 };		// polar motion x [rad] (initialized to J2000)
+	double _yp { 1.831747290652104e-06 };		// polar motion y [rad] (initialized to J2000)
+	double _dPsi { -6.750247617532480e-05 };	// nutation of longitude [rad] (initialized to J2000)
+	FrameTransform _CfromNtoE { IDENTITY_MATRIX3 }; // DCM from ECI to ECEF
+	FrameTransform _CfromEtoN { IDENTITY_MATRIX3 }; // DCM from ECEF to ECI
 	Matrix3 _PI { IDENTITY_MATRIX3 };			// polar motion DCM
 	Matrix3 _TH { IDENTITY_MATRIX3 };			// Greenwich DCM
 	Matrix3 _NU { IDENTITY_MATRIX3 };			// nutation DCM
@@ -205,13 +208,13 @@ class Earth : public Model
 
 public:
 	static inline const std::string name { "Earth" };						// name of body
-	static inline const double mu { 5.972168489579432e+24 * Constants::G };	// gravitational parameter in km^3/s^2
-	static inline const double radius { 6378.1363 };						// mean equatorial radius in km
-	static inline const double J2 { .001082626174 };						// J2 harmonic coefficient (unitless)
-	static inline const double J3 { -.000002532411 };						// J3 harmonic coefficient (unitless)
-	static inline const double J4 { -.000001619897 };						// J4 harmonic coefficient (unitless)
-	static inline const double eccentricity { .081919084262 };			// geometric eccentricity (unitless)
-	static inline const Vector3 omega { {0.0, 0.0, .00007292115} };		// rotation rate in rad/s
+	static inline const double mu { 5.972168489579432e+24 * Constants::G };	// gravitational parameter [km^3/s^2]
+	static inline const double radius { 6378.1363 };						// mean equatorial radius [km]
+	static inline const double J2 { .001082626174 };						// J2 harmonic coefficient [unitless]
+	static inline const double J3 { -.000002532411 };						// J3 harmonic coefficient [unitless]
+	static inline const double J4 { -.000001619897 };						// J4 harmonic coefficient [unitless]
+	static inline const double eccentricity { .081919084262 };				// geometric eccentricity [unitless]
+	static inline const Vector3 omega { {0.0, 0.0, .00007292115} };			// rotation rate [rad/s]
 	static inline const EarthOrientation::NutationTable& nutationCoeff { EarthOrientation::NUTATION_COEFF };	// IAU 1980 nutation coefficients
 	static inline const EarthAtmosphere::DensityLookupTable& densityLookup { EarthAtmosphere::DENS_LOOKUP };	// exponential atmospheric model (Table 8-4 of Vallado)
 
@@ -226,7 +229,7 @@ public:
 	virtual void updateDerivs() override;
 	virtual void updateStateDependents() override;
 	static const double getDensity(const double& alt);
-	static const double getGeoidHeight(const double& geocentricLat);
+	static const double getGeoidHeight(const double& gdLat);
 	void calcPolarMotion();
 	void calcNutation();
 	void calcPrecession();
@@ -244,6 +247,8 @@ public:
 	const Matrix3& getEarthRotationDCM() const { return _TH; }
 	const Matrix3& getNutationDCM() const { return _NU; }
 	const Matrix3& getPrecessionDCM() const { return _PR; }
+	const Matrix3 getCfromEtoN() const { return _CfromEtoN.getDCM(); }
+	const Matrix3 getCfromNtoE() const { return _CfromNtoE.getDCM(); }
 
 	// setter functions
 	void setXp(const double xp) { _xp = xp; }

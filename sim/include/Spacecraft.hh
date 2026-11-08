@@ -6,11 +6,11 @@
 #include "Model.hh"
 #include "Vector.hh"
 #include "Dynamics.hh"
+#include "InputParser.hh"
 #include <cstddef>  // for std::size_t
 #include <string>	// for std::string
 
 // ------ Constants -------
-
 
 // ------ Forward Declarations -------
 class Earth;
@@ -20,7 +20,7 @@ class SpacecraftBody;
 class Spacecraft : public Model
 {
 	Earth* _pEarth { nullptr };
-	SpacecraftBody* _body { nullptr };
+	SpacecraftBody* _pBody { nullptr };
 	DynamicsOptions _dynamicsOptions;
 	Dynamics* _pDynamics[MAX_DYNAMIC] { nullptr };
 	std::size_t _numDynamics { 0 };
@@ -30,7 +30,7 @@ public:
 	Spacecraft() = delete;
 
 	// parameterized constructor
-	Spacecraft(const std::string& name, Earth* pEarth);
+	Spacecraft(const std::string& name, json inputFileData, Earth* pEarth);
 
 	// destructor
 	~Spacecraft();
@@ -43,7 +43,7 @@ public:
 	// setter functions
 
 	// access functions
-	const SpacecraftBody* getSpacecraftBody() const { return _body; }
+	const SpacecraftBody* getSpacecraftBody() const { return _pBody; }
 };
 
 

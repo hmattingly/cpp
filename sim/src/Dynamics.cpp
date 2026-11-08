@@ -23,8 +23,8 @@
 ** ----------- Class Definition ------------
 */ 
 // constructor
-Dynamics::Dynamics(SpacecraftBody* body) :
-	_body { body }
+Dynamics::Dynamics(SpacecraftBody* pBody, Earth* pEarth) :
+	_pBody { pBody }, _pEarth { pEarth }
 {
 
 }
@@ -33,23 +33,23 @@ Dynamics::Dynamics(SpacecraftBody* body) :
 ** ----------- Class Definition ------------
 */ 
 // constructor
-TwoBodyDynamics::TwoBodyDynamics(SpacecraftBody* body) :
-	Dynamics(body)
+TwoBodyDynamics::TwoBodyDynamics(SpacecraftBody* pBody, Earth* pEarth) :
+	Dynamics(pBody, pEarth)
 {
 
 }
 
 const Vector3 TwoBodyDynamics::getAwrtNexpN()
 {
-	return ( -1.0 * Earth::mu / _body->RwrtOmag3 * _body->RwrtOexpN );
+	return ( -1.0 * Earth::mu / _pBody->RwrtOmag3 * _pBody->RwrtOexpN );
 }
 
 /*
 ** ----------- Class Definition ------------
 */ 
 // constructor
-J2Dynamics::J2Dynamics(SpacecraftBody* body) :
-	Dynamics(body)
+J2Dynamics::J2Dynamics(SpacecraftBody* pBody, Earth* pEarth) :
+	Dynamics(pBody, pEarth)
 {
 
 }
@@ -57,34 +57,33 @@ J2Dynamics::J2Dynamics(SpacecraftBody* body) :
 const Vector3 J2Dynamics::getAwrtNexpN()
 {
 	return ( -1.5 * Earth::mu * Earth::radius * Earth::radius * Earth::J2
-			 / _body->RwrtOmag5
-			 * ( _body->RwrtOexpN + 2.0 * _body->RwrtOexpN[2] * Z_UNIT_VECTOR3
-			 - 5.0 * _body->RwrtOexpN[2] * _body->RwrtOexpN[2]
-			 * _body->RwrtOexpN / _body->RwrtOmag2 ) );
+			 / _pBody->RwrtOmag5
+			 * ( _pBody->RwrtOexpN + 2.0 * _pBody->RwrtOexpN[2] * Z_UNIT_VECTOR3
+			 - 5.0 * _pBody->RwrtOexpN[2] * _pBody->RwrtOexpN[2]
+			 * _pBody->RwrtOexpN / _pBody->RwrtOmag2 ) );
 }
 
 /*
 ** ----------- Class Definition ------------
 */ 
 // constructor
-J3Dynamics::J3Dynamics(SpacecraftBody* body) :
-	Dynamics(body)
+J3Dynamics::J3Dynamics(SpacecraftBody* pBody, Earth* pEarth) :
+	Dynamics(pBody, pEarth)
 {
 
 }
 
 const Vector3 J3Dynamics::getAwrtNexpN()
 {
-	Matrix3 CfromEtoN { _body->CfromNtoE.getDCM().transpose() };
 	Vector3 AwrtNexpE { 
 		-1.0 * Earth::mu * Earth::radius * Earth::radius * Earth::radius * Earth::J3
-		/ ( 2.0 * _body->RwrtOmag7 ) * ( ( 15.0 * _body->RwrtOexpE[2] 
-		- 35.0 * _body->RwrtOexpE[2] * _body->RwrtOexpE[2] * _body->RwrtOexpE[2] 
-		/ _body->RwrtOmag2 ) * _body->RwrtOexpE + ( 15.0 * _body->RwrtOexpE[2] 
-		* _body->RwrtOexpE[2] - 3.0 * _body->RwrtOmag2 ) * Z_UNIT_VECTOR3 )
+		/ ( 2.0 * _pBody->RwrtOmag7 ) * ( ( 15.0 * _pBody->RwrtOexpE[2] 
+		- 35.0 * _pBody->RwrtOexpE[2] * _pBody->RwrtOexpE[2] * _pBody->RwrtOexpE[2] 
+		/ _pBody->RwrtOmag2 ) * _pBody->RwrtOexpE + ( 15.0 * _pBody->RwrtOexpE[2] 
+		* _pBody->RwrtOexpE[2] - 3.0 * _pBody->RwrtOmag2 ) * Z_UNIT_VECTOR3 )
 	};
 
-	return CfromEtoN * AwrtNexpE;
+	return _pEarth->getCfromEtoN() * AwrtNexpE;
 	
 }
 
@@ -92,24 +91,23 @@ const Vector3 J3Dynamics::getAwrtNexpN()
 ** ----------- Class Definition ------------
 */ 
 // constructor
-J4Dynamics::J4Dynamics(SpacecraftBody* body) :
-	Dynamics(body)
+J4Dynamics::J4Dynamics(SpacecraftBody* pBody, Earth* pEarth) :
+	Dynamics(pBody, pEarth)
 {
 
 }
 
 const Vector3 J4Dynamics::getAwrtNexpN()
 {
-	Matrix3 CfromEtoN { _body->CfromNtoE.getDCM().transpose() };
 	Vector3 AwrtNexpE { 
 		-5.0 * Earth::mu * Earth::radius * Earth::radius * Earth::radius * Earth::radius
-		* Earth::J4 / ( 8.0 * _body->RwrtOmag9 ) * ( ( 42.0 * _body->RwrtOexpE[2] * _body->RwrtOexpE[2]
-		- 3.0 * _body->RwrtOmag2 - 63.0 * _body->RwrtOexpE[2] * _body->RwrtOexpE[2]
-		* _body->RwrtOexpE[2] * _body->RwrtOexpE[2] / _body->RwrtOmag2 )
-		* _body->RwrtOexpE + ( 28.0 * _body->RwrtOexpE[2] * _body->RwrtOexpE[2] * _body->RwrtOexpE[2]
-		- 12.0 * _body->RwrtOexpE[2] * _body->RwrtOmag2 ) * Z_UNIT_VECTOR3 )
+		* Earth::J4 / ( 8.0 * _pBody->RwrtOmag9 ) * ( ( 42.0 * _pBody->RwrtOexpE[2] * _pBody->RwrtOexpE[2]
+		- 3.0 * _pBody->RwrtOmag2 - 63.0 * _pBody->RwrtOexpE[2] * _pBody->RwrtOexpE[2]
+		* _pBody->RwrtOexpE[2] * _pBody->RwrtOexpE[2] / _pBody->RwrtOmag2 )
+		* _pBody->RwrtOexpE + ( 28.0 * _pBody->RwrtOexpE[2] * _pBody->RwrtOexpE[2] * _pBody->RwrtOexpE[2]
+		- 12.0 * _pBody->RwrtOexpE[2] * _pBody->RwrtOmag2 ) * Z_UNIT_VECTOR3 )
 	};
 
-	return CfromEtoN * AwrtNexpE;
+	return _pEarth->getCfromEtoN() * AwrtNexpE;
 	
 }

@@ -63,7 +63,6 @@ public:
 	double VwrtNmag2 { 0.0 };
 
 	// ECEF states
-	FrameTransform CfromNtoE;
 	Vector3 RwrtOexpE { ZERO_VECTOR3 };
 	Vector3 VwrtNexpE { ZERO_VECTOR3 };
 	Vector3 VwrtEexpE { ZERO_VECTOR3 };
@@ -90,32 +89,32 @@ public:
 	Vector3 EwrtOexpN    { ZERO_VECTOR3 };	// eccentricity vector
 
 	// Keplerian orbital elements
-	double a 	{ 0.0 };  	// semi-major axis
-	double b	{ 0.0 };	// semi-minor axis
-	double p 	{ 0.0 };	// semi-latus rectum
-	double Rp	{ 0.0 };	// periapsis
-	double Ra	{ 0.0 };	// apoapsis
-	double ecc  { 0.0 };	// eccentricity
-	double inc  { 0.0 };	// inclination
-	double raan { 0.0 };	// right ascension of the ascending node
-	double aop  { 0.0 };	// argument of periapsis
-	double aol  { 0.0 };	// argument of latitude
-	double ta   { 0.0 };	// true anomaly
-	double E    { 0.0 };	// eccentric anomaly
-	double M    { 0.0 };	// mean anomaly
-	double n	{ 0.0 };	// mean motion
-	double P	{ 0.0 };	// orbital period
-	double energy { 0.0 };	// specific energy
-	double fpa	{ 0.0 };	// flight path angle
+	double a 	{ 0.0 };  	// semi-major axis [km]
+	double b	{ 0.0 };	// semi-minor axis [km]
+	double p 	{ 0.0 };	// semi-latus rectum [km]
+	double Rp	{ 0.0 };	// periapsis [km]
+	double Ra	{ 0.0 };	// apoapsis [km]
+	double ecc  { 0.0 };	// eccentricity [unitless]
+	double inc  { 0.0 };	// inclination [rad]
+	double raan { 0.0 };	// right ascension of the ascending node [rad]
+	double aop  { 0.0 };	// argument of periapsis [rad]
+	double aol  { 0.0 };	// argument of latitude [rad]
+	double ta   { 0.0 };	// true anomaly [rad]
+	double E    { 0.0 };	// eccentric anomaly [rad]
+	double M    { 0.0 };	// mean anomaly [rad]
+	double n	{ 0.0 };	// mean motion [rad/s]
+	double P	{ 0.0 };	// orbital period [s]
+	double energy { 0.0 };	// specific energy [km^2/s^2]
+	double fpa	{ 0.0 };	// flight path angle [rad]
 
 	// latitude, longitude, altitude
-	double gcLat  	{ 0.0 };	// geocentric latitude
-	double gdLat    { 0.0 };  	// geodetic latitude
-	double lon		{ 0.0 };	// longitude
-	double alt 		{ 0.0 };	// altitude above geoid
-	double gcRA   	{ 0.0 };	// geocentric right ascension
-	double gcDecl 	{ 0.0 };	// geocentric declination
-	double gmha		{ 0.0 };	// Greenwich mean hour angle
+	double gcLat  	{ 0.0 };	// geocentric latitude [rad]
+	double gdLat    { 0.0 };  	// geodetic latitude [rad]
+	double lon		{ 0.0 };	// longitude [rad]
+	double alt 		{ 0.0 };	// altitude above geoid [km]
+	double gcRA   	{ 0.0 };	// geocentric right ascension [rad]
+	double gcDecl 	{ 0.0 };	// geocentric declination [rad]
+	double gmha		{ 0.0 };	// Greenwich mean hour angle [rad]
 
 	// spacecraft physical quantities
 	double AMR;	// area to mass ratio [m^2/kg]
