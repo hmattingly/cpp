@@ -47,6 +47,8 @@ protected:
 	OutputVariable _outputVars[MAX_OUTVARS] {};
 	std::size_t _numOutVars { 0 };
 
+	bool _outputFlag { true };
+
 public:
 	// default constructor (disabled)
 	OutputProducer() = delete;
@@ -64,7 +66,6 @@ public:
 	void output(const double& integratorTime);
 
 	// setter functions
-
 
 };
 

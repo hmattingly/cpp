@@ -66,6 +66,7 @@ public:
 	Vector3 RwrtOexpE { ZERO_VECTOR3 };
 	Vector3 VwrtNexpE { ZERO_VECTOR3 };
 	Vector3 VwrtEexpE { ZERO_VECTOR3 };
+	Vector3 VwrtEexpN { ZERO_VECTOR3 };
 
 	// LVLH / RTN states
 	FrameTransform CfromNtoL;

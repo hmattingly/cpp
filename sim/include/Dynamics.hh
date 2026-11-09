@@ -162,4 +162,29 @@ public:
 	// setter functions
 };
 
+/*
+** ----------- Class Definition ------------
+*/ 
+class DragDynamics : public Dynamics
+{
+	double _rho { 0.0 };  // atmospheric density [kg/m^3]
+	
+public:
+	// default constructor
+	DragDynamics() = delete;
+
+	// parameterized constructor
+	DragDynamics(SpacecraftBody* pBody, Earth* pEarth);
+
+	// destructor
+	~DragDynamics() = default;
+
+	// forward declarations
+	const Vector3 getAwrtNexpN() override;
+
+	// access functions
+
+	// setter functions
+};
+
 #endif  // DYNAMICS_HH

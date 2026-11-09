@@ -214,7 +214,7 @@ public:
 	static inline const double J3 { -.000002532411 };						// J3 harmonic coefficient [unitless]
 	static inline const double J4 { -.000001619897 };						// J4 harmonic coefficient [unitless]
 	static inline const double eccentricity { .081919084262 };				// geometric eccentricity [unitless]
-	static inline const Vector3 omega { {0.0, 0.0, .00007292115} };			// rotation rate [rad/s]
+	static inline const Vector3 WwrtNexpE { {0.0, 0.0, .00007292115} };		// rotation rate [rad/s]
 	static inline const EarthOrientation::NutationTable& nutationCoeff { EarthOrientation::NUTATION_COEFF };	// IAU 1980 nutation coefficients
 	static inline const EarthAtmosphere::DensityLookupTable& densityLookup { EarthAtmosphere::DENS_LOOKUP };	// exponential atmospheric model (Table 8-4 of Vallado)
 

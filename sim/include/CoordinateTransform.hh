@@ -12,6 +12,7 @@
 #include "CelestialBody.hh"
 #include "FrameTransform.hh"
 #include <cmath>	// for std::sqrt(), std::acos(), etc.
+#include <cassert>  // for assert()
 
 /*
 ** -------------- Constants ---------------
@@ -635,7 +636,7 @@ namespace CoordinateTransform
 		);
 	}
 
-	// (overload) altitude ECEF position and geocetric latitude
+	// (overload) altitude given ECEF position and geocetric latitude
 	inline const double getAltitude(const Vector3& RwrtOexpE, const double& gdLat)
 	{
 		double p { std::sqrt( RwrtOexpE[0] * RwrtOexpE[0] + RwrtOexpE[1] * RwrtOexpE[1] ) }; 
