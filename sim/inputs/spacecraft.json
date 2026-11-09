@@ -17,9 +17,10 @@
 			"J2": true,
 			"J3": true,
 			"J4": true,
-			"SRP": false,
-			"Drag": false
-		}
+			"Drag": true,
+			"SRP": false
+		},
+		"outputFlag": true
 	},
 
 	"Spacecraft2":
@@ -40,9 +41,10 @@
 			"J2": true,
 			"J3": true,
 			"J4": true,
-			"SRP": false,
-			"Drag": false
-		}
+			"Drag": true,
+			"SRP": false
+		},
+		"outputFlag": true
 	}
 	
 }

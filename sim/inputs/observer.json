@@ -5,6 +5,7 @@
 		"lon": 45,
 		"alt": 50,
 		"heading": 20,
-		"speed": 0.0
+		"speed": 0.0,
+		"outputFlag": true
 	}
 }
