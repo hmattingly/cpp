@@ -34,6 +34,8 @@ Spacecraft::Spacecraft(const std::string& name, json inputFileData, Earth* pEart
 	_dynamicsOptions.j2 		= inputFileData["dynamics"]["J2"].get<bool>();
 	_dynamicsOptions.j3 		= inputFileData["dynamics"]["J3"].get<bool>();
 	_dynamicsOptions.j4 		= inputFileData["dynamics"]["J4"].get<bool>();
+	_dynamicsOptions.sun 		= inputFileData["dynamics"]["Sun"].get<bool>();
+	_dynamicsOptions.moon 		= inputFileData["dynamics"]["Moon"].get<bool>();
 	_dynamicsOptions.srp 		= inputFileData["dynamics"]["SRP"].get<bool>();
 	_dynamicsOptions.drag 		= inputFileData["dynamics"]["Drag"].get<bool>();
 
@@ -115,6 +117,14 @@ void Spacecraft::initModel()
 	{
 		_pDynamics[_numDynamics] = new J4Dynamics(_pBody, _pEarth);
 		++_numDynamics;
+	}
+	if ( true == _dynamicsOptions.sun )
+	{
+		//
+	}
+	if ( true == _dynamicsOptions.moon )
+	{
+		//
 	}
 	if ( true == _dynamicsOptions.drag )
 	{
