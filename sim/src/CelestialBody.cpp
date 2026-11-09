@@ -38,6 +38,9 @@ Earth::Earth() :
 	setXp(pInputFile->inputFileData["xp"].get<double>());
 	setYp(pInputFile->inputFileData["yp"].get<double>());
 
+	// set output flag
+	_outputFlag = pInputFile->inputFileData["outputFlag"].get<bool>();
+
 	// get Epoch pointer
     _pEpoch = Scheduler::getEpoch();
 

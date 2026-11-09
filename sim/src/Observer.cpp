@@ -57,6 +57,9 @@ Observer::Observer(const std::string& name, json inputFileData, Earth* pEarth) :
 	CfromDtoE.setD2E( gdLat, lon );
 	VwrtEexpE = CfromDtoE.getDCM() * VwrtEexpD;
 
+	// set output flag
+	_outputFlag = inputFileData["outputFlag"].get<bool>();
+
 	// populate initial values
 	updateStateDependents();
 }

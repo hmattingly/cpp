@@ -37,6 +37,9 @@ Spacecraft::Spacecraft(const std::string& name, json inputFileData, Earth* pEart
 	_dynamicsOptions.srp 		= inputFileData["dynamics"]["SRP"].get<bool>();
 	_dynamicsOptions.drag 		= inputFileData["dynamics"]["Drag"].get<bool>();
 
+	// set output flag
+	_outputFlag = inputFileData["outputFlag"].get<bool>();
+
 	// populate initial values
 	updateStateDependents();
 	
@@ -113,14 +116,16 @@ void Spacecraft::initModel()
 		_pDynamics[_numDynamics] = new J4Dynamics(_pBody, _pEarth);
 		++_numDynamics;
 	}
+	if ( true == _dynamicsOptions.drag )
+	{
+		_pDynamics[_numDynamics] = new DragDynamics(_pBody, _pEarth);
+		++_numDynamics;
+	}
 	if ( true == _dynamicsOptions.srp )
 	{
 		//
 	}
-	if ( true == _dynamicsOptions.drag )
-	{
-		//
-	}
+	
 
 	// set initialized flag
 	_initialized = true;

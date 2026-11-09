@@ -56,7 +56,8 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 	// convert from ECI to ECEF
 	RwrtOexpE = _pEarth->getCfromNtoE() * RwrtOexpN;
 	VwrtNexpE = _pEarth->getCfromNtoE() * VwrtNexpN;
-	VwrtEexpE = VwrtNexpE - cross( _pEarth->omega, RwrtOexpE );
+	VwrtEexpE = VwrtNexpE - cross( _pEarth->WwrtNexpE, RwrtOexpE );
+	VwrtEexpN = VwrtNexpN - cross( _pEarth->getCfromEtoN() * _pEarth->WwrtNexpE, RwrtOexpN );
 
 	// optional parameters only need to be updated at solution point
 	if ( true == atSolPoint )
@@ -135,7 +136,8 @@ void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 	// convert from ECI to ECEF
 	RwrtOexpE = _pEarth->getCfromNtoE() * RwrtOexpN;
 	VwrtNexpE = _pEarth->getCfromNtoE() * VwrtNexpN;
-	VwrtEexpE = VwrtNexpE - cross( _pEarth->omega, RwrtOexpE );
+	VwrtEexpE = VwrtNexpE - cross( _pEarth->WwrtNexpE, RwrtOexpE );
+	VwrtEexpN = VwrtNexpN - cross( _pEarth->getCfromEtoN() * _pEarth->WwrtNexpE, RwrtOexpN );
 
 	// optional parameters only need to be updated at solution point
 	if ( true == atSolPoint )

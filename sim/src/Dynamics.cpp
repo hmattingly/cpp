@@ -4,7 +4,10 @@
 #include "Dynamics.hh"
 #include "Vector.hh"
 #include "FrameTransform.hh"
+#include "CoordinateTransform.hh"
 #include "CelestialBody.hh"
+#include "Constants.hh"
+#include <cassert>  // for assert()
 
 
 /*
@@ -18,6 +21,8 @@
 /*
 ** --------- Namespace directives ---------
 */ 
+using namespace CoordinateTransform;
+using namespace Constants;
 
 /*
 ** ----------- Class Definition ------------
@@ -109,5 +114,25 @@ const Vector3 J4Dynamics::getAwrtNexpN()
 	};
 
 	return _pEarth->getCfromEtoN() * AwrtNexpE;
+	
+}
+
+/*
+** ----------- Class Definition ------------
+*/ 
+// constructor
+DragDynamics::DragDynamics(SpacecraftBody* pBody, Earth* pEarth) :
+	Dynamics(pBody, pEarth)
+{
+
+}
+
+const Vector3 DragDynamics::getAwrtNexpN()
+{
+	_rho = Earth::getDensity( _pBody->alt );
+
+	return (
+		-1.0 * 0.5 * _pBody->Cd * _pBody->AMR * _rho * _pBody->VwrtEexpN.mag() * _pBody->VwrtEexpN * KM2M
+	);
 	
 }
