@@ -13,7 +13,7 @@
 /*
 ** -------------- Constants ---------------
 */ 
-inline constexpr int MAX_DYNAMIC { 6 };	// max number dynamic options
+inline constexpr int MAX_DYNAMIC { 8 };	// max number dynamic options
 
 /*
 ** -------- Forward Declarations ----------
@@ -33,6 +33,8 @@ struct DynamicsOptions {
     bool j2 { false };
     bool j3 { false };
     bool j4 { false };
+	bool sun { false };
+	bool moon { false };
     bool srp { false };
     bool drag { false };
 };
