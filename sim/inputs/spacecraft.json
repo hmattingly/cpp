@@ -18,6 +18,8 @@
 			"J3": true,
 			"J4": true,
 			"Drag": true,
+			"Sun": false,
+			"Moon": false,
 			"SRP": false
 		},
 		"outputFlag": true
@@ -41,6 +43,8 @@
 			"J2": true,
 			"J3": true,
 			"J4": true,
+			"Sun": false,
+			"Moon": false,
 			"Drag": true,
 			"SRP": false
 		},
