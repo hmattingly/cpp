@@ -80,45 +80,49 @@ void OutputProducer::output(const double& integratorTime)
 {
 	if ( true == _outputFlag )
 	{
-		// open the file if not already open and write headers
-		if ( false == _outputFile.is_open() )
+		if ( 0 != _numOutVars )
 		{
-			_outputFile.open("outputs/" + _outputFileName);
-
-			// check if file opened successfully
+			// open the file if not already open and write headers
 			if ( false == _outputFile.is_open() )
 			{
-				printf("Error: Failed to open %s", _outputFileName.c_str());
-				std::exit(EXIT_FAILURE);
+				_outputFile.open("outputs/" + _outputFileName);
+
+				// check if file opened successfully
+				if ( false == _outputFile.is_open() )
+				{
+					printf("Error: Failed to open %s", _outputFileName.c_str());
+					std::exit(EXIT_FAILURE);
+				}
+
+				// set precision
+				_outputFile << std::setprecision(PRECISION);
+
+				// write header row
+				_outputFile << "Time";
+
+				for ( std::size_t i { 0 }; i < _numOutVars; ++i )
+				{
+					_outputFile << "," << _outputVars[i].name;
+				}
+
+				// move to new row
+				_outputFile << "\n";
 			}
-
-			// set precision
-			_outputFile << std::setprecision(PRECISION);
-
-			// write header row
-			_outputFile << "Time";
-
+			
+			// loop through each variable and output to file
+			_outputFile << integratorTime;
 			for ( std::size_t i { 0 }; i < _numOutVars; ++i )
 			{
-				_outputFile << "," << _outputVars[i].name;
+				_outputFile << "," << *(_outputVars[i].value);
 			}
 
 			// move to new row
 			_outputFile << "\n";
+			
+			// flush output to file
+			_outputFile.flush();
 		}
 		
-		// loop through each variable and output to file
-		_outputFile << integratorTime;
-		for ( std::size_t i { 0 }; i < _numOutVars; ++i )
-		{
-			_outputFile << "," << *(_outputVars[i].value);
-		}
-
-		// move to new row
-		_outputFile << "\n";
-		
-		// flush output to file
-		_outputFile.flush();
 	}
 	
 }

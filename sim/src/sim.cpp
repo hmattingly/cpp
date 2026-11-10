@@ -67,9 +67,13 @@ int main(int argc, char* argv[])
 	// build integrators
 	RK4* pIntegratorRK4 = new RK4(pSimConfigFile);
 
-	// build Earth model
+	// build celestial bodies (ensure these are registered first)
 	Earth* pEarth = new Earth();
-	pIntegratorRK4->registerModel(pEarth);  // ensure Earth is registered first
+	pIntegratorRK4->registerModel(pEarth);
+	Sun* pSun = new Sun();
+	pIntegratorRK4->registerModel(pSun);
+	Moon* pMoon = new Moon();
+	// pIntegratorRK4->registerModel(pMoon);
 
 	// build spacecrafts
 	const std::size_t numSpacecraft { pSpacecraftConfigFile->inputFileData.size() };
@@ -77,7 +81,13 @@ int main(int argc, char* argv[])
 	std::size_t i { 0 };
 	for ( const auto& [spacecraftName, spacecraftConfig] : pSpacecraftConfigFile->inputFileData.items() )
 	{
-		pSpacecraftArray[i] = new Spacecraft(spacecraftName, spacecraftConfig, pEarth);
+		pSpacecraftArray[i] = new Spacecraft(
+			spacecraftName, 
+			spacecraftConfig, 
+			pEarth,
+			pSun,
+			pMoon
+		);
 		pIntegratorRK4->registerModel(pSpacecraftArray[i]);
 		++i;
 	}

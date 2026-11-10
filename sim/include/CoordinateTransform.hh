@@ -29,50 +29,50 @@ using namespace Constants;
 
 namespace CoordinateTransform
 {	
-	// specific angular momentum (HwrtOexpN) vector given ECI position and velocity
-	inline const Vector3 getSpecAngularMomentum(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	// specific angular momentum (HofBwrtCexpI) vector given ECI position and velocity
+	inline const Vector3 getSpecAngularMomentum(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		return Vector3 { cross( RwrtOexpN, VwrtOexpN ) };
+		return Vector3 { cross( RofBwrtCexpI, VofBwrtIexpI ) };
 	}
 
-	// line of nodes unit vector (NwrtOexpNhat) given ECI position and velocity
-	inline const Vector3 getLineOfNodesUnit(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	// line of nodes unit vector (NofBwrtCexpIhat) given ECI position and velocity
+	inline const Vector3 getLineOfNodesUnit(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		Vector3 HwrtOexpN { getSpecAngularMomentum( RwrtOexpN, VwrtOexpN ) };
+		Vector3 HofBwrtCexpI { getSpecAngularMomentum( RofBwrtCexpI, VofBwrtIexpI ) };
 
-		return Vector3 { cross( Z_UNIT_VECTOR3, HwrtOexpN ).unit() };
+		return Vector3 { cross( Z_UNIT_VECTOR3, HofBwrtCexpI ).unit() };
 	}
 
-	// (overload) line of nodes unit vector (NwrtOexpNhat) given specific angular momentum vector
-	inline const Vector3 getLineOfNodesUnit(const Vector3& HwrtOexpN)
+	// (overload) line of nodes unit vector (NofBwrtCexpIhat) given specific angular momentum vector
+	inline const Vector3 getLineOfNodesUnit(const Vector3& HofBwrtCexpI)
 	{
-		return Vector3 { cross( Z_UNIT_VECTOR3, HwrtOexpN ).unit() };
+		return Vector3 { cross( Z_UNIT_VECTOR3, HofBwrtCexpI ).unit() };
 	}
 
-	// eccentricity vector (EwrtOexpN) given ECI position and velocity
-	inline const Vector3 getEccentricityVector(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	// eccentricity vector (EofBwrtCexpI) given ECI position and velocity
+	inline const Vector3 getEccentricityVector(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double RwrtOexpNmag { RwrtOexpN.mag() };
-		double VwrtOexpNmag { VwrtOexpN.mag() };
+		double RofBwrtCmag { RofBwrtCexpI.mag() };
+		double VofBwrtImag { VofBwrtIexpI.mag() };
 
 		return Vector3 {
-			( ( VwrtOexpNmag * VwrtOexpNmag - Earth::mu / RwrtOexpNmag ) 
-			* RwrtOexpN - dot( RwrtOexpN, VwrtOexpN ) * VwrtOexpN ) / Earth::mu
+			( ( VofBwrtImag * VofBwrtImag - Earth::mu / RofBwrtCmag ) 
+			* RofBwrtCexpI - dot( RofBwrtCexpI, VofBwrtIexpI ) * VofBwrtIexpI ) / Earth::mu
 		};
 	}
 
 	// eccentricity magnitude (ecc) given ECI position and velocity
-	inline const double getEccentricity(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getEccentricity(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		return getEccentricityVector( RwrtOexpN, VwrtOexpN ).mag();
+		return getEccentricityVector( RofBwrtCexpI, VofBwrtIexpI ).mag();
 	}
 
 	// semimajor axis (a) given ECI position and velocity
-	inline const double getSemimajorAxis(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getSemimajorAxis(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double RwrtOexpNmag { RwrtOexpN.mag() };
-		double VwrtOexpNmag { VwrtOexpN.mag() };
-		double ecc { getEccentricity( RwrtOexpN, VwrtOexpN ) };
+		double RofBwrtCmag { RofBwrtCexpI.mag() };
+		double VofBwrtImag { VofBwrtIexpI.mag() };
+		double ecc { getEccentricity( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		if ( ABS( 1.0 - ecc ) < FLOAT_TOL )  // parabolic orbit
 		{
@@ -80,12 +80,12 @@ namespace CoordinateTransform
 		}
 		else
 		{
-			return -1.0 * Earth::mu * RwrtOexpNmag / ( VwrtOexpNmag * VwrtOexpNmag * RwrtOexpNmag - 2.0 * Earth::mu );
+			return -1.0 * Earth::mu * RofBwrtCmag / ( VofBwrtImag * VofBwrtImag * RofBwrtCmag - 2.0 * Earth::mu );
 		}
 	}
 
 	// (overload) semimajor axis (a) given ECI position and velocity magnitudes and eccentricity magnitude
-	inline const double getSemimajorAxis(const double& RwrtOexpNmag, const double& VwrtOexpNmag, const double& ecc)
+	inline const double getSemimajorAxis(const double& RofBwrtCmag, const double& VofBwrtImag, const double& ecc)
 	{
 		if ( ABS( 1.0 - ecc ) < FLOAT_TOL )  // parabolic orbit
 		{
@@ -93,15 +93,15 @@ namespace CoordinateTransform
 		}
 		else
 		{
-			return -1.0 * Earth::mu * RwrtOexpNmag / ( VwrtOexpNmag * VwrtOexpNmag * RwrtOexpNmag - 2.0 * Earth::mu );
+			return -1.0 * Earth::mu * RofBwrtCmag / ( VofBwrtImag * VofBwrtImag * RofBwrtCmag - 2.0 * Earth::mu );
 		}
 	}
 
 	// semiminor axis (b) given ECI position and velocity
-	inline const double getSemiminorAxis(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getSemiminorAxis(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double a { getSemimajorAxis( RwrtOexpN, VwrtOexpN ) };
-		double ecc { getEccentricity( RwrtOexpN, VwrtOexpN ) };
+		double a { getSemimajorAxis( RofBwrtCexpI, VofBwrtIexpI ) };
+		double ecc { getEccentricity( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		return a * std::sqrt( 1.0 - ecc * ecc );
 	}
@@ -113,11 +113,11 @@ namespace CoordinateTransform
 	}
 
 	// semilatus rectum (p) given ECI position and velocity
-	inline const double getSemilatusRectum(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getSemilatusRectum(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double HwrtOexpNmag { getSpecAngularMomentum( RwrtOexpN, VwrtOexpN ).mag() };
+		double HofBwrtCmag { getSpecAngularMomentum( RofBwrtCexpI, VofBwrtIexpI ).mag() };
 		
-		return HwrtOexpNmag * HwrtOexpNmag / Earth::mu;
+		return HofBwrtCmag * HofBwrtCmag / Earth::mu;
 	}
 
 	// (overload) semilatus rectum (p) given semimajor axis and eccentricity magnitude
@@ -134,16 +134,16 @@ namespace CoordinateTransform
 	}
 
 	// (overload) semilatus rectum (p) given specific angular momentum magnitude
-	inline const double getSemilatusRectum(const double& HwrtOexpNmag)
+	inline const double getSemilatusRectum(const double& HofBwrtCmag)
 	{
-		return HwrtOexpNmag * HwrtOexpNmag / Earth::mu;
+		return HofBwrtCmag * HofBwrtCmag / Earth::mu;
 	}
 
 	// apoapsis (Ra) given ECI position and velocity
-	inline const double getApoapsis(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getApoapsis(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double a { getSemimajorAxis( RwrtOexpN, VwrtOexpN) };
-		double ecc { getEccentricity( RwrtOexpN, VwrtOexpN ) };
+		double a { getSemimajorAxis( RofBwrtCexpI, VofBwrtIexpI) };
+		double ecc { getEccentricity( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		if ( ecc >= 1.0 )
 		{
@@ -169,10 +169,10 @@ namespace CoordinateTransform
 	}
 
 	// periapsis (Rp) given ECI position and velocity
-	inline const double getPeriapsis(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getPeriapsis(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double p { getSemilatusRectum(RwrtOexpN, VwrtOexpN) };
-		double ecc { getEccentricity( RwrtOexpN, VwrtOexpN ) };
+		double p { getSemilatusRectum(RofBwrtCexpI, VofBwrtIexpI) };
+		double ecc { getEccentricity( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		return p / ( 1.0 + ecc );
 	}
@@ -184,9 +184,9 @@ namespace CoordinateTransform
 	}
 
 	// mean motion (n) given ECI position and velocity
-	inline const double getMeanMotion(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getMeanMotion(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double a { getSemimajorAxis( RwrtOexpN, VwrtOexpN) };
+		double a { getSemimajorAxis( RofBwrtCexpI, VofBwrtIexpI) };
 		assert(a > 0.0);
 
 		return std::sqrt( Earth::mu / ( a * a * a ) );
@@ -201,9 +201,9 @@ namespace CoordinateTransform
 	}
 
 	// specific energy (energy) given ECI position and velocity
-	inline const double getSpecEnergy(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getSpecEnergy(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		return 0.5 * VwrtOexpN.mag2() - Earth::mu / RwrtOexpN.mag();
+		return 0.5 * VofBwrtIexpI.mag2() - Earth::mu / RofBwrtCexpI.mag();
 	}
 
 	// (overload) specific energy (energy) given semimajor axis
@@ -213,24 +213,24 @@ namespace CoordinateTransform
 	}
 
 	// inclination (inc) given ECI position and velocity
-	inline const double getInclination(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getInclination(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		Vector3 HwrtOexpNhat { getSpecAngularMomentum( RwrtOexpN, VwrtOexpN ).unit() };
+		Vector3 HofBwrtCexpIhat { getSpecAngularMomentum( RofBwrtCexpI, VofBwrtIexpI ).unit() };
 		
-		return std::acos( HwrtOexpNhat[2] );
+		return std::acos( HofBwrtCexpIhat[2] );
 	}
 
 	// (overload) inclination (inc) given specific angular momentum unit vector
-	inline const double getInclination(const Vector3& HwrtOexpNhat)
+	inline const double getInclination(const Vector3& HofBwrtCexpIhat)
 	{
-		return std::acos( HwrtOexpNhat[2] );
+		return std::acos( HofBwrtCexpIhat[2] );
 	}
 
 	// right ascension of the ascending node (raan) given ECI position and velocity
-	inline const double getRightAscension(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getRightAscension(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double inc { getInclination( RwrtOexpN, VwrtOexpN ) };
-		Vector3 NwrtOexpNhat { getLineOfNodesUnit( RwrtOexpN, VwrtOexpN ) };
+		double inc { getInclination( RofBwrtCexpI, VofBwrtIexpI ) };
+		Vector3 NofBwrtCexpIhat { getLineOfNodesUnit( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		if ( ABS( inc ) < FLOAT_TOL ) // equatorial orbit
 		{
@@ -238,19 +238,19 @@ namespace CoordinateTransform
 		}
 		else 
 		{
-			if ( NwrtOexpNhat[1] < 0.0 )
+			if ( NofBwrtCexpIhat[1] < 0.0 )
 			{
-				return TWO_PI - std::acos( NwrtOexpNhat[0] );
+				return TWO_PI - std::acos( NofBwrtCexpIhat[0] );
 			}
 			else
 			{
-				return std::acos( NwrtOexpNhat[0] );
+				return std::acos( NofBwrtCexpIhat[0] );
 			}
 		}
 	}
 
 	// (overload) right ascension of the ascending node (raan) given inclination and line of nodes unit vector
-	inline const double getRightAscension(const double& inc, const Vector3& NwrtOexpNhat)
+	inline const double getRightAscension(const double& inc, const Vector3& NofBwrtCexpIhat)
 	{
 		if ( ABS( inc ) < FLOAT_TOL ) // equatorial orbit
 		{
@@ -258,24 +258,24 @@ namespace CoordinateTransform
 		}
 		else 
 		{
-			if ( NwrtOexpNhat[1] < 0.0 )
+			if ( NofBwrtCexpIhat[1] < 0.0 )
 			{
-				return TWO_PI - std::acos( NwrtOexpNhat[0] );
+				return TWO_PI - std::acos( NofBwrtCexpIhat[0] );
 			}
 			else
 			{
-				return std::acos( NwrtOexpNhat[0] );
+				return std::acos( NofBwrtCexpIhat[0] );
 			}
 		}
 	}
 
 	// argument of periapsis (aop) given ECI position and velocity
-	inline const double getArgumentOfPeriapsis(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getArgumentOfPeriapsis(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		Vector3 NwrtOexpNhat { getLineOfNodesUnit( RwrtOexpN, VwrtOexpN ) };
-		Vector3 EwrtOexpN { getEccentricityVector( RwrtOexpN, VwrtOexpN ) };
-		double ecc { EwrtOexpN.mag() };
-		double inc { getInclination( RwrtOexpN, VwrtOexpN ) };
+		Vector3 NofBwrtCexpIhat { getLineOfNodesUnit( RofBwrtCexpI, VofBwrtIexpI ) };
+		Vector3 EofBwrtCexpI { getEccentricityVector( RofBwrtCexpI, VofBwrtIexpI ) };
+		double ecc { EofBwrtCexpI.mag() };
+		double inc { getInclination( RofBwrtCexpI, VofBwrtIexpI ) };
 		
 		if ( ecc < FLOAT_TOL || ABS( inc ) < FLOAT_TOL )  // circular or equatorial orbit
 		{
@@ -283,21 +283,21 @@ namespace CoordinateTransform
 		}
 		else
 		{
-			if ( EwrtOexpN[2] < 0.0 )
+			if ( EofBwrtCexpI[2] < 0.0 )
 			{
-				return TWO_PI - std::acos( dot( NwrtOexpNhat, EwrtOexpN / ecc ) );
+				return TWO_PI - std::acos( dot( NofBwrtCexpIhat, EofBwrtCexpI / ecc ) );
 			}
 			else
 			{
-				return std::acos( dot( NwrtOexpNhat, EwrtOexpN / ecc ) );
+				return std::acos( dot( NofBwrtCexpIhat, EofBwrtCexpI / ecc ) );
 			}
 		}
 	}
 
 	// (overload) argument of periapsis (aop) given inclination, eccentricity vector, and line of nodes unit vector
-	inline const double getArgumentOfPeriapsis(const double& inc, const Vector3& EwrtOexpN, const Vector3& NwrtOexpNhat)
+	inline const double getArgumentOfPeriapsis(const double& inc, const Vector3& EofBwrtCexpI, const Vector3& NofBwrtCexpIhat)
 	{
-		double ecc { EwrtOexpN.mag() };
+		double ecc { EofBwrtCexpI.mag() };
 		
 		if ( ecc < FLOAT_TOL || ABS( inc ) < FLOAT_TOL )  // circular or equatorial orbit
 		{
@@ -305,81 +305,81 @@ namespace CoordinateTransform
 		}
 		else
 		{
-			if ( EwrtOexpN[2] < 0.0 )
+			if ( EofBwrtCexpI[2] < 0.0 )
 			{
-				return TWO_PI - std::acos( dot( NwrtOexpNhat, EwrtOexpN / ecc ) );
+				return TWO_PI - std::acos( dot( NofBwrtCexpIhat, EofBwrtCexpI / ecc ) );
 			}
 			else
 			{
-				return std::acos( dot( NwrtOexpNhat, EwrtOexpN / ecc ) );
+				return std::acos( dot( NofBwrtCexpIhat, EofBwrtCexpI / ecc ) );
 			}
 		}
 	}
 
 	// true anomaly (ta) given ECI position and velocity, and inclination, eccentricity vector, and line of nodes unit vector (optional)
-	inline const double getTrueAnomaly(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN, double inc=0.0, Vector3 EwrtOexpN=ZERO_VECTOR3, Vector3 NwrtOexpNhat=ZERO_VECTOR3)
+	inline const double getTrueAnomaly(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI, double inc=0.0, Vector3 EofBwrtCexpI=ZERO_VECTOR3, Vector3 NofBwrtCexpIhat=ZERO_VECTOR3)
 	{
 		if ( 0.0 == inc )
 		{
-			inc = getInclination( RwrtOexpN, VwrtOexpN );
+			inc = getInclination( RofBwrtCexpI, VofBwrtIexpI );
 		}
-		if ( ZERO_VECTOR3 == EwrtOexpN )
+		if ( ZERO_VECTOR3 == EofBwrtCexpI )
 		{
-			EwrtOexpN = getEccentricityVector( RwrtOexpN, VwrtOexpN );
+			EofBwrtCexpI = getEccentricityVector( RofBwrtCexpI, VofBwrtIexpI );
 		}
-		if ( ZERO_VECTOR3 == NwrtOexpNhat )
+		if ( ZERO_VECTOR3 == NofBwrtCexpIhat )
 		{
-			NwrtOexpNhat = getLineOfNodesUnit( RwrtOexpN, VwrtOexpN );
+			NofBwrtCexpIhat = getLineOfNodesUnit( RofBwrtCexpI, VofBwrtIexpI );
 		}
 		
-		double ecc { EwrtOexpN.mag() };
-		double RwrtOexpNmag { RwrtOexpN.mag() };
-		Vector3 RwrtOexpNhat { RwrtOexpN / RwrtOexpNmag };
+		double ecc { EofBwrtCexpI.mag() };
+		double RofBwrtCmag { RofBwrtCexpI.mag() };
+		Vector3 RofBwrtCexpIhat { RofBwrtCexpI / RofBwrtCmag };
 
 		// return true longitude (ecc = 0 and inc = 0)
 		if ( ecc < FLOAT_TOL && ABS( inc ) < FLOAT_TOL )
 		{
-			if ( RwrtOexpN[1] < 0.0 )
+			if ( RofBwrtCexpI[1] < 0.0 )
 			{
-				return TWO_PI - std::acos( RwrtOexpN[0] / RwrtOexpNmag );
+				return TWO_PI - std::acos( RofBwrtCexpI[0] / RofBwrtCmag );
 			}
 			else
 			{
-				return std::acos( RwrtOexpN[0] / RwrtOexpNmag );
+				return std::acos( RofBwrtCexpI[0] / RofBwrtCmag );
 			}
 		}
 		// return true longitude of periapsis (ecc != 0, inc = 0)
 		else if ( ecc > FLOAT_TOL && ABS( inc ) < FLOAT_TOL )
 		{
-			if ( EwrtOexpN[1] < 0.0 )
+			if ( EofBwrtCexpI[1] < 0.0 )
 			{
-				return TWO_PI - std::acos( EwrtOexpN[0] / ecc );
+				return TWO_PI - std::acos( EofBwrtCexpI[0] / ecc );
 			}
 			else
 			{
-				return std::acos( EwrtOexpN[0] / ecc );
+				return std::acos( EofBwrtCexpI[0] / ecc );
 			}
 		}
 		// return argument of latitude (ecc = 0, inc != 0)
 		else if ( ecc < FLOAT_TOL && ABS( inc ) >= FLOAT_TOL )
 		{
-			if ( RwrtOexpN[2] < 0.0 )
+			if ( RofBwrtCexpI[2] < 0.0 )
 			{
-				return TWO_PI - std::acos( dot( NwrtOexpNhat, RwrtOexpNhat ) );
+				return TWO_PI - std::acos( dot( NofBwrtCexpIhat, RofBwrtCexpIhat ) );
 			}
 			else
 			{
-				return std::acos( dot( NwrtOexpNhat, RwrtOexpNhat ) );
+				return std::acos( dot( NofBwrtCexpIhat, RofBwrtCexpIhat ) );
 			}
 		}
 		// return true anomaly
 		else 
 		{
 			// prevent numerical errors near TA = 0
-			double EdotR { dot( EwrtOexpN / ecc, RwrtOexpNhat ) };
+			double EdotR { dot( EofBwrtCexpI / ecc, RofBwrtCexpIhat ) };
 			EdotR = MAX( -1.0, MIN( 1.0, EdotR ) );
 
-			if ( dot( RwrtOexpN, VwrtOexpN ) < 0.0 )
+			if ( dot( RofBwrtCexpI, VofBwrtIexpI ) < 0.0 )
 			{
 				return TWO_PI - std::acos( EdotR );
 			}
@@ -391,10 +391,10 @@ namespace CoordinateTransform
 	}
 
 	// eccentric anomaly (E) given ECI position and velocity
-	inline const double getEccentricAnomaly(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getEccentricAnomaly(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double ta { getTrueAnomaly( RwrtOexpN, VwrtOexpN ) };
-		double ecc { getEccentricity( RwrtOexpN, VwrtOexpN ) };
+		double ta { getTrueAnomaly( RofBwrtCexpI, VofBwrtIexpI ) };
+		double ecc { getEccentricity( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		assert(ecc < 1.0);
 
@@ -424,10 +424,10 @@ namespace CoordinateTransform
 	}
 
 	// parabolic anomaly given ECI position and velocity
-	inline const double getParabolicAnomaly(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getParabolicAnomaly(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double ta { getTrueAnomaly( RwrtOexpN, VwrtOexpN ) };
-		double ecc { getEccentricity( RwrtOexpN, VwrtOexpN ) };
+		double ta { getTrueAnomaly( RofBwrtCexpI, VofBwrtIexpI ) };
+		double ecc { getEccentricity( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		assert(ABS( 1.0 - ecc ) < FLOAT_TOL);
 
@@ -443,10 +443,10 @@ namespace CoordinateTransform
 	}
 
 	// hyperbolic anomaly (H) given ECI position and velocity
-	inline const double getHyperbolicAnomaly(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getHyperbolicAnomaly(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double ta { getTrueAnomaly( RwrtOexpN, VwrtOexpN ) };
-		double ecc { getEccentricity( RwrtOexpN, VwrtOexpN ) };
+		double ta { getTrueAnomaly( RofBwrtCexpI, VofBwrtIexpI ) };
+		double ecc { getEccentricity( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		assert(ecc > 1.0);
 
@@ -462,10 +462,10 @@ namespace CoordinateTransform
 	}
 
 	// mean anomaly (M) given ECI position and velocity
-	inline const double getMeanAnomaly(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getMeanAnomaly(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double E { getEccentricAnomaly( RwrtOexpN, VwrtOexpN ) };
-		double ecc { getEccentricity( RwrtOexpN, VwrtOexpN ) };
+		double E { getEccentricAnomaly( RofBwrtCexpI, VofBwrtIexpI ) };
+		double ecc { getEccentricity( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		return E - ecc * std::sin( E );
 	}
@@ -477,17 +477,17 @@ namespace CoordinateTransform
 	}
 
 	// flight path angle (fpa) given ECI position and velocity
-	inline const double getFlightPathAngle(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getFlightPathAngle(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double HwrtOexpNmag { getSpecAngularMomentum( RwrtOexpN, VwrtOexpN ).mag() };
+		double HofBwrtCmag { getSpecAngularMomentum( RofBwrtCexpI, VofBwrtIexpI ).mag() };
 		
-		return std::atan2( dot( RwrtOexpN, VwrtOexpN), HwrtOexpNmag );
+		return std::atan2( dot( RofBwrtCexpI, VofBwrtIexpI), HofBwrtCmag );
 	}
 
 	// orbital period (P) given ECI position and velocity
-	inline const double getPeriod(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const double getPeriod(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{
-		double n { getMeanMotion( RwrtOexpN, VwrtOexpN ) };
+		double n { getMeanMotion( RofBwrtCexpI, VofBwrtIexpI ) };
 		assert(n > 0.0);
 		
 		return TWO_PI / n;
@@ -501,38 +501,38 @@ namespace CoordinateTransform
 
 	
 	// conversion from ECI position and velocity to keplerian orbial elements
-	inline const Vector6 N2kepoe(const Vector3& RwrtOexpN, const Vector3& VwrtOexpN)
+	inline const Vector6 I2kepoe(const Vector3& RofBwrtCexpI, const Vector3& VofBwrtIexpI)
 	{	
 		// specific angular momentum
-		Vector3 HwrtOexpN { getSpecAngularMomentum( RwrtOexpN, VwrtOexpN ) };
+		Vector3 HofBwrtCexpI { getSpecAngularMomentum( RofBwrtCexpI, VofBwrtIexpI ) };
 
 		// line of nodes
-		Vector3 NwrtOexpNhat { getLineOfNodesUnit( HwrtOexpN ) };
+		Vector3 NofBwrtCexpIhat { getLineOfNodesUnit( HofBwrtCexpI ) };
 
 		// eccentricity
-		Vector3 EwrtOexpN { getEccentricityVector( RwrtOexpN, VwrtOexpN ) };
-		double ecc { EwrtOexpN.mag() };
+		Vector3 EofBwrtCexpI { getEccentricityVector( RofBwrtCexpI, VofBwrtIexpI ) };
+		double ecc { EofBwrtCexpI.mag() };
 
 		// semi-major axis
-		double a { getSemimajorAxis( RwrtOexpN.mag(), VwrtOexpN.mag(), ecc ) };
+		double a { getSemimajorAxis( RofBwrtCexpI.mag(), VofBwrtIexpI.mag(), ecc ) };
 
 		// inclination
-		double inc { getInclination( HwrtOexpN.unit() ) };
+		double inc { getInclination( HofBwrtCexpI.unit() ) };
 
 		// right ascension of the ascending node
-		double raan { getRightAscension( inc, NwrtOexpNhat) };
+		double raan { getRightAscension( inc, NofBwrtCexpIhat) };
 
 		// argument of periapsis
-		double aop { getArgumentOfPeriapsis( inc, EwrtOexpN, NwrtOexpNhat) };
+		double aop { getArgumentOfPeriapsis( inc, EofBwrtCexpI, NofBwrtCexpIhat) };
 
 		// determine true longitude, argument of latitude, or true anomaly
-		double theta { getTrueAnomaly( RwrtOexpN, VwrtOexpN, inc, EwrtOexpN, NwrtOexpNhat ) };
+		double theta { getTrueAnomaly( RofBwrtCexpI, VofBwrtIexpI, inc, EofBwrtCexpI, NofBwrtCexpIhat ) };
 
 		return Vector6 { a,	ecc, inc, raan, aop, theta };
 	}
 
 	// conversion keplerian orbial elements to ECI position and velocity
-	inline const Vector6 kepoe2N(double a, 
+	inline const Vector6 kepoe2I(double a, 
 						  double ecc,
 					  	  double inc,
 					  	  double raan,
@@ -559,46 +559,46 @@ namespace CoordinateTransform
 		double p { getSemilatusRectum( a, ecc ) };
 
 		// radius in perifocal frame
-		Vector3 RwrtOexpP { ZERO_VECTOR3 };
-		RwrtOexpP[0] = p * cTheta / ( 1.0 + ecc * cTheta );
-		RwrtOexpP[1] = p * sTheta / ( 1.0 + ecc * cTheta );
+		Vector3 RofBwrtCexpP { ZERO_VECTOR3 };
+		RofBwrtCexpP[0] = p * cTheta / ( 1.0 + ecc * cTheta );
+		RofBwrtCexpP[1] = p * sTheta / ( 1.0 + ecc * cTheta );
 
 		// velocity in perifocal frame
-		Vector3 VwrtOexpP { ZERO_VECTOR3 };
+		Vector3 VofBwrtIexpP { ZERO_VECTOR3 };
 		double sqrtMuOP { std::sqrt( Earth::mu / p ) };
-		VwrtOexpP[0] = -1.0 * sqrtMuOP * sTheta;
-		VwrtOexpP[1] = sqrtMuOP * ( ecc + cTheta );
+		VofBwrtIexpP[0] = -1.0 * sqrtMuOP * sTheta;
+		VofBwrtIexpP[1] = sqrtMuOP * ( ecc + cTheta );
 
 		// transform to ECI frame
-		FrameTransform CfromPtoN;
-		CfromPtoN.setP2N( inc, raan, aop );
-		Vector3 RwrtOexpN = CfromPtoN.getDCM() * RwrtOexpP;
-		Vector3 VwrtOexpN = CfromPtoN.getDCM() * VwrtOexpP;
+		FrameTransform CfromPtoI;
+		CfromPtoI.setP2I( inc, raan, aop );
+		Vector3 RofBwrtCexpI = CfromPtoI.getDCM() * RofBwrtCexpP;
+		Vector3 VofBwrtIexpI = CfromPtoI.getDCM() * VofBwrtIexpP;
 
-		return Vector6 { RwrtOexpN[0],
-						 RwrtOexpN[1],
-						 RwrtOexpN[2],
-						 VwrtOexpN[0],
-						 VwrtOexpN[1],
-						 VwrtOexpN[2] };
+		return Vector6 { RofBwrtCexpI[0],
+						 RofBwrtCexpI[1],
+						 RofBwrtCexpI[2],
+						 VofBwrtIexpI[0],
+						 VofBwrtIexpI[1],
+						 VofBwrtIexpI[2] };
 	}
 
 	// (overload) conversion keplerian orbial elements to ECI position and velocity
-	inline const Vector6 kepoe2N(const Vector6& state)
+	inline const Vector6 kepoe2I(const Vector6& state)
 	{
-		return kepoe2N( state[0], state[1], state[2], state[3], state[4], state[5] );
+		return kepoe2I( state[0], state[1], state[2], state[3], state[4], state[5] );
 	}
 
 	// geocentric latitude given ECEF position
-	inline const double getGeocentricLatitude(const Vector3& RwrtOexpE)
+	inline const double getGeocentricLatitude(const Vector3& RofBwrtCexpE)
 	{
-		return std::asin( RwrtOexpE[2] / RwrtOexpE.mag() );
+		return std::asin( RofBwrtCexpE[2] / RofBwrtCexpE.mag() );
 	}
 
 	// (overload) geocentric latitude given ECEF position and magnitude
-	inline const double getGeocentricLatitude(const Vector3& RwrtOexpE, const double& RwrtOmag)
+	inline const double getGeocentricLatitude(const Vector3& RofBwrtCexpE, const double& RofBwrtCmag)
 	{
-		return std::asin( RwrtOexpE[2] / RwrtOmag );
+		return std::asin( RofBwrtCexpE[2] / RofBwrtCmag );
 	}
 
 	// (overload) geocentric latitude given geodetic latitude
@@ -614,48 +614,48 @@ namespace CoordinateTransform
 	}
 
 	// (overload) geodetic latitude given ECEF position
-	inline const double getGeodeticLatitude(const Vector3& RwrtOexpE)
+	inline const double getGeodeticLatitude(const Vector3& RofBwrtCexpE)
 	{
-		return getGeodeticLatitude( getGeocentricLatitude( RwrtOexpE ) );
+		return getGeodeticLatitude( getGeocentricLatitude( RofBwrtCexpE ) );
 	}
 
 	// longitude given ECEF position
-	inline const double getLongitude(const Vector3& RwrtOexpE)
+	inline const double getLongitude(const Vector3& RofBwrtCexpE)
 	{
-		return std::atan2( RwrtOexpE[1], RwrtOexpE[0] );
+		return std::atan2( RofBwrtCexpE[1], RofBwrtCexpE[0] );
 	}
 
 	// altitude given ECEF position
-	inline const double getAltitude(const Vector3& RwrtOexpE)
+	inline const double getAltitude(const Vector3& RofBwrtCexpE)
 	{
-		double p { std::sqrt( RwrtOexpE[0] * RwrtOexpE[0] + RwrtOexpE[1] * RwrtOexpE[1] ) }; 
-		double gdLat { getGeodeticLatitude( RwrtOexpE ) };
+		double p { std::sqrt( RofBwrtCexpE[0] * RofBwrtCexpE[0] + RofBwrtCexpE[1] * RofBwrtCexpE[1] ) }; 
+		double gdLat { getGeodeticLatitude( RofBwrtCexpE ) };
 		return (
-			p * std::cos( gdLat ) + RwrtOexpE[2] * std::sin( gdLat ) - Earth::radius 
+			p * std::cos( gdLat ) + RofBwrtCexpE[2] * std::sin( gdLat ) - Earth::radius 
 			* std::sqrt( 1.0 - Earth::eccentricity * Earth::eccentricity * std::sin( gdLat ) * std::sin( gdLat ) )
 		);
 	}
 
 	// (overload) altitude given ECEF position and geocetric latitude
-	inline const double getAltitude(const Vector3& RwrtOexpE, const double& gdLat)
+	inline const double getAltitude(const Vector3& RofBwrtCexpE, const double& gdLat)
 	{
-		double p { std::sqrt( RwrtOexpE[0] * RwrtOexpE[0] + RwrtOexpE[1] * RwrtOexpE[1] ) }; 
+		double p { std::sqrt( RofBwrtCexpE[0] * RofBwrtCexpE[0] + RofBwrtCexpE[1] * RofBwrtCexpE[1] ) }; 
 		return (
-			p * std::cos( gdLat ) + RwrtOexpE[2] * std::sin( gdLat ) - Earth::radius 
+			p * std::cos( gdLat ) + RofBwrtCexpE[2] * std::sin( gdLat ) - Earth::radius 
 			* std::sqrt( 1.0 - Earth::eccentricity * Earth::eccentricity * std::sin( gdLat ) * std::sin( gdLat ) )
 		);
 	}
 
 	// right ascension given ECI position
-	inline const double getRightAscension(const Vector3& RwrtOexpN)
+	inline const double getRightAscension(const Vector3& RofBwrtCexpI)
 	{
-		return std::atan2( RwrtOexpN[1], RwrtOexpN[0] );
+		return std::atan2( RofBwrtCexpI[1], RofBwrtCexpI[0] );
 	}
 
 	// sidereal time given ECI position
-	inline const double getSiderealTime(const Vector3& RwrtOexpN)
+	inline const double getSiderealTime(const Vector3& RofBwrtCexpI)
 	{
-		return std::atan2( RwrtOexpN[1], RwrtOexpN[0] );
+		return std::atan2( RofBwrtCexpI[1], RofBwrtCexpI[0] );
 	}
 };
 

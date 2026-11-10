@@ -40,22 +40,22 @@ class Observer : public Model
 public:
 
 	// ECI states
-	Vector3 RwrtOexpN { ZERO_VECTOR3 };
-	Vector3 VwrtNexpN { ZERO_VECTOR3 };
+	Vector3 RofOwrtCexpI { ZERO_VECTOR3 };
+	Vector3 VofOwrtIexpI { ZERO_VECTOR3 };
 
 	// ECEF states
-	Vector3 RwrtOexpE { ZERO_VECTOR3 };
-	Vector3 VwrtEexpE { ZERO_VECTOR3 };
+	Vector3 RofOwrtCexpE { ZERO_VECTOR3 };
+	Vector3 VofOwrtEexpE { ZERO_VECTOR3 };
 
 	// NED states
-	FrameTransform CfromNtoD;
-	Vector3 RwrtOexpD { ZERO_VECTOR3 };
-	Vector3 VwrtNexpD { ZERO_VECTOR3 };
+	FrameTransform CfromItoN;
+	Vector3 RofOwrtCexpN { ZERO_VECTOR3 };
+	Vector3 VofOwrtIexpN { ZERO_VECTOR3 };
 
 	// Tropocentric states
-	FrameTransform CfromNtoT;
-	Vector3 RwrtOexpT { ZERO_VECTOR3 };
-	Vector3 VwrtNexpT { ZERO_VECTOR3 };
+	FrameTransform CfromItoT;
+	Vector3 RofOwrtCexpT { ZERO_VECTOR3 };
+	Vector3 VofOwrtIexpT { ZERO_VECTOR3 };
 
 	double gcLat  	{ 0.0 };	// geocentric latitude [rad]
 	double gdLat    { 0.0 };  	// geodetic latitude [rad]
@@ -63,10 +63,7 @@ public:
 	double alt 		{ 0.0 };	// altitude above geoid [km]
 	double st		{ 0.0 };	// sidereal time [rad]
 
-	Vector3 RwrtSexpNArray[MAX_SPACECRAFT_TO_TRACK] { ZERO_VECTOR3 };	// range wrt ECI array [km]
-	Vector3 RwrtSexpEArray[MAX_SPACECRAFT_TO_TRACK] { ZERO_VECTOR3 };	// range wrt ECEF array [km]
-	Vector3 RwrtSexpDArray[MAX_SPACECRAFT_TO_TRACK] { ZERO_VECTOR3 };	// range wrt NED array [km]
-	Vector3 RwrtSexpTArray[MAX_SPACECRAFT_TO_TRACK] { ZERO_VECTOR3 };	// range wrt Topocentric array [km]
+	Vector3 RofBwrtOexpIArray[MAX_SPACECRAFT_TO_TRACK] { ZERO_VECTOR3 };	// range wrt ECI array [km]
 	double azArray[MAX_SPACECRAFT_TO_TRACK] { 0.0 };  		// azimuth array [rad] (measured cw from North)
 	double elArray[MAX_SPACECRAFT_TO_TRACK] { 0.0 };		// elevation array [rad]
 	double raArray[MAX_SPACECRAFT_TO_TRACK] { 0.0 };  		// right ascension array [rad] (measured cw from North)

@@ -68,6 +68,13 @@ const double Earth::getDensity(const double& alt)
 		hRef = densityLookup[i][2];
 		scaleHeight = densityLookup[i][3];
 		++i;
+		
+		// if above 1000 km return 0 density
+		if ( EarthAtmosphere::DENSLOOKUP_ROW_COUNT == i )
+		{
+			return 0.0;
+		}
+		
 	} while ( alt > h );
 
 	return densityRef * std::exp( ( hRef - alt ) / scaleHeight );
@@ -248,8 +255,8 @@ void Earth::updateStateDependents()
 	calcEarthRotation();
 
 	// update transformation matrices
-	_CfromNtoE.setN2E( this );
-	_CfromEtoN.setE2N( this );
+	_CfromItoE.setI2E( this );
+	_CfromEtoI.setE2I( this );
 }
 
 Sun::Sun() :
@@ -279,30 +286,32 @@ void Sun::updateStateDependents()
 {
 	double t1 { _pEpoch->getT1() };
 
-	// calculate mean longitude
+	/*
+	** Section 11.3 Fundamentals of Spacecraft Attitude Determination and Control
+	*/
+
+	// calculate mean longitude of the ecliptic
 	double meanLon { DEG2RAD * ( 280.460 + 36000.771 * t1 ) };
 
-	// calculate mean anomaly
+	// calculate mean anomaly of the sun
 	double M { DEG2RAD * ( 357.5277233 + 35999.05034 * t1 ) };
 
-	// calculate longitude of the ecliptic
-	double eclipLon { meanLon + DEG2RAD * ( 1.914666471 * std::sin( M ) + .019994643 * std::sin( 2.0 * M ) ) };
+	// calculate true longitude of the ecliptic
+	double trueLon { meanLon + DEG2RAD * ( 1.914666471 * std::sin( M ) + .019994643 * std::sin( 2.0 * M ) ) };
 
 	// get mean obliquity of the ecliptic
 	double meanEpsilon { Earth::getMeanEpsilon( t1 ) };
 
 	// get Earth to Sun unit vector and magntiude
-	Vector3 RwrtOexpNhat {
-		std::cos( eclipLon ),
-		std::cos( meanEpsilon ) * std::sin( eclipLon ),
-		std::sin( meanEpsilon ) * std::sin( eclipLon )
+	Vector3 RofSwrtCexpIhat {
+		std::cos( trueLon ),
+		std::cos( meanEpsilon ) * std::sin( trueLon ),
+		std::sin( meanEpsilon ) * std::sin( trueLon )
 	};
 
-	double RwrtOmag {
-		AU * ( 1.000140612 - .016708617 * std::cos( M ) - .000139589 * std::cos( 2.0 * M ) )
-	};
+	_RofSwrtCmag = AU2KM * ( 1.000140612 - .016708617 * std::cos( M ) - .000139589 * std::cos( 2.0 * M ) );
 
-	_RwrtOexpN = RwrtOmag * RwrtOexpNhat;
+	_RofSwrtCexpI = _RofSwrtCmag * RofSwrtCexpIhat;
 
 }
 

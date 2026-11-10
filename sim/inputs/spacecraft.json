@@ -1,10 +1,10 @@
 {
-	"Spacecraft1":
+	"Spacecraft":
 	{
 		"initialState": 
 		{
-			"RwrtOexpN": [1718.18, -31888.14, 27208.05],
-			"VwrtNexpN": [2.1338, 1.5161, 1.6421]
+			"RofBwrtCexpI": [1718.18, -31888.14, 27208.05],
+			"VofBwrtIexpI": [2.1338, 1.5161, 1.6421]
 		},
 
 		"areaToMassRatio": 5.0,
@@ -18,34 +18,8 @@
 			"J3": true,
 			"J4": true,
 			"Drag": true,
-			"Sun": false,
+			"Sun": true,
 			"Moon": false,
-			"SRP": false
-		},
-		"outputFlag": true
-	},
-
-	"Spacecraft2":
-	{
-		"initialState": 
-		{
-			"RwrtOexpN": [1718.18, -31888.14, 27208.05],
-			"VwrtNexpN": [2.1338, 1.5161, 1.6421]
-		},
-		
-		"areaToMassRatio": 5.0,
-		"diffuseReflectivity": 0.25,
-		"dragCoefficient": 2.1,
-
-		"dynamics":
-		{
-			"TwoBody": true,
-			"J2": true,
-			"J3": true,
-			"J4": true,
-			"Sun": false,
-			"Moon": false,
-			"Drag": true,
 			"SRP": false
 		},
 		"outputFlag": true

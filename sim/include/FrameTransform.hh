@@ -27,18 +27,6 @@ class Earth;
 ** ----------- Class Definition ------------
 */ 
 
-// reference definitions
-  // O = Center of Earth
-  // B = Center of Mass of Body
-  // S = Center of Mass of Earth Observer
-// frame definitions
-  // N = ECI
-  // E = ECEF
-  // P = Perifocal
-  // L = LVLH / RTN
-  // T = topocentric (SEZ / SEU)
-  // D = NED
-
 class FrameTransform
 {
 	Matrix3 _dcm { IDENTITY_MATRIX3 };
@@ -83,40 +71,40 @@ public:
 	void setEulerAngles23(const double& phi, const double& theta);
 
 	// LVLH to ECI
-	void setL2N(const double& inc, const double& raan, const double& aol);
+	void setL2I(const double& inc, const double& raan, const double& aol);
 
 	// ECI to LVLH
-	void setN2L(const double& inc, const double& raan, const double& aol);
+	void setI2L(const double& inc, const double& raan, const double& aol);
 
 	// Perifocal to ECI
-	void setP2N(const double& inc, const double& raan, const double& aop);
+	void setP2I(const double& inc, const double& raan, const double& aop);
 
 	// ECI to Perifocal
-	void setN2P(const double& inc, const double& raan, const double& aop);
+	void setI2P(const double& inc, const double& raan, const double& aop);
 
 	// NED to ECI
-	void setD2N(const double& gdLat, const double& st);
+	void setN2I(const double& gdLat, const double& st);
 
 	// ECI to NED
-	void setN2D(const double& gdLat, const double& st);
+	void setI2N(const double& gdLat, const double& st);
 
 	// Topocentric (SEZ) to ECI
-	void setT2N(const double& gdLat, const double& st);
+	void setT2I(const double& gdLat, const double& st);
 
 	// ECI to Topocentric (SEZ)
-	void setN2T(const double& gdLat, const double& st);
+	void setI2T(const double& gdLat, const double& st);
 
 	// ECEF to ECI
-	void setE2N(Earth* pEarth);
+	void setE2I(Earth* pEarth);
 
 	// ECI to ECEF
-	void setN2E(Earth* pEarth);
+	void setI2E(Earth* pEarth);
 
 	// NED to ECEF
-	void setD2E(const double& gdLat, const double& lon);
+	void setN2E(const double& gdLat, const double& lon);
 
 	// ECEF to NED
-	void setE2D(const double& gdLat, const double& lon);
+	void setE2N(const double& gdLat, const double& lon);
 	
 	// Topocentric (SEZ) to ECEF
 	void setT2E(const double& gdLat, const double& lon);
@@ -125,10 +113,10 @@ public:
 	void setE2T(const double& gdLat, const double& lon);
 
 	// NED to Topocentric (SEZ)
-	void setD2T();
+	void setN2T();
 
 	// Topocentric (SEZ) to NED
-	void setT2D();
+	void setT2N();
 	
 };
 

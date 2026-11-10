@@ -23,56 +23,47 @@ using namespace CoordinateTransform;
 ** ----------- Class Definition ------------
 */ 
 
-// reference definitions
-  // O = Center of Earth
-  // B = Center of Mass of Body
-// frame definitions
-  // N = ECI
-  // E = ECEF
-  // P = Perifocal
-  // L = LVLH / RTN
-
 SpacecraftBody::SpacecraftBody(Earth* pEarth) : 
 	_pEarth { pEarth }
 {
 
 }
 
-void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
+void SpacecraftBody::updateFromI(const bool& atSolPoint=true)
 {
 	// update position magnitudes
-	RwrtOmag = RwrtOexpN.mag();
-	assert(RwrtOmag > 0.0);
-	RwrtOmag2 = RwrtOmag * RwrtOmag;
-	RwrtOmag3 = RwrtOmag2 * RwrtOmag;
-	RwrtOmag5 = RwrtOmag3 * RwrtOmag2;
-	RwrtOmag7 = RwrtOmag5 * RwrtOmag2;
-	RwrtOmag9 = RwrtOmag7 * RwrtOmag2;
+	RofBwrtCmag = RofBwrtCexpI.mag();
+	assert(RofBwrtCmag > 0.0);
+	RofBwrtCmag2 = RofBwrtCmag * RofBwrtCmag;
+	RofBwrtCmag3 = RofBwrtCmag2 * RofBwrtCmag;
+	RofBwrtCmag5 = RofBwrtCmag3 * RofBwrtCmag2;
+	RofBwrtCmag7 = RofBwrtCmag5 * RofBwrtCmag2;
+	RofBwrtCmag9 = RofBwrtCmag7 * RofBwrtCmag2;
 
 	// update velocity magnitudes
-	VwrtNmag = VwrtNexpN.mag();
-	VwrtNmag2 = VwrtNmag * VwrtNmag;
+	VofBwrtImag = VofBwrtIexpI.mag();
+	VofBwrtImag2 = VofBwrtImag * VofBwrtImag;
 
 	// convert from ECI to ECEF
-	RwrtOexpE = _pEarth->getCfromNtoE() * RwrtOexpN;
-	VwrtNexpE = _pEarth->getCfromNtoE() * VwrtNexpN;
-	VwrtEexpE = VwrtNexpE - cross( _pEarth->WwrtNexpE, RwrtOexpE );
-	VwrtEexpN = VwrtNexpN - cross( _pEarth->getCfromEtoN() * _pEarth->WwrtNexpE, RwrtOexpN );
+	RofBwrtCexpE = _pEarth->getCfromItoE() * RofBwrtCexpI;
+	VofBwrtIexpE = _pEarth->getCfromItoE() * VofBwrtIexpI;
+	VofBwrtEexpE = VofBwrtIexpE - cross( _pEarth->WofEwrtIexpE, RofBwrtCexpE );
+	VofBwrtEexpI = VofBwrtIexpI - cross( _pEarth->getCfromEtoI() * _pEarth->WofEwrtIexpE, RofBwrtCexpI );
 
 	// optional parameters only need to be updated at solution point
 	if ( true == atSolPoint )
 	{
 		// specific angular momentum
-		HwrtOexpN = getSpecAngularMomentum( RwrtOexpN, VwrtNexpN );
-		HwrtOmag = HwrtOexpN.mag();
-		assert(HwrtOmag > 0.0);
-		HwrtOexpNhat = HwrtOexpN / HwrtOmag;
+		HofBwrtCexpI = getSpecAngularMomentum( RofBwrtCexpI, VofBwrtIexpI );
+		HofBwrtCmag = HofBwrtCexpI.mag();
+		assert(HofBwrtCmag > 0.0);
+		HofBwrtCexpIhat = HofBwrtCexpI / HofBwrtCmag;
 
 		// line of nodes
-		NwrtOexpNhat = getLineOfNodesUnit( HwrtOexpN );
+		NofBwrtCexpIhat = getLineOfNodesUnit( HofBwrtCexpI );
 
 		// convert inertial state to keplerian orbital elements
-		Vector6 kepOE = N2kepoe( RwrtOexpN, VwrtNexpN );
+		Vector6 kepOE = I2kepoe( RofBwrtCexpI, VofBwrtIexpI );
 		a 		= kepOE[0];
 		ecc 	= kepOE[1];
 		inc 	= kepOE[2];
@@ -81,106 +72,106 @@ void SpacecraftBody::updateFromN(const bool& atSolPoint=true)
 		ta 		= kepOE[5];
 
 		b 			= getSemiminorAxis( a, ecc );
-		p 			= getSemilatusRectum( HwrtOmag );
+		p 			= getSemilatusRectum( HofBwrtCmag );
 		Ra 			= getApoapsis( p, ecc );
 		Rp 			= getPeriapsis( p, ecc );
 		n 			= getMeanMotion( a );
 		P			= getPeriod( n );
 		energy 		= getSpecEnergy( a );
-		EwrtOexpN	= getEccentricityVector( RwrtOexpN, VwrtNexpN );
+		EofBwrtCexpI	= getEccentricityVector( RofBwrtCexpI, VofBwrtIexpI );
 		aol 		= aop + ta;
 		E 			= getEccentricAnomaly( ecc, ta );
 		M 			= getMeanAnomaly( ecc, E );
-		fpa 		= getFlightPathAngle( RwrtOexpN, VwrtNexpN );
+		fpa 		= getFlightPathAngle( RofBwrtCexpI, VofBwrtIexpI );
 
-		gcLat		= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
+		gcLat		= getGeocentricLatitude( RofBwrtCexpE, RofBwrtCmag );
 		gdLat		= getGeodeticLatitude( gcLat );
-		lon			= getLongitude( RwrtOexpE );
-		alt			= getAltitude( RwrtOexpE, gdLat );
-		gcRA		= getRightAscension( RwrtOexpN );
+		lon			= getLongitude( RofBwrtCexpE );
+		alt			= getAltitude( RofBwrtCexpE, gdLat );
+		gcRA		= getRightAscension( RofBwrtCexpI );
 		gcDecl		= gcLat;
 		gmha		= _pEarth->getGMST() - gcRA;
 
 		// convert from ECI to LVLH
-		CfromNtoL.setN2L( inc, raan, aol );
-		RwrtOexpL = CfromNtoL.getDCM() * RwrtOexpN;
-		VwrtNexpL = CfromNtoL.getDCM() * VwrtNexpN;
+		CfromItoL.setI2L( inc, raan, aol );
+		RofBwrtCexpL = CfromItoL.getDCM() * RofBwrtCexpI;
+		VofBwrtIexpL = CfromItoL.getDCM() * VofBwrtIexpI;
 
 		// convert from ECI to Perifocal
-		CfromNtoP.setN2P( inc, raan, aop );
-		RwrtOexpP = CfromNtoP.getDCM() * RwrtOexpN;
-		VwrtNexpP = CfromNtoP.getDCM() * VwrtNexpN;
+		CfromItoP.setI2P( inc, raan, aop );
+		RofBwrtCexpP = CfromItoP.getDCM() * RofBwrtCexpI;
+		VofBwrtIexpP = CfromItoP.getDCM() * VofBwrtIexpI;
 	}
 }
 
 void SpacecraftBody::updateFromKepOE(const bool& atSolPoint=true)
 {
 	// convert keplerian orbital elements to inertial state
-	Vector6 stateN { kepoe2N( a, ecc, inc, raan, aop, ta ) };
-	RwrtOexpN = { stateN[0], stateN[1], stateN[2] };
-	VwrtNexpN = { stateN[3], stateN[4], stateN[5] };
+	Vector6 stateI { kepoe2I( a, ecc, inc, raan, aop, ta ) };
+	RofBwrtCexpI = { stateI[0], stateI[1], stateI[2] };
+	VofBwrtIexpI = { stateI[3], stateI[4], stateI[5] };
 
 	// update position magnitudes
-	RwrtOmag = RwrtOexpN.mag();
-	assert(RwrtOmag > 0.0);
-	RwrtOmag2 = RwrtOmag * RwrtOmag;
-	RwrtOmag3 = RwrtOmag2 * RwrtOmag;
-	RwrtOmag5 = RwrtOmag3 * RwrtOmag2;
-	RwrtOmag7 = RwrtOmag5 * RwrtOmag2;
-	RwrtOmag9 = RwrtOmag7 * RwrtOmag2;
+	RofBwrtCmag = RofBwrtCexpI.mag();
+	assert(RofBwrtCmag > 0.0);
+	RofBwrtCmag2 = RofBwrtCmag * RofBwrtCmag;
+	RofBwrtCmag3 = RofBwrtCmag2 * RofBwrtCmag;
+	RofBwrtCmag5 = RofBwrtCmag3 * RofBwrtCmag2;
+	RofBwrtCmag7 = RofBwrtCmag5 * RofBwrtCmag2;
+	RofBwrtCmag9 = RofBwrtCmag7 * RofBwrtCmag2;
 
 	// update velocity magnitudes
-	VwrtNmag = VwrtNexpN.mag();
-	VwrtNmag2 = VwrtNmag * VwrtNmag;
+	VofBwrtImag = VofBwrtIexpI.mag();
+	VofBwrtImag2 = VofBwrtImag * VofBwrtImag;
 
 	// convert from ECI to ECEF
-	RwrtOexpE = _pEarth->getCfromNtoE() * RwrtOexpN;
-	VwrtNexpE = _pEarth->getCfromNtoE() * VwrtNexpN;
-	VwrtEexpE = VwrtNexpE - cross( _pEarth->WwrtNexpE, RwrtOexpE );
-	VwrtEexpN = VwrtNexpN - cross( _pEarth->getCfromEtoN() * _pEarth->WwrtNexpE, RwrtOexpN );
+	RofBwrtCexpE = _pEarth->getCfromItoE() * RofBwrtCexpI;
+	VofBwrtIexpE = _pEarth->getCfromItoE() * VofBwrtIexpI;
+	VofBwrtEexpE = VofBwrtIexpE - cross( _pEarth->WofEwrtIexpE, RofBwrtCexpE );
+	VofBwrtEexpI = VofBwrtIexpI - cross( _pEarth->getCfromEtoI() * _pEarth->WofEwrtIexpE, RofBwrtCexpI );
 
 	// optional parameters only need to be updated at solution point
 	if ( true == atSolPoint )
 	{
 		// specific angular momentum
-		HwrtOexpN = getSpecAngularMomentum( RwrtOexpN, VwrtNexpN );
-		HwrtOmag = HwrtOexpN.mag();
-		assert(HwrtOmag > 0.0);
-		HwrtOexpNhat = HwrtOexpN / HwrtOmag;
+		HofBwrtCexpI = getSpecAngularMomentum( RofBwrtCexpI, VofBwrtIexpI );
+		HofBwrtCmag = HofBwrtCexpI.mag();
+		assert(HofBwrtCmag > 0.0);
+		HofBwrtCexpIhat = HofBwrtCexpI / HofBwrtCmag;
 
 		// line of nodes
-		NwrtOexpNhat = getLineOfNodesUnit( HwrtOexpN );
+		NofBwrtCexpIhat = getLineOfNodesUnit( HofBwrtCexpI );
 
 		// get optional parameters
 		b 			= getSemiminorAxis( a, ecc );
-		p 			= getSemilatusRectum( HwrtOmag );
+		p 			= getSemilatusRectum( HofBwrtCmag );
 		Ra 			= getApoapsis( p, ecc );
 		Rp 			= getPeriapsis( p, ecc );
 		n 			= getMeanMotion( a );
 		P			= getPeriod( n );
 		energy 		= getSpecEnergy( a );
-		EwrtOexpN	= getEccentricityVector( RwrtOexpN, VwrtNexpN );
+		EofBwrtCexpI	= getEccentricityVector( RofBwrtCexpI, VofBwrtIexpI );
 		aol 		= aop + ta;
 		E 			= getEccentricAnomaly( ecc, ta );
 		M 			= getMeanAnomaly( ecc, E );
-		fpa 		= getFlightPathAngle( RwrtOexpN, VwrtNexpN );
+		fpa 		= getFlightPathAngle( RofBwrtCexpI, VofBwrtIexpI );
 
-		gcLat		= getGeocentricLatitude( RwrtOexpE, RwrtOmag );
+		gcLat		= getGeocentricLatitude( RofBwrtCexpE, RofBwrtCmag );
 		gdLat		= getGeodeticLatitude( gcLat );
-		lon			= getLongitude( RwrtOexpE );
-		alt			= getAltitude( RwrtOexpE, gdLat );
-		gcRA		= getRightAscension( RwrtOexpN );
+		lon			= getLongitude( RofBwrtCexpE );
+		alt			= getAltitude( RofBwrtCexpE, gdLat );
+		gcRA		= getRightAscension( RofBwrtCexpI );
 		gcDecl		= gcLat;
 		gmha		= _pEarth->getGMST() - gcRA;
 
 		// convert from ECI to LVLH
-		CfromNtoL.setN2L( inc, raan, aol );
-		RwrtOexpL = CfromNtoL.getDCM() * RwrtOexpN;
-		VwrtNexpL = CfromNtoL.getDCM() * VwrtNexpN;
+		CfromItoL.setI2L( inc, raan, aol );
+		RofBwrtCexpL = CfromItoL.getDCM() * RofBwrtCexpI;
+		VofBwrtIexpL = CfromItoL.getDCM() * VofBwrtIexpI;
 
 		// convert from ECI to Perifocal
-		CfromNtoP.setN2P( inc, raan, aop );
-		RwrtOexpP = CfromNtoP.getDCM() * RwrtOexpN;
-		VwrtNexpP = CfromNtoP.getDCM() * VwrtNexpN;
+		CfromItoP.setI2P( inc, raan, aop );
+		RofBwrtCexpP = CfromItoP.getDCM() * RofBwrtCexpI;
+		VofBwrtIexpP = CfromItoP.getDCM() * VofBwrtIexpI;
 	}
 }

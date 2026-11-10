@@ -11,8 +11,8 @@
 // ------- Namespace directives -------
 
 // ------- Class Definition -------
-Spacecraft::Spacecraft(const std::string& name, json inputFileData, Earth* pEarth) :
-	Model(name), _pEarth { pEarth }
+Spacecraft::Spacecraft(const std::string& name, json inputFileData, Earth* pEarth, Sun* pSun, Moon* pMoon) :
+	Model(name), _pEarth { pEarth }, _pSun { pSun }, _pMoon { pMoon }
 {
 	// build spacecraft body
 	_pBody = new SpacecraftBody(pEarth);
@@ -20,8 +20,8 @@ Spacecraft::Spacecraft(const std::string& name, json inputFileData, Earth* pEart
 	// get spacecraft initial state
 	for ( std::size_t i { 0 }; i < 3; ++i )
 	{
-		_pBody->RwrtOexpN[i] = inputFileData["initialState"]["RwrtOexpN"][i].get<double>();
-		_pBody->VwrtNexpN[i] = inputFileData["initialState"]["VwrtNexpN"][i].get<double>();
+		_pBody->RofBwrtCexpI[i] = inputFileData["initialState"]["RofBwrtCexpI"][i].get<double>();
+		_pBody->VofBwrtIexpI[i] = inputFileData["initialState"]["VofBwrtIexpI"][i].get<double>();
 	}
 
 	// get spacecraft parameters
@@ -52,23 +52,23 @@ void Spacecraft::initModel()
 	// NOTE initModel() is executed when Model registered to Integrator
 
 	// register ECI states to be integrated
-	registerStates(_pBody->RwrtOexpN, _pBody->VwrtNexpN);
-	registerStates(_pBody->VwrtNexpN, _pBody->AwrtNexpN);
+	registerStates(_pBody->RofBwrtCexpI, _pBody->VofBwrtIexpI);
+	registerStates(_pBody->VofBwrtIexpI, _pBody->AofBwrtIexpI);
 
 	// register outputs with integrator
-	registerOutput("RwrtOexpN", _pBody->RwrtOexpN);
-	registerOutput("VwrtNexpN", _pBody->VwrtNexpN);
-	registerOutput("AwrtNexpN", _pBody->AwrtNexpN);
-	registerOutput("RwrtOexpE", _pBody->RwrtOexpE);
-	registerOutput("VwrtNexpE", _pBody->VwrtNexpE);
-	registerOutput("VwrtEexpE", _pBody->VwrtEexpE);
-	registerOutput("RwrtOexpL", _pBody->RwrtOexpL);
-	registerOutput("VwrtNexpL", _pBody->VwrtNexpL);
-	registerOutput("RwrtOexpP", _pBody->RwrtOexpP);
-	registerOutput("VwrtNexpP", _pBody->VwrtNexpP);
+	registerOutput("RofBwrtCexpI", _pBody->RofBwrtCexpI);
+	registerOutput("VofBwrtIexpI", _pBody->VofBwrtIexpI);
+	registerOutput("AofBwrtIexpI", _pBody->AofBwrtIexpI);
+	registerOutput("RofBwrtCexpE", _pBody->RofBwrtCexpE);
+	registerOutput("VofBwrtIexpE", _pBody->VofBwrtIexpE);
+	registerOutput("VofBwrtEexpE", _pBody->VofBwrtEexpE);
+	registerOutput("RofBwrtCexpL", _pBody->RofBwrtCexpL);
+	registerOutput("VofBwrtIexpL", _pBody->VofBwrtIexpL);
+	registerOutput("RofBwrtCexpP", _pBody->RofBwrtCexpP);
+	registerOutput("VofBwrtIexpP", _pBody->VofBwrtIexpP);
 
-	registerOutput("HwrtOexpN", _pBody->HwrtOexpN);
-	registerOutput("NwrtOexpNhat", _pBody->NwrtOexpNhat);
+	registerOutput("HofBwrtCexpI", _pBody->HofBwrtCexpI);
+	registerOutput("NofBwrtCexpIhat", _pBody->NofBwrtCexpIhat);
 
 	registerOutput("a", _pBody->a);
 	registerOutput("ecc", _pBody->ecc);
@@ -120,7 +120,8 @@ void Spacecraft::initModel()
 	}
 	if ( true == _dynamicsOptions.sun )
 	{
-		//
+		_pDynamics[_numDynamics] = new SunDynamics(_pBody, _pSun);
+		++_numDynamics;
 	}
 	if ( true == _dynamicsOptions.moon )
 	{
@@ -133,7 +134,8 @@ void Spacecraft::initModel()
 	}
 	if ( true == _dynamicsOptions.srp )
 	{
-		//
+		_pDynamics[_numDynamics] = new SrpDynamics(_pBody, _pSun);
+		++_numDynamics;
 	}
 	
 
@@ -145,19 +147,19 @@ void Spacecraft::initModel()
 // called after state (position and velocity) is updated to next timestep
 void Spacecraft::updateStateDependents()
 {
-	_pBody->updateFromN( _atSolutionPoint );
+	_pBody->updateFromI( _atSolutionPoint );
 }
 
 // called after state dependents are updated to next timestep
 void Spacecraft::updateDerivs()
 {
 	// reset acceleration
-	_pBody->AwrtNexpN = { ZERO_VECTOR3 }; 
+	_pBody->AofBwrtIexpI = { ZERO_VECTOR3 }; 
 
 	// loop through each dynamics model and update acceleration term
 	for ( std::size_t i { 0 }; i < _numDynamics; ++i )
 	{
-		_pBody->AwrtNexpN += _pDynamics[i]->getAwrtNexpN();
+		_pBody->AofBwrtIexpI += _pDynamics[i]->getAofBwrtIexpI();
 	}
 }
 

@@ -16,7 +16,6 @@ namespace Constants
 	inline constexpr double PI 		{ 3.141592653589793116 };	// Pi
 	inline constexpr double TWO_PI 	{ 2.0 * PI };				// 2*Pi
 	inline constexpr double G 		{ 6.67430e-20 };			// gravitational constant [km^3/kg/s^2]
-	inline constexpr double AU 		{ 149'597'870.7 };			// astronomical unit [km]
 	inline constexpr double c 		{ 299'792.457999 };			// speed of light [km/s]
 
 	// angle conversions
@@ -32,8 +31,10 @@ namespace Constants
 	inline constexpr double RAD2ARCSEC { RAD2DEG * DEG2ARCSEC };// radians to arcseconds
 
 	// length conversions
-	inline constexpr double KM2M { 1000.0 };		// kilometers to meters
-	inline constexpr double M2KM { 1.0 / KM2M };	// meters to kilometers
+	inline constexpr double KM2M  { 1000.0 };			// kilometers to meters
+	inline constexpr double M2KM  { 1.0 / KM2M };		// meters to kilometers
+	inline constexpr double AU2KM { 149'597'870.7 };	// astronomical unit to kilometers
+	inline constexpr double KM2AU { 1.0 / AU2KM };		// kilometers to astronomical unit
 
 	// time conversions
 	inline constexpr double SOLAR_DAY 		{ 86'400.0 };			// solar day [s]

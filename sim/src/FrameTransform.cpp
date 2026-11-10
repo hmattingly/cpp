@@ -22,18 +22,6 @@
 */ 
 using namespace Constants;
 
-// reference definitions
-  // O = Center of Earth
-  // B = Center of Mass of Body
-  // S = Center of Mass of Earth Observer
-// frame definitions
-  // N = ECI
-  // E = ECEF
-  // P = Perifocal
-  // L = LVLH / RTN
-  // T = topocentric (SEZ / SEU)
-  // D = NED
-
 /*
 ** ----------- Class Definition ------------
 */ 
@@ -179,55 +167,55 @@ void FrameTransform::setEulerAngles23(const double& phi, const double& theta)
 }
 
 // LVLH to ECI
-void FrameTransform::setL2N(const double& inc, const double& raan, const double& aol)
+void FrameTransform::setL2I(const double& inc, const double& raan, const double& aol)
 {
 	setEulerAngles313( -1.0 * aol, -1.0 * inc, -1.0 * raan );
 }
 
 // ECI to LVLH
-void FrameTransform::setN2L(const double& inc, const double& raan, const double& aol)
+void FrameTransform::setI2L(const double& inc, const double& raan, const double& aol)
 {
 	setEulerAngles313( raan, inc, aol );
 }
 
 // Perifocal to ECI
-void FrameTransform::setP2N(const double& inc, const double& raan, const double& aop)
+void FrameTransform::setP2I(const double& inc, const double& raan, const double& aop)
 {
 	setEulerAngles313( -1.0 * aop, -1.0 * inc, -1.0 * raan );
 }
 
 // ECI to Perifocal
-void FrameTransform::setN2P(const double& inc, const double& raan, const double& aop)
+void FrameTransform::setI2P(const double& inc, const double& raan, const double& aop)
 {
 	setEulerAngles313( raan, inc, aop );
 }
 
 // NED to ECI
-void FrameTransform::setD2N(const double& gdLat, const double& st)
+void FrameTransform::setN2I(const double& gdLat, const double& st)
 {
 	setEulerAngles23( gdLat + PI / 2.0, -1.0 * st );
 }
 
 // ECI to NED
-void FrameTransform::setN2D(const double& gdLat, const double& st)
+void FrameTransform::setI2N(const double& gdLat, const double& st)
 {
 	setEulerAngles32( st, -1.0 * ( gdLat + PI / 2.0 ) );
 }
 
 // Tropocentric (SEZ) to ECI
-void FrameTransform::setT2N(const double& gdLat, const double& st)
+void FrameTransform::setT2I(const double& gdLat, const double& st)
 {
 	setEulerAngles23( gdLat - PI / 2.0, -1.0 * st );
 }
 
 // ECI to Tropocentric (SEZ)
-void FrameTransform::setN2T(const double& gdLat, const double& st)
+void FrameTransform::setI2T(const double& gdLat, const double& st)
 {
 	setEulerAngles32( st, PI / 2.0 - gdLat );
 }
 
 // ECEF to ECI
-void FrameTransform::setE2N(Earth* pEarth)
+void FrameTransform::setE2I(Earth* pEarth)
 {
 	_dcm = pEarth->getPrecessionDCM().transpose()
 		   * pEarth->getNutationDCM().transpose()
@@ -236,7 +224,7 @@ void FrameTransform::setE2N(Earth* pEarth)
 }
 
 // ECI to ECEF
-void FrameTransform::setN2E(Earth* pEarth)
+void FrameTransform::setI2E(Earth* pEarth)
 {
 	_dcm = pEarth->getPolarMotionDCM() 
 		   * pEarth->getEarthRotationDCM()
@@ -245,13 +233,13 @@ void FrameTransform::setN2E(Earth* pEarth)
 }
 
 // NED to ECEF
-void FrameTransform::setD2E(const double& gdLat, const double& lon)
+void FrameTransform::setN2E(const double& gdLat, const double& lon)
 {
 	setEulerAngles23( gdLat + PI / 2.0, -1.0 * lon );
 }
 
 // ECEF to NED
-void FrameTransform::setE2D(const double& gdLat, const double& lon)
+void FrameTransform::setE2N(const double& gdLat, const double& lon)
 {
 	setEulerAngles32( lon, -1.0 * ( gdLat + PI / 2.0 ) );
 }
@@ -269,7 +257,7 @@ void FrameTransform::setE2T(const double& gdLat, const double& lon)
 }
 
 // NED to Tropocentric (SEZ)
-void FrameTransform::setD2T()
+void FrameTransform::setN2T()
 {
 	_dcm = {
 		{ -1.0, 0.0, 0.0 },
@@ -279,7 +267,7 @@ void FrameTransform::setD2T()
 }
 
 // Tropocentric (SEZ) to NED
-void FrameTransform::setT2D()
+void FrameTransform::setT2N()
 {
 	_dcm = {
 		{ -1.0, 0.0, 0.0 },

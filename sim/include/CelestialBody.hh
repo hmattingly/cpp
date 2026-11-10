@@ -199,8 +199,8 @@ class Earth : public Model
 	double _xp { 2.102636934972058e-07 };		// polar motion x [rad] (initialized to J2000)
 	double _yp { 1.831747290652104e-06 };		// polar motion y [rad] (initialized to J2000)
 	double _dPsi { -6.750247617532480e-05 };	// nutation of longitude [rad] (initialized to J2000)
-	FrameTransform _CfromNtoE { IDENTITY_MATRIX3 }; // DCM from ECI to ECEF
-	FrameTransform _CfromEtoN { IDENTITY_MATRIX3 }; // DCM from ECEF to ECI
+	FrameTransform _CfromItoE { IDENTITY_MATRIX3 }; // DCM from ECI to ECEF
+	FrameTransform _CfromEtoI { IDENTITY_MATRIX3 }; // DCM from ECEF to ECI
 	Matrix3 _PI { IDENTITY_MATRIX3 };			// polar motion DCM
 	Matrix3 _TH { IDENTITY_MATRIX3 };			// Greenwich DCM
 	Matrix3 _NU { IDENTITY_MATRIX3 };			// nutation DCM
@@ -214,7 +214,7 @@ public:
 	static inline const double J3 { -.000002532411 };						// J3 harmonic coefficient [unitless]
 	static inline const double J4 { -.000001619897 };						// J4 harmonic coefficient [unitless]
 	static inline const double eccentricity { .081919084262 };				// geometric eccentricity [unitless]
-	static inline const Vector3 WwrtNexpE { {0.0, 0.0, .00007292115} };		// rotation rate [rad/s]
+	static inline const Vector3 WofEwrtIexpE { {0.0, 0.0, .00007292115} };	// rotation rate of ECEF frame wrt ECI expressed in ECEF [rad/s]
 	static inline const EarthOrientation::NutationTable& nutationCoeff { EarthOrientation::NUTATION_COEFF };	// IAU 1980 nutation coefficients
 	static inline const EarthAtmosphere::DensityLookupTable& densityLookup { EarthAtmosphere::DENS_LOOKUP };	// exponential atmospheric model (Table 8-4 of Vallado)
 
@@ -247,8 +247,8 @@ public:
 	const Matrix3& getEarthRotationDCM() const { return _TH; }
 	const Matrix3& getNutationDCM() const { return _NU; }
 	const Matrix3& getPrecessionDCM() const { return _PR; }
-	const Matrix3 getCfromEtoN() const { return _CfromEtoN.getDCM(); }
-	const Matrix3 getCfromNtoE() const { return _CfromNtoE.getDCM(); }
+	const Matrix3 getCfromEtoI() const { return _CfromEtoI.getDCM(); }
+	const Matrix3 getCfromItoE() const { return _CfromItoE.getDCM(); }
 
 	// setter functions
 	void setXp(const double xp) { _xp = xp; }
@@ -264,8 +264,8 @@ class Moon
 
 public:
 	static inline const std::string name { "Moon" };						// name of body
-	static inline const double mu { 7.345789943736122e+22 * Constants::G };	// gravitational parameter in km^3/s^2
-	static inline const double radius { 1737.4 };							// mean equatorial radius in km
+	static inline const double mu { 7.345789943736122e+22 * Constants::G };	// gravitational parameter [km^3/s^2]
+	static inline const double radius { 1737.4 };							// mean equatorial radius [km]
 
 	// default constructor
 	Moon() = default;
@@ -288,12 +288,14 @@ class Sun : public Model
 {
 	Epoch* _pEpoch { nullptr };
 
-	Vector3 _RwrtOexpN { ZERO_VECTOR3 };
+	Vector3 _RofSwrtCexpI { ZERO_VECTOR3 };
+	double _RofSwrtCmag { 0.0 };
 
 public:
 	static inline const std::string name { "Sun" };							// name of body
-	static inline const double mu { 1.988409870967592e+30 * Constants::G };	// gravitational parameter in km^3/s^2
-	static inline const double radius { 695'700 };							// mean equatorial radius in km
+	static inline const double mu { 1.988409870967592e+30 * Constants::G };	// gravitational parameter [km^3/s^2]
+	static inline const double radius { 695'700 };							// mean equatorial radius [km]
+	static inline const double E { 1367.0 }; 								// solar flux [W/m^2]
 
 	// default constructor
 	Sun();
@@ -307,6 +309,8 @@ public:
 	virtual void updateStateDependents() override;
 
 	// access functions
+	const Vector3& getRofSwrtCexpI() const { return _RofSwrtCexpI; }
+	const double& getRofSwrtCmag() const { return _RofSwrtCmag; }
 
 	// setter functions
 

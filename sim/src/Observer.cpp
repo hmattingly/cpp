@@ -43,19 +43,19 @@ Observer::Observer(const std::string& name, json inputFileData, Earth* pEarth) :
 	double speed { inputFileData["speed"].get<double>() * M2KM };
 
 	// build initial state
-	RwrtOexpE = {
+	RofOwrtCexpE = {
 		( _pEarth->getGeoidHeight( gdLat ) + alt ) * std::cos( gdLat ) * std::cos( lon ),
 		( _pEarth->getGeoidHeight( gdLat ) + alt ) * std::cos( gdLat ) * std::sin( lon ),
 		( _pEarth->getGeoidHeight( gdLat ) * ( 1.0 - Earth::eccentricity * Earth::eccentricity ) + alt ) * std::sin( gdLat )
 	};
-	Vector3 VwrtEexpD { 
+	Vector3 VofOwrtEexpN { 
 		speed * std::cos( heading ),
 		speed * std::sin( heading ),
 		0.0
 	};
-	FrameTransform CfromDtoE;
-	CfromDtoE.setD2E( gdLat, lon );
-	VwrtEexpE = CfromDtoE.getDCM() * VwrtEexpD;
+	FrameTransform CfromNtoE;
+	CfromNtoE.setN2E( gdLat, lon );
+	VofOwrtEexpE = CfromNtoE.getDCM() * VofOwrtEexpN;
 
 	// set output flag
 	_outputFlag = inputFileData["outputFlag"].get<bool>();
@@ -68,14 +68,14 @@ void Observer::initModel()
 {
 	// NOTE initModel() is executed when Model registered to Integrator
 
-	// register ECI states to be integrated
-	registerStates(RwrtOexpE, VwrtEexpE);
+	// register ECEF states to be integrated
+	registerStates(RofOwrtCexpE, VofOwrtEexpE);
 
 	// register outputs with integrator
-	registerOutput("RwrtOexpN", RwrtOexpN);
-	registerOutput("RwrtOexpE", RwrtOexpE);
-	registerOutput("VwrtEexpE", VwrtEexpE);
-	registerOutput("VwrtNexpN", VwrtNexpN);
+	registerOutput("RofOwrtCexpI", RofOwrtCexpI);
+	registerOutput("RofOwrtCexpE", RofOwrtCexpE);
+	registerOutput("VofOwrtEexpE", VofOwrtEexpE);
+	registerOutput("VofOwrtIexpI", VofOwrtIexpI);
 
 	registerOutput("gcLat", gcLat);
 	registerOutput("gdLat", gdLat);
@@ -91,42 +91,41 @@ void Observer::initModel()
 // called after state (position and velocity) is updated to next timestep
 void Observer::updateStateDependents()
 {
-	RwrtOexpN = _pEarth->getCfromEtoN() * RwrtOexpE;
-	VwrtNexpN = _pEarth->getCfromEtoN() * ( VwrtEexpE + cross( _pEarth->omega, RwrtOexpE ) );
+	RofOwrtCexpI = _pEarth->getCfromEtoI() * RofOwrtCexpE;
+	VofOwrtIexpI = _pEarth->getCfromEtoI() * ( VofOwrtEexpE + cross( _pEarth->WofEwrtIexpE, RofOwrtCexpE ) );
 	
 	// get longitude, latitude, altitude, and sidereal time
-	gcLat = getGeocentricLatitude( RwrtOexpE, RwrtOexpE.mag() );
+	gcLat = getGeocentricLatitude( RofOwrtCexpE, RofOwrtCexpE.mag() );
 	gdLat = getGeodeticLatitude( gcLat );
-	lon = getLongitude( RwrtOexpE );
-	alt = getAltitude( RwrtOexpE, gdLat );
-	st = getSiderealTime( RwrtOexpN );
+	lon = getLongitude( RofOwrtCexpE );
+	alt = getAltitude( RofOwrtCexpE, gdLat );
+	st = getSiderealTime( RofOwrtCexpI );
 
 	// set NED tranformation
-	CfromNtoD.setN2D( gdLat, st );
-	RwrtOexpD = CfromNtoD.getDCM() * RwrtOexpN;
-	VwrtNexpD = CfromNtoD.getDCM() * VwrtNexpN;
+	CfromItoN.setI2N( gdLat, st );
+	RofOwrtCexpN = CfromItoN.getDCM() * RofOwrtCexpI;
+	VofOwrtIexpN = CfromItoN.getDCM() * VofOwrtIexpI;
 
 	// set tropocentric transformation
-	CfromNtoT.setN2T( gdLat, st );
-	RwrtOexpT = CfromNtoT.getDCM() * RwrtOexpN;
-	VwrtNexpT = CfromNtoT.getDCM() * VwrtNexpN;
+	CfromItoT.setI2T( gdLat, st );
+	RofOwrtCexpT = CfromItoT.getDCM() * RofOwrtCexpI;
+	VofOwrtIexpT = CfromItoT.getDCM() * VofOwrtIexpI;
 
-	Vector3 RwrtSexpD { ZERO_VECTOR3 };
+	Vector3 RofBwrtOexpN { ZERO_VECTOR3 };
 
 	for ( std::size_t i { 0 }; i < _numSpacecraft; ++i )
 	{
 		// get range vectors
-		RwrtSexpNArray[i] = _pSpacecraftArray[i]->getSpacecraftBody()->RwrtOexpN - RwrtOexpN;
-		RwrtSexpEArray[i] = _pSpacecraftArray[i]->getSpacecraftBody()->RwrtOexpE - RwrtOexpE;
+		RofBwrtOexpIArray[i] = _pSpacecraftArray[i]->getSpacecraftBody()->RofBwrtCexpI - RofOwrtCexpI;
 
 		// get right ascension and declination of range vector
-		raArray[i] = std::atan2( RwrtSexpNArray[i][1], RwrtSexpNArray[i][0] );
-		declArray[i] = std::asin( RwrtSexpNArray[i][2] / RwrtSexpNArray[i].mag() );
+		raArray[i] = std::atan2( RofBwrtOexpIArray[i][1], RofBwrtOexpIArray[i][0] );
+		declArray[i] = std::asin( RofBwrtOexpIArray[i][2] / RofBwrtOexpIArray[i].mag() );
 
 		// get azimuth and elevation
-		RwrtSexpD = ( CfromNtoD.getDCM() * ( _pSpacecraftArray[i]->getSpacecraftBody()->RwrtOexpN ) ) - RwrtOexpD;
-		azArray[i] = std::atan2( RwrtSexpD[1], RwrtSexpD[0] );
-		elArray[i] = std::asin( -1.0 * RwrtSexpD[2] / RwrtSexpD.mag() );
+		RofBwrtOexpN = CfromItoN.getDCM() * _pSpacecraftArray[i]->getSpacecraftBody()->RofBwrtCexpI - RofOwrtCexpN;
+		azArray[i] = std::atan2( RofBwrtOexpN[1], RofBwrtOexpN[0] );
+		elArray[i] = std::asin( -1.0 * RofBwrtOexpN[2] / RofBwrtOexpN.mag() );
 	}
 }
 
@@ -163,8 +162,7 @@ void Observer::registerSpacecraft(Spacecraft* pSpacecraft)
 	}
 
 	// register variables to output
-	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_RwrtSexpN", RwrtSexpNArray[_numSpacecraft] );
-	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_RwrtSexpE", RwrtSexpEArray[_numSpacecraft] );
+	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_RofBwrtOexpI", RofBwrtOexpIArray[_numSpacecraft] );
 	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_ra", raArray[_numSpacecraft] );
 	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_decl", declArray[_numSpacecraft] );
 	registerOutput( getName() + "_to_" + pSpacecraft->getName() + "_az", azArray[_numSpacecraft] );

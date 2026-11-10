@@ -24,6 +24,8 @@ inline constexpr int MAX_DYNAMIC { 8 };	// max number dynamic options
 ** --------- Namespace directives ---------
 */ 
 class Earth;
+class Sun;
+class Moon;
 
 /*
 ** ---------- Struct Definition -----------
@@ -46,21 +48,20 @@ class Dynamics
 {
 protected:
 
-	SpacecraftBody* _pBody;
-	Earth* _pEarth;
+	SpacecraftBody* _pBody { nullptr };
 
 public:
 	// default constructor
 	Dynamics() = delete;
 
 	// parameterized constructor
-	Dynamics(SpacecraftBody* pBody, Earth* pEarth);
+	Dynamics(SpacecraftBody* pBody);
 
 	// destructor
 	virtual ~Dynamics() = default;
 
 	// forward declarations
-	virtual const Vector3 getAwrtNexpN() = 0;
+	virtual const Vector3 getAofBwrtIexpI() = 0;
 
 	// access functions
 
@@ -74,6 +75,7 @@ public:
 */ 
 class TwoBodyDynamics : public Dynamics
 {
+	Earth* _pEarth { nullptr };
 
 public:
 	// default constructor
@@ -86,7 +88,7 @@ public:
 	~TwoBodyDynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtNexpN() override;
+	const Vector3 getAofBwrtIexpI() override;
 
 	// access functions
 
@@ -98,6 +100,8 @@ public:
 */ 
 class J2Dynamics : public Dynamics
 {
+	Earth* _pEarth { nullptr };
+
 public:
 	// default constructor
 	J2Dynamics() = delete;
@@ -109,7 +113,7 @@ public:
 	~J2Dynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtNexpN() override;
+	const Vector3 getAofBwrtIexpI() override;
 
 	// access functions
 
@@ -121,6 +125,7 @@ public:
 */ 
 class J3Dynamics : public Dynamics
 {
+	Earth* _pEarth { nullptr };
 
 public:
 	// default constructor
@@ -133,7 +138,7 @@ public:
 	~J3Dynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtNexpN() override;
+	const Vector3 getAofBwrtIexpI() override;
 
 	// access functions
 
@@ -145,6 +150,7 @@ public:
 */ 
 class J4Dynamics : public Dynamics
 {
+	Earth* _pEarth { nullptr };
 
 public:
 	// default constructor
@@ -157,7 +163,7 @@ public:
 	~J4Dynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtNexpN() override;
+	const Vector3 getAofBwrtIexpI() override;
 
 	// access functions
 
@@ -169,6 +175,7 @@ public:
 */ 
 class DragDynamics : public Dynamics
 {
+	Earth* _pEarth { nullptr };
 	double _rho { 0.0 };  // atmospheric density [kg/m^3]
 	
 public:
@@ -182,7 +189,57 @@ public:
 	~DragDynamics() = default;
 
 	// forward declarations
-	const Vector3 getAwrtNexpN() override;
+	const Vector3 getAofBwrtIexpI() override;
+
+	// access functions
+
+	// setter functions
+};
+
+/*
+** ----------- Class Definition ------------
+*/ 
+class SunDynamics : public Dynamics
+{
+	Sun* _pSun { nullptr };
+	
+public:
+	// default constructor
+	SunDynamics() = delete;
+
+	// parameterized constructor
+	SunDynamics(SpacecraftBody* pBody, Sun* pSun);
+
+	// destructor
+	~SunDynamics() = default;
+
+	// forward declarations
+	const Vector3 getAofBwrtIexpI() override;
+
+	// access functions
+
+	// setter functions
+};
+
+/*
+** ----------- Class Definition ------------
+*/ 
+class SrpDynamics : public Dynamics
+{
+	Sun* _pSun { nullptr };
+	
+public:
+	// default constructor
+	SrpDynamics() = delete;
+
+	// parameterized constructor
+	SrpDynamics(SpacecraftBody* pBody, Sun* pSun);
+
+	// destructor
+	~SrpDynamics() = default;
+
+	// forward declarations
+	const Vector3 getAofBwrtIexpI() override;
 
 	// access functions
 

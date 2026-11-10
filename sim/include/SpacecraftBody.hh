@@ -27,15 +27,6 @@ class Earth;
 ** ---------- Class Definition -----------
 */ 
 
-// reference definitions
-  // O = Center of Earth
-  // B = Center of Mass of Body
-// frame definitions
-  // N = ECI
-  // E = ECEF
-  // P = Perifocal
-  // L = LVLH / RTN
-
 class SpacecraftBody
 {
 	Earth* _pEarth { nullptr };
@@ -48,46 +39,46 @@ public:
 	~SpacecraftBody() = default;
 
 	// ECI states
-	Vector3 RwrtOexpN { ZERO_VECTOR3 };
-	Vector3 VwrtNexpN { ZERO_VECTOR3 };
-	Vector3 AwrtNexpN { ZERO_VECTOR3 };
+	Vector3 RofBwrtCexpI { ZERO_VECTOR3 };
+	Vector3 VofBwrtIexpI { ZERO_VECTOR3 };
+	Vector3 AofBwrtIexpI { ZERO_VECTOR3 };
 
-	double RwrtOmag  { 0.0 };
-	double RwrtOmag2 { 0.0 };
-	double RwrtOmag3 { 0.0 };
-	double RwrtOmag5 { 0.0 };
-	double RwrtOmag7 { 0.0 };
-	double RwrtOmag9 { 0.0 };
+	double RofBwrtCmag  { 0.0 };
+	double RofBwrtCmag2 { 0.0 };
+	double RofBwrtCmag3 { 0.0 };
+	double RofBwrtCmag5 { 0.0 };
+	double RofBwrtCmag7 { 0.0 };
+	double RofBwrtCmag9 { 0.0 };
 
-	double VwrtNmag  { 0.0 };
-	double VwrtNmag2 { 0.0 };
+	double VofBwrtImag  { 0.0 };
+	double VofBwrtImag2 { 0.0 };
 
 	// ECEF states
-	Vector3 RwrtOexpE { ZERO_VECTOR3 };
-	Vector3 VwrtNexpE { ZERO_VECTOR3 };
-	Vector3 VwrtEexpE { ZERO_VECTOR3 };
-	Vector3 VwrtEexpN { ZERO_VECTOR3 };
+	Vector3 RofBwrtCexpE { ZERO_VECTOR3 };
+	Vector3 VofBwrtIexpE { ZERO_VECTOR3 };
+	Vector3 VofBwrtEexpE { ZERO_VECTOR3 };
+	Vector3 VofBwrtEexpI { ZERO_VECTOR3 };
 
 	// LVLH / RTN states
-	FrameTransform CfromNtoL;
-	Vector3 RwrtOexpL { ZERO_VECTOR3 };
-	Vector3 VwrtNexpL { ZERO_VECTOR3 };
+	FrameTransform CfromItoL;
+	Vector3 RofBwrtCexpL { ZERO_VECTOR3 };
+	Vector3 VofBwrtIexpL { ZERO_VECTOR3 };
 
 	// Perifocal states
-	FrameTransform CfromNtoP;
-	Vector3 RwrtOexpP { ZERO_VECTOR3 };
-	Vector3 VwrtNexpP { ZERO_VECTOR3 };
+	FrameTransform CfromItoP;
+	Vector3 RofBwrtCexpP { ZERO_VECTOR3 };
+	Vector3 VofBwrtIexpP { ZERO_VECTOR3 };
 
 	// specific angular momentum
-	Vector3 HwrtOexpN 	 { ZERO_VECTOR3 };	// specific angular momentum
-	Vector3 HwrtOexpNhat { ZERO_VECTOR3 };	// specific angular momentum unit vector
-	double HwrtOmag  { 0.0 };				// specific angular momentum magnitude
+	Vector3 HofBwrtCexpI 	{ ZERO_VECTOR3 };	// specific angular momentum
+	Vector3 HofBwrtCexpIhat { ZERO_VECTOR3 };	// specific angular momentum unit vector
+	double HofBwrtCmag  { 0.0 };				// specific angular momentum magnitude
 
 	// line of nodes
-	Vector3 NwrtOexpNhat { ZERO_VECTOR3 };	// line of nodes unit vector
+	Vector3 NofBwrtCexpIhat { ZERO_VECTOR3 };	// line of nodes unit vector
 
 	// eccentricity vector
-	Vector3 EwrtOexpN    { ZERO_VECTOR3 };	// eccentricity vector
+	Vector3 EofBwrtCexpI    { ZERO_VECTOR3 };	// eccentricity vector
 
 	// Keplerian orbital elements
 	double a 	{ 0.0 };  	// semi-major axis [km]
@@ -123,7 +114,7 @@ public:
 	double Cd;	// drag coefficient [unitless]
 
 	// forward declarations
-	void updateFromN(const bool& atSolPoint);
+	void updateFromI(const bool& atSolPoint);
 	void updateFromKepOE(const bool& atSolPoint);
 
 	// setter functions
