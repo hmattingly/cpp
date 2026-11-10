@@ -230,6 +230,7 @@ public:
 	virtual void updateStateDependents() override;
 	static const double getDensity(const double& alt);
 	static const double getGeoidHeight(const double& gdLat);
+	static const double getMeanEpsilon(const double& t1);
 	void calcPolarMotion();
 	void calcNutation();
 	void calcPrecession();
@@ -239,7 +240,6 @@ public:
 	const double& getGMST() const { return _gmst; }
 	const double& getGAST() const { return _gast; }
 	const double& getTrueEpsilon() const { return _trueEpsilon; }
-	const double& getMeanEpsilon() const { return _meanEpsilon; }
 	const double& getXp() const { return _xp; }
 	const double& getYp() const { return _yp; }
 	const double& getDPsi() const { return _dPsi; }
@@ -261,6 +261,7 @@ public:
 */ 
 class Moon
 {
+
 public:
 	static inline const std::string name { "Moon" };						// name of body
 	static inline const double mu { 7.345789943736122e+22 * Constants::G };	// gravitational parameter in km^3/s^2
@@ -283,20 +284,27 @@ public:
 /*
 ** ----------- Class Definition ------------
 */ 
-class Sun
+class Sun : public Model
 {
+	Epoch* _pEpoch { nullptr };
+
+	Vector3 _RwrtOexpN { ZERO_VECTOR3 };
+
 public:
 	static inline const std::string name { "Sun" };							// name of body
 	static inline const double mu { 1.988409870967592e+30 * Constants::G };	// gravitational parameter in km^3/s^2
 	static inline const double radius { 695'700 };							// mean equatorial radius in km
 
 	// default constructor
-	Sun() = default;
+	Sun();
 
 	// destructor
 	~Sun() = default;
 
 	// forward declarations
+	virtual void initModel() override;
+	virtual void updateDerivs() override;
+	virtual void updateStateDependents() override;
 
 	// access functions
 

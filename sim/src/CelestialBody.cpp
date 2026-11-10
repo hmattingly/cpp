@@ -90,6 +90,13 @@ void Earth::initModel()
 	_initialized = true;
 }
 
+const double Earth::getMeanEpsilon(const double& t1)
+{
+	double t1_2  { t1 * t1 };
+	double t1_3  { t1 * t1_2 };
+	return ARCSEC2RAD * ( 84381.448 - 46.8150 * t1 - 0.00059 * t1_2 + 0.001813 * t1_3 );
+}
+
 void Earth::calcPolarMotion()
 {
 	double cNXp { std::cos( -1.0 * _xp ) };
@@ -168,7 +175,7 @@ void Earth::calcNutation()
 	_dPsi = dPsi;
 
 	// update mean obliquity of the ecliptic
-	_meanEpsilon = ARCSEC2RAD * ( 84381.448 - 46.8150 * t1 - 0.00059 * t1_2 + 0.001813 * t1_3 );
+	_meanEpsilon = getMeanEpsilon( t1 );
 
 	// update true obliquity of the ecliptic
 	_trueEpsilon = _meanEpsilon + dEpsilon;
@@ -243,5 +250,59 @@ void Earth::updateStateDependents()
 	// update transformation matrices
 	_CfromNtoE.setN2E( this );
 	_CfromEtoN.setE2N( this );
+}
+
+Sun::Sun() :
+	Model( Sun::name )
+{
+	// get Epoch pointer
+    _pEpoch = Scheduler::getEpoch();
+
+	// populate initial values
+	updateStateDependents();
+}
+
+void Sun::initModel()
+{
+	// NOTE initModel() is executed when Model registered to Integrator
+
+	// set initialized flag
+	_initialized = true;
+}
+
+void Sun::updateDerivs()
+{
+	// no derivatives to update
+}
+
+void Sun::updateStateDependents()
+{
+	double t1 { _pEpoch->getT1() };
+
+	// calculate mean longitude
+	double meanLon { DEG2RAD * ( 280.460 + 36000.771 * t1 ) };
+
+	// calculate mean anomaly
+	double M { DEG2RAD * ( 357.5277233 + 35999.05034 * t1 ) };
+
+	// calculate longitude of the ecliptic
+	double eclipLon { meanLon + DEG2RAD * ( 1.914666471 * std::sin( M ) + .019994643 * std::sin( 2.0 * M ) ) };
+
+	// get mean obliquity of the ecliptic
+	double meanEpsilon { Earth::getMeanEpsilon( t1 ) };
+
+	// get Earth to Sun unit vector and magntiude
+	Vector3 RwrtOexpNhat {
+		std::cos( eclipLon ),
+		std::cos( meanEpsilon ) * std::sin( eclipLon ),
+		std::sin( meanEpsilon ) * std::sin( eclipLon )
+	};
+
+	double RwrtOmag {
+		AU * ( 1.000140612 - .016708617 * std::cos( M ) - .000139589 * std::cos( 2.0 * M ) )
+	};
+
+	_RwrtOexpN = RwrtOmag * RwrtOexpNhat;
+
 }
 
