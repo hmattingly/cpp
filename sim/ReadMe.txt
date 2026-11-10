@@ -9,16 +9,12 @@ TODO:
 
 	Moon
 		add position vector given epoch
-	Sun
-		add position vector given epoch
 
 	CoordinateTransform
 		I2eqoe: ECI to modified equinoctial orbital elements (and vice versa)
 		I2miloe: ECI to Milankovitch orbital elements (and vice versa)
 
 	Dynamics
-		SRPDynamics
-		SunDynamics
 		MoonDynamics
 		ControlInput
 

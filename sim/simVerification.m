@@ -7,43 +7,47 @@ simData = jsondecode(simFile);
 spacecraftFile = fileread("inputs/spacecraft.json");
 spacecraftData = jsondecode(spacecraftFile);
 
+earthFile = fileread("inputs/earth.json");
+earthData = jsondecode(earthFile);
+
 startTime   = 0.0;
 endTime     = simData.simRunTime;
-dt          = simData.timeStepRK4;
+dt          = simData.RK4.timeStep;
 
 year = simData.epoch.year;
 month = simData.epoch.month;
 day = simData.epoch.day;
 utc0 = simData.epoch.utc;
 
-RwrtCexpI_0 = spacecraftData.initialState.RwrtCexpI;
-VwrtIexpI_0 = spacecraftData.initialState.VwrtIexpI;
+xp = earthData.xp;
+yp = earthData.yp;
+
+RofBwrtCexpI_0 = spacecraftData.Spacecraft.initialState.RofBwrtCexpI;
+VofBwrtIexpI_0 = spacecraftData.Spacecraft.initialState.VofBwrtIexpI;
 
 opts = Const.propOpts();
-opts.J2 = spacecraftData.dynamics.J2;
-opts.J3 = spacecraftData.dynamics.J3;
-opts.J4 = spacecraftData.dynamics.J4;
+opts.J2 = spacecraftData.Spacecraft.dynamics.J2;
+opts.J3 = spacecraftData.Spacecraft.dynamics.J3;
+opts.J4 = spacecraftData.Spacecraft.dynamics.J4;
 opts.epoch = [year, month, day, utc0];
-[~,~,~,~,MJD] = date2jd(year, month, day, utc0);
-[xp, yp] = get_xp_yp(MJD);
 opts.xp = xp;
 opts.yp = yp;
 
 %% import sim output
 T = readtable("outputs/Spacecraft.csv");
 time = T.Time;
-RwrtCexpI = [T.RwrtCexpI_1, T.RwrtCexpI_2, T.RwrtCexpI_3]';
-VwrtIexpI = [T.VwrtIexpI_1, T.VwrtIexpI_2, T.VwrtIexpI_3]';
-RwrtCexpE = [T.RwrtCexpE_1, T.RwrtCexpE_2, T.RwrtCexpE_3]';
-VwrtIexpE = [T.VwrtIexpE_1, T.VwrtIexpE_2, T.VwrtIexpE_3]';
-VwrtEexpE = [T.VwrtEexpE_1, T.VwrtEexpE_2, T.VwrtEexpE_3]';
-RwrtCexpL = [T.RwrtCexpL_1, T.RwrtCexpL_2, T.RwrtCexpL_3]';
-VwrtIexpL = [T.VwrtIexpL_1, T.VwrtIexpL_2, T.VwrtIexpL_3]';
-RwrtCexpP = [T.RwrtCexpP_1, T.RwrtCexpP_2, T.RwrtCexpP_3]';
-VwrtIexpP = [T.VwrtIexpP_1, T.VwrtIexpP_2, T.VwrtIexpP_3]';
+RofBwrtCexpI = [T.RofBwrtCexpI_1, T.RofBwrtCexpI_2, T.RofBwrtCexpI_3]';
+VofBwrtIexpI = [T.VofBwrtIexpI_1, T.VofBwrtIexpI_2, T.VofBwrtIexpI_3]';
+RofBwrtCexpE = [T.RofBwrtCexpE_1, T.RofBwrtCexpE_2, T.RofBwrtCexpE_3]';
+VofBwrtIexpE = [T.VofBwrtIexpE_1, T.VofBwrtIexpE_2, T.VofBwrtIexpE_3]';
+VofBwrtEexpE = [T.VofBwrtEexpE_1, T.VofBwrtEexpE_2, T.VofBwrtEexpE_3]';
+RofBwrtCexpL = [T.RofBwrtCexpL_1, T.RofBwrtCexpL_2, T.RofBwrtCexpL_3]';
+VofBwrtIexpL = [T.VofBwrtIexpL_1, T.VofBwrtIexpL_2, T.VofBwrtIexpL_3]';
+RofBwrtCexpP = [T.RofBwrtCexpP_1, T.RofBwrtCexpP_2, T.RofBwrtCexpP_3]';
+VofBwrtIexpP = [T.VofBwrtIexpP_1, T.VofBwrtIexpP_2, T.VofBwrtIexpP_3]';
 
-HwrtCexpI = [T.HwrtCexpI_1, T.HwrtCexpI_2, T.HwrtCexpI_3]';
-NwrtCexpIhat = [T.NwrtCexpIhat_1, T.NwrtCexpIhat_2, T.NwrtCexpIhat_3]';
+HofBwrtCexpI = [T.HofBwrtCexpI_1, T.HofBwrtCexpI_2, T.HofBwrtCexpI_3]';
+NofBwrtCexpIhat = [T.NofBwrtCexpIhat_1, T.NofBwrtCexpIhat_2, T.NofBwrtCexpIhat_3]';
 
 a = T.a';
 ecc = T.ecc';
@@ -69,7 +73,7 @@ gmst = T.gmst';
 gast = T.gast';
 
 %% compare against ode45
-x0_ECI = [RwrtCexpI_0; VwrtIexpI_0];
+x0_ECI = [RofBwrtCexpI_0; VofBwrtIexpI_0];
 tspan = startTime:dt:endTime;
 [t, x_ECI] = ode45(@(t, state) propagator(t, state, opts), tspan, x0_ECI, Const.odeOpts);
 x_ECI = x_ECI';
@@ -133,84 +137,84 @@ end
 figure(1)
 sgtitle(sprintf('Sim vs. Matlab\nECI State Errors'))
 subplot(3,2,1)
-plot(t/3600, (x_ECI(1,:) - RwrtCexpI(1,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(1,:) - RofBwrtCexpI(1,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-ylabel('RwrtCexpI_1 Error [m]')
+ylabel('RofBwrtCexpI_1 Error [m]')
 
 subplot(3,2,3)
-plot(t/3600, (x_ECI(2,:) - RwrtCexpI(2,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(2,:) - RofBwrtCexpI(2,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-ylabel('RwrtCexpI_2 Error [m]')
+ylabel('RofBwrtCexpI_2 Error [m]')
 
 subplot(3,2,5)
-plot(t/3600, (x_ECI(3,:) - RwrtCexpI(3,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(3,:) - RofBwrtCexpI(3,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
 xlabel('Time [hr]')
-ylabel('RwrtCexpI_3 Error [m]')
+ylabel('RofBwrtCexpI_3 Error [m]')
 
 subplot(3,2,2)
-plot(t/3600, (x_ECI(4,:) - VwrtIexpI(1,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(4,:) - VofBwrtIexpI(1,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-ylabel('VwrtIexpI_1 Error [m/s]')
+ylabel('VofBwrtIexpI_1 Error [m/s]')
 
 subplot(3,2,4)
-plot(t/3600, (x_ECI(5,:) - VwrtIexpI(2,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(5,:) - VofBwrtIexpI(2,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-ylabel('VwrtIexpI_2 Error [m/s]')
+ylabel('VofBwrtIexpI_2 Error [m/s]')
 
 subplot(3,2,6)
-plot(t/3600, (x_ECI(6,:) - VwrtIexpI(3,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECI(6,:) - VofBwrtIexpI(3,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
 xlabel('Time [hr]')
-ylabel('VwrtIexpI_3 Error [m/s]')
+ylabel('VofBwrtIexpI_3 Error [m/s]')
 
 
 % Sim vs. Matlab ECEF state comparison
 figure(2)
 sgtitle(sprintf('Sim vs. Matlab\nECEF State Errors'))
 subplot(3,2,1)
-plot(t/3600, (x_ECEF(1,:) - RwrtCexpE(1,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECEF(1,:) - RofBwrtCexpE(1,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-ylabel('RwrtCexpE_1 Error [m]')
+ylabel('RofBwrtCexpE_1 Error [m]')
 
 subplot(3,2,3)
-plot(t/3600, (x_ECEF(2,:) - RwrtCexpE(2,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECEF(2,:) - RofBwrtCexpE(2,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-ylabel('RwrtCexpE_2 Error [m]')
+ylabel('RofBwrtCexpE_2 Error [m]')
 
 subplot(3,2,5)
-plot(t/3600, (x_ECEF(3,:) - RwrtCexpE(3,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECEF(3,:) - RofBwrtCexpE(3,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
 xlabel('Time [hr]')
-ylabel('RwrtCexpE_3 Error [m]')
+ylabel('RofBwrtCexpE_3 Error [m]')
 
 subplot(3,2,2)
-plot(t/3600, (x_ECEF(4,:) - VwrtIexpE(1,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECEF(4,:) - VofBwrtIexpE(1,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-ylabel('VwrtIexpE_1 Error [m/s]')
+ylabel('VofBwrtIexpE_1 Error [m/s]')
 
 subplot(3,2,4)
-plot(t/3600, (x_ECEF(5,:) - VwrtIexpE(2,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECEF(5,:) - VofBwrtIexpE(2,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
-ylabel('VwrtIexpE_2 Error [m/s]')
+ylabel('VofBwrtIexpE_2 Error [m/s]')
 
 subplot(3,2,6)
-plot(t/3600, (x_ECEF(6,:) - VwrtIexpE(3,:))*1000, 'LineWidth', 1.5)
+plot(t/3600, (x_ECEF(6,:) - VofBwrtIexpE(3,:))*1000, 'LineWidth', 1.5)
 hold on
 grid on
 xlabel('Time [hr]')
-ylabel('VwrtIexpE_3 Error [m/s]')
+ylabel('VofBwrtIexpE_3 Error [m/s]')
 
 % Sim vs. Matlab OE state comparison
 figure(3)
